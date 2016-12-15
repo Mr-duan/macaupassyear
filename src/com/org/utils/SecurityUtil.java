@@ -3,32 +3,32 @@
  * Project : lms
  * $Id$
  * $Revision$
- * Last Changed by SJ at 2014Äê3ÔÂ4ÈÕ ÏÂÎç4:07:24
+ * Last Changed by SJ at 2014å¹´3æœˆ4æ—¥ ä¸‹åˆ4:07:24
  * $URL$
  * 
  * Change Log
  * Author      Change Date    Comments
  *-------------------------------------------------------------
- * SJ         2014Äê3ÔÂ4ÈÕ        Initailized
+ * SJ         2014å¹´3æœˆ4æ—¥        Initailized
  */
 package com.org.utils;
 
 import java.io.UnsupportedEncodingException;
 
 /**
- * °²È«ÃÜÔ¿Àà
+ * å®‰å…¨å¯†é’¥ç±»
  */
 public class SecurityUtil {
-	public static String createPersionalKey(String sessionId) {
-		byte[] encoded;
-		try {
-			encoded = DesUtil.encryptMode(sessionId.getBytes("UTF-8"));
-			String dnHex = ByteUtil.bytes2HexStr(encoded);
-			System.out.println("hexºóµÄ×Ö·û´®:" + dnHex);
-			return dnHex;
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+    public static String createPersionalKey(String sessionId) {
+        byte[] encoded;
+        try {
+            encoded = DesUtil.encryptMode(sessionId.getBytes("UTF-8"));
+            String dnHex = ByteUtil.bytes2HexStr(encoded);
+            System.out.println("hexåçš„å­—ç¬¦ä¸²:" + dnHex);
+            return dnHex;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

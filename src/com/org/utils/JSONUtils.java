@@ -15,132 +15,131 @@ import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 
 /**
- * Json¹¤¾ßÀà
+ * Jsonå·¥å…·ç±»
  */
 public class JSONUtils {
-	private static Log log = LogFactory.getLog(JSONUtils.class);
-	
-	public static JSONObject getJsonFromStrStrMap(Map<String, String> ssMap){
-		JSONObject paramJson = new JSONObject();
-		try{
-			 paramJson.putAll(ssMap);
-			 return paramJson;
-		}catch(Exception e){
-			log.info("MAP×ªJSON¶ÔÏóÊı¾İ¹ı³Ì³ö´í...");
-			return null;
-		}
-	}
-	
-	public static JSONObject getJsonFromKeyValueMap(HashMap<String, String> kvMap){
-		JSONObject paramJson = new JSONObject();
-		try{
-			 paramJson.putAll(kvMap);
-			 return paramJson;
-		}catch(Exception e){
-			log.info("MAP×ªJSON¶ÔÏóÊı¾İ¹ı³Ì³ö´í...");
-			return null;
-		}
-	}
-	
-	public static String getJsonStringFromKeyValueMap(HashMap<String, String> kvMap)  {
-		JSONObject paramJson = new JSONObject();
-		try{
-			 paramJson.putAll(kvMap);
-			 return paramJson.toString();
-		}catch(Exception e){
-			log.info("MAP×ªJSON×Ö·û´®¹ı³Ì³ö´í...");
-			return null;
-		}
-	}
-	
-	public static String getJsonStringFromObject(Object obj)  {
-		try{
-			 return JSONObject.fromObject(obj).toString();
-		}catch(Exception e){
-			log.info("¶ÔÏó×ªJSON×Ö·û´®¹ı³Ì³ö´í...");
-			return null;
-		}
-	}
-	
-	public static String getJsonStringFromObject(Object obj,JsonConfig config)  {
-		try{
-			 return JSONObject.fromObject(obj,config).toString();
-		}catch(Exception e){
-			log.info("¶ÔÏó×ªJSON×Ö·û´®¹ı³Ì³ö´í...");
-			return null;
-		}
-	}
-	
-	//ĞŞÕıÓöµ½[] »ò {}µÈ·Çjson¶ÔÏóÊ±×Ô¶¯Ìí¼ÓÒıºÅµÄ"{}" "[{}]" bug
-	public static void jsoncheck(JSONObject paramJson){	
-		if(paramJson != null){
-			Iterator<?> it = paramJson.keys();
-			while(it.hasNext()){
-				Object key = it.next();
-				Object o = paramJson.get(key);
-				if(o instanceof String ){//×Ö·û´®ÀàĞÍ
-					String value = (String)o;
-					if((value.startsWith("\"{") && value.endsWith("}\"")) || (value.startsWith("\"[") && value.endsWith("]\""))){
-						value = value.substring(1, value.length()-1);
-						paramJson.put(key, value);
-					}
-				}else if(o instanceof JSONObject){
-					JSONObject jo = (JSONObject)o;
-					jsoncheck(jo);
-				}else if(o instanceof JSONArray){
-					JSONArray ja = (JSONArray)o;
-					for (int i = 0; i < ja.size(); i++) {
-						JSONObject jo = ja.getJSONObject(i);
-						jsoncheck(jo);
-					}
-				}
-			}
-		}
-	}
-	
-	public static JSONObject getJsonFromString(String jsonString){	
-		try{
-			JSONObject paramJson = JSONObject.fromObject(jsonString);
-			jsoncheck(paramJson);
-			return paramJson;
-		}catch(Exception e){
-			log.info("×Ö·û´® ×ªJSON¶ÔÏó¹ı³Ì³ö´í...");
-			return null;
-		}
-	}
-	
-	
-	public static JSONArray getJsonArrayFromCollection(Collection<?> collection)  {
-		JSONArray ja = new JSONArray();
-		try{
-			 ja.addAll(collection);
-			 return ja;
-		}catch(Exception e){
-			log.info("¼¯ºÏ×ªJSONÊı×é¹ı³Ì³ö´í...");
-			return null;
-		}
-	}
-	
-	public static Object toBean(String jsonString,Class<?> beanClass){
-		try{
-			JSONObject jsonObject = JSONObject.fromObject(jsonString);
-			return JSONObject.toBean(jsonObject, beanClass);
-		}catch(Exception e){
-			log.info("×Ö·û´® ×ªJSON¶ÔÏó¹ı³Ì³ö´í...");
-			return null;
-		}
-	}
-	
-	public static Map<Object, Object> parseJSON2Map(JSONObject json){
+    private static Log log = LogFactory.getLog(JSONUtils.class);
+
+    public static JSONObject getJsonFromStrStrMap(Map<String, String> ssMap) {
+        JSONObject paramJson = new JSONObject();
+        try {
+            paramJson.putAll(ssMap);
+            return paramJson;
+        } catch (Exception e) {
+            log.info("MAPè½¬JSONå¯¹è±¡æ•°æ®è¿‡ç¨‹å‡ºé”™...");
+            return null;
+        }
+    }
+
+    public static JSONObject getJsonFromKeyValueMap(HashMap<String, String> kvMap) {
+        JSONObject paramJson = new JSONObject();
+        try {
+            paramJson.putAll(kvMap);
+            return paramJson;
+        } catch (Exception e) {
+            log.info("MAPè½¬JSONå¯¹è±¡æ•°æ®è¿‡ç¨‹å‡ºé”™...");
+            return null;
+        }
+    }
+
+    public static String getJsonStringFromKeyValueMap(HashMap<String, String> kvMap) {
+        JSONObject paramJson = new JSONObject();
+        try {
+            paramJson.putAll(kvMap);
+            return paramJson.toString();
+        } catch (Exception e) {
+            log.info("MAPè½¬JSONå­—ç¬¦ä¸²è¿‡ç¨‹å‡ºé”™...");
+            return null;
+        }
+    }
+
+    public static String getJsonStringFromObject(Object obj) {
+        try {
+            return JSONObject.fromObject(obj).toString();
+        } catch (Exception e) {
+            log.info("å¯¹è±¡è½¬JSONå­—ç¬¦ä¸²è¿‡ç¨‹å‡ºé”™...");
+            return null;
+        }
+    }
+
+    public static String getJsonStringFromObject(Object obj, JsonConfig config) {
+        try {
+            return JSONObject.fromObject(obj, config).toString();
+        } catch (Exception e) {
+            log.info("å¯¹è±¡è½¬JSONå­—ç¬¦ä¸²è¿‡ç¨‹å‡ºé”™...");
+            return null;
+        }
+    }
+
+    // ä¿®æ­£é‡åˆ°[] æˆ– {}ç­‰éjsonå¯¹è±¡æ—¶è‡ªåŠ¨æ·»åŠ å¼•å·çš„"{}" "[{}]" bug
+    public static void jsoncheck(JSONObject paramJson) {
+        if (paramJson != null) {
+            Iterator<?> it = paramJson.keys();
+            while (it.hasNext()) {
+                Object key = it.next();
+                Object o = paramJson.get(key);
+                if (o instanceof String) {// å­—ç¬¦ä¸²ç±»å‹
+                    String value = (String) o;
+                    if ((value.startsWith("\"{") && value.endsWith("}\"")) || (value.startsWith("\"[") && value.endsWith("]\""))) {
+                        value = value.substring(1, value.length() - 1);
+                        paramJson.put(key, value);
+                    }
+                } else if (o instanceof JSONObject) {
+                    JSONObject jo = (JSONObject) o;
+                    jsoncheck(jo);
+                } else if (o instanceof JSONArray) {
+                    JSONArray ja = (JSONArray) o;
+                    for (int i = 0; i < ja.size(); i++) {
+                        JSONObject jo = ja.getJSONObject(i);
+                        jsoncheck(jo);
+                    }
+                }
+            }
+        }
+    }
+
+    public static JSONObject getJsonFromString(String jsonString) {
+        try {
+            JSONObject paramJson = JSONObject.fromObject(jsonString);
+            jsoncheck(paramJson);
+            return paramJson;
+        } catch (Exception e) {
+            log.info("å­—ç¬¦ä¸² è½¬JSONå¯¹è±¡è¿‡ç¨‹å‡ºé”™...");
+            return null;
+        }
+    }
+
+    public static JSONArray getJsonArrayFromCollection(Collection<?> collection) {
+        JSONArray ja = new JSONArray();
+        try {
+            ja.addAll(collection);
+            return ja;
+        } catch (Exception e) {
+            log.info("é›†åˆè½¬JSONæ•°ç»„è¿‡ç¨‹å‡ºé”™...");
+            return null;
+        }
+    }
+
+    public static Object toBean(String jsonString, Class<?> beanClass) {
+        try {
+            JSONObject jsonObject = JSONObject.fromObject(jsonString);
+            return JSONObject.toBean(jsonObject, beanClass);
+        } catch (Exception e) {
+            log.info("å­—ç¬¦ä¸² è½¬JSONå¯¹è±¡è¿‡ç¨‹å‡ºé”™...");
+            return null;
+        }
+    }
+
+    public static Map<Object, Object> parseJSON2Map(JSONObject json) {
         Map<Object, Object> map = new HashMap<Object, Object>();
-        for(Object k : json.keySet()){
-            Object v = json.get(k); 
-            //Èç¹ûÄÚ²ã»¹ÊÇÊı×éµÄ»°£¬¼ÌĞø½âÎö
-            if(v instanceof JSONArray){
-                List<Map<Object, Object>> list = new ArrayList<Map<Object,Object>>();
+        for (Object k : json.keySet()) {
+            Object v = json.get(k);
+            // å¦‚æœå†…å±‚è¿˜æ˜¯æ•°ç»„çš„è¯ï¼Œç»§ç»­è§£æ
+            if (v instanceof JSONArray) {
+                List<Map<Object, Object>> list = new ArrayList<Map<Object, Object>>();
                 @SuppressWarnings("unchecked")
-				Iterator<JSONObject> it = ((JSONArray)v).iterator();
-                while(it.hasNext()){
+                Iterator<JSONObject> it = ((JSONArray) v).iterator();
+                while (it.hasNext()) {
                     list.add(parseJSON2Map(it.next()));
                 }
                 map.put(k.toString(), list);
@@ -150,17 +149,17 @@ public class JSONUtils {
         }
         return map;
     }
-	
-	public static Map<Integer, Object> parseJSON2IntegerKeyMap(JSONObject json){
+
+    public static Map<Integer, Object> parseJSON2IntegerKeyMap(JSONObject json) {
         Map<Integer, Object> map = new HashMap<Integer, Object>();
-        for(Object k : json.keySet()){
-            Object v = json.get(k); 
-            //Èç¹ûÄÚ²ã»¹ÊÇÊı×éµÄ»°£¬¼ÌĞø½âÎö
-            if(v instanceof JSONArray){
-                List<Map<Object, Object>> list = new ArrayList<Map<Object,Object>>();
+        for (Object k : json.keySet()) {
+            Object v = json.get(k);
+            // å¦‚æœå†…å±‚è¿˜æ˜¯æ•°ç»„çš„è¯ï¼Œç»§ç»­è§£æ
+            if (v instanceof JSONArray) {
+                List<Map<Object, Object>> list = new ArrayList<Map<Object, Object>>();
                 @SuppressWarnings("unchecked")
-				Iterator<JSONObject> it = ((JSONArray)v).iterator();
-                while(it.hasNext()){
+                Iterator<JSONObject> it = ((JSONArray) v).iterator();
+                while (it.hasNext()) {
                     list.add(parseJSON2Map(it.next()));
                 }
                 map.put(Integer.valueOf(k.toString()), list);
@@ -170,8 +169,8 @@ public class JSONUtils {
         }
         return map;
     }
-	
-	public static void main(String[] args){
+
+    public static void main(String[] args) {
 //		String s = "{'merid':'888002148160001','cid':'0001','kids':[{'kid':'01','tids':[{'tid':'000','orgids':[{'orgid':'00000001'}]},{'tid':'001','orgids':[{'orgid':'00000001'}]}]},{'kid':'02','tids':[{'tid':'000','orgids':[{'orgid':'00000005'},{'orgid':'00000006'},{'orgid':'00000007'},{'orgid':'00000008'}]}]},{'kid':'04','tids':[{'tid':'000','orgids':[{'orgid':'00000004'}]}]},{'kid':'06','tids':[{'tid':'000','orgids':[{'orgid':'00000003'}]}]},{'kid':'07','tids':[{'tid':'000','orgids':[{'orgid':'00000002'}]}]}]}";
 //		JSONObject jo = JSONUtils.getJsonFromString(s);
 //		
@@ -204,5 +203,5 @@ public class JSONUtils {
 //			}
 //			
 //		}
-	}
+    }
 }

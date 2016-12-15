@@ -1,13 +1,13 @@
 package com.org.utils;
 
 /**
- * ÓÃ»§¹¤¾ßÀà
- * Ö÷ÒªÓÃÓÚ´¦ÀíÓëÓÃ»§Ïà¹ØµÄÊı¾İ£¬±ÈÈç´´½¨Ò»¸öÁÙÊ±ÓÃ»§
+ * ç”¨æˆ·å·¥å…·ç±»
+ * ä¸»è¦ç”¨äºå¤„ç†ä¸ç”¨æˆ·ç›¸å…³çš„æ•°æ®ï¼Œæ¯”å¦‚åˆ›å»ºä¸€ä¸ªä¸´æ—¶ç”¨æˆ·
  */
 public class UserUtil {
-	public static synchronized String randomLoginName(){
-		String rn = DateUtil.getDateStringByFormat(DateUtil.yyyyMMddHHmmss);
-		return rn;
-	}
-	
+    public static synchronized String randomLoginName() {
+        String rn = DateUtil.getDateStringByFormat(DateUtil.yyyyMMddHHmmss);
+        return rn;
+    }
+
 }

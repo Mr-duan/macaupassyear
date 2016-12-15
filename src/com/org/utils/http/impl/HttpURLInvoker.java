@@ -9,8 +9,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 
-import net.sf.json.JSONObject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,203 +17,231 @@ import com.org.log.impl.LogUtilMg;
 import com.org.util.CT;
 import com.org.utils.JSONUtils;
 import com.org.utils.http.HttpTool;
+
+import net.sf.json.JSONObject;
+
 /**
  * @author Nano
  * 
- * URL Í¨Ñ¶¹¤¾ß·â×°
+ * URL é€šè®¯å·¥å…·å°è£…
  */
 public class HttpURLInvoker implements HttpTool {
 
-	public static Logger log = LoggerFactory.getLogger(HttpURLInvoker.class);
+    public static Logger log = LoggerFactory.getLogger(HttpURLInvoker.class);
 
-	public  String httpGet(String url,String charset) {
-		HttpURLConnection connection = null;
-		BufferedReader reader  = null;
-	    StringBuffer sb = new StringBuffer();
-		try {
-			LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "1.½«½øĞĞHttpGetÇëÇó", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
-			URL getUrl = new URL(url);
-			connection = (HttpURLConnection) getUrl.openConnection();
-			connection.connect();
-			LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "2.³É¹¦´´½¨Á¬½Óµ½["+url+"]Á¬½Ó", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
-		    reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),charset));
-			String line = "";
-			while ((line = reader.readLine()) != null) {
-				  sb.append(line);
-			}
-			LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "3.³É¹¦»ñµÃÊı¾İ³¤¶È["+sb.toString().length()+"],²¢¶Ï¿ªÁ¬½Ó", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
-		} catch (MalformedURLException e) {
-			LogUtil.log(CT.LOG_CATEGORY_ERR, "URLµØÖ·½âÎöÊ§°Ü", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
-		} catch (IOException e) {
-			LogUtil.log(CT.LOG_CATEGORY_ERR, "ÍøÂçÊı¾İÁ÷²Ù×÷Ê§°Ü", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
-		} finally{
-			 try {
-					if(reader != null) reader.close();
-					if(connection != null) connection.disconnect();
-				} catch (IOException e) {
-					LogUtil.log(CT.LOG_CATEGORY_ERR, "¹Ø±ÕÊı¾İÁ÷²Ù×÷Ê§°Ü", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
-				}
-		}
-		return sb.toString();
-	}
-	
-	public  String httpPost(String content,String url,String charset){
-		 HttpURLConnection connection = null;
-		 DataOutputStream out = null;
-		 BufferedReader reader = null;
-		 StringBuffer sb = new StringBuffer();
-		try {
-			LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "1.½«½øĞĞHttpPostÇëÇó", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
-			
-	        URL postUrl = new URL(url);
-	        connection = (HttpURLConnection) postUrl.openConnection();
-	        // ÉèÖÃÊÇ·ñÏòconnectionÊä³ö
-	        connection.setDoOutput(true);
-	        // ÉèÖÃÊÇ·ñÏòconnectionÊäÈë
-	        connection.setDoInput(true);
-	        // Default is GET
-	        connection.setRequestMethod("POST");
-	        // PostÇëÇó²»ÄÜÊ¹ÓÃ»º´æ
-	        connection.setUseCaches(false);
-	        
-	        //connection.setFollowRedirects(true);
-	        
-	        connection.setInstanceFollowRedirects(true);
-	        
-	        // ÅäÖÃapplication/x-www-form-urlencoded
-	        connection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-	        connection.setRequestProperty("Content-Length", String.valueOf(content.getBytes().length));   
-	        // ÅäÖÃ±ØĞëÒªÔÚconnectÖ®Ç°Íê³É
-	        connection.connect();
-	   
-	        LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "2.³É¹¦´´½¨Á¬½Óµ½["+url+"]Á¬½Ó", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
-			
-	        out = new DataOutputStream(connection.getOutputStream());
-	        //out.writeBytes(content); 
-	        out.write(content.getBytes(charset));
-	        out.flush();
-	       
-	        reader = new BufferedReader(new InputStreamReader( connection.getInputStream(),charset));
-	        String line;
-	        while ((line = reader.readLine()) != null) {
-	            sb.append(line);
-	        }
-	        
-	        LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "3.³É¹¦»ñµÃÊı¾İ³¤¶È["+sb.toString().length()+"],²¢¶Ï¿ªÁ¬½Ó", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
-		} catch (MalformedURLException e) {
-			LogUtil.log(CT.LOG_CATEGORY_ERR, "URLµØÖ·½âÎöÊ§°Ü", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
-		} catch (IOException e) {
-			LogUtil.log(CT.LOG_CATEGORY_ERR, "ÍøÂçÊı¾İÁ÷²Ù×÷Ê§°Ü", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
-		} finally{
-			 try {
-				    if(out != null) out.close();
-					if(reader != null) reader.close();
-					if(connection != null) connection.disconnect();
-				} catch (IOException e) {
-					LogUtil.log(CT.LOG_CATEGORY_ERR, "¹Ø±ÕÊı¾İÁ÷²Ù×÷Ê§°Ü", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
-				}
-		}
-		
-		return sb.toString();
-	}
+    @Override
+    public String httpGet(String url, String charset) {
+        HttpURLConnection connection = null;
+        BufferedReader reader = null;
+        StringBuffer sb = new StringBuffer();
+        try {
+            LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "1.å°†è¿›è¡ŒHttpGetè¯·æ±‚", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
+            URL getUrl = new URL(url);
+            connection = (HttpURLConnection) getUrl.openConnection();
+            connection.connect();
+            LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "2.æˆåŠŸåˆ›å»ºè¿æ¥åˆ°[" + url + "]è¿æ¥", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
+            reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), charset));
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+            LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "3.æˆåŠŸè·å¾—æ•°æ®é•¿åº¦[" + sb.toString().length() + "],å¹¶æ–­å¼€è¿æ¥", null, LogUtilMg.LOG_INFO,
+                    CT.LOG_PATTERN_COMMUNICATION);
+        } catch (MalformedURLException e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "URLåœ°å€è§£æå¤±è´¥", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        } catch (IOException e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "ç½‘ç»œæ•°æ®æµæ“ä½œå¤±è´¥", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            } catch (IOException e) {
+                LogUtil.log(CT.LOG_CATEGORY_ERR, "å…³é—­æ•°æ®æµæ“ä½œå¤±è´¥", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+            }
+        }
+        return sb.toString();
+    }
 
-	public JSONObject httpPost(JSONObject requestJson, String url,String charset) {
-		 HttpURLConnection connection = null;
-		 DataOutputStream out = null;
-		 BufferedReader reader = null;
-		 JSONObject resultJson = null;
-		try {
-			LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "1.½«½øĞĞHttpPostÇëÇó", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
-			
-			Iterator<?> it = requestJson.keySet().iterator();
-	    	StringBuffer content = new StringBuffer();
-			while(it.hasNext()){
-				Object nextObj = it.next();
-				if(nextObj != null) {
-					String name = nextObj.toString();
-					content.append(name).append(CT.SYMBOL_DYH).append(requestJson.getString(name)).append(CT.SYMBOL_ADF);	
-				}
-			}
-			String data = content.substring(0, content.length()-1);
-			
-	        URL postUrl = new URL(url);
-	        connection = (HttpURLConnection) postUrl.openConnection();
-	        // ÉèÖÃÊÇ·ñÏòconnectionÊä³ö
-	        connection.setDoOutput(true);
-	        // ÉèÖÃÊÇ·ñÏòconnectionÊäÈë
-	        connection.setDoInput(true);
-	        // Default is GET
-	        connection.setRequestMethod("POST");
-	        // PostÇëÇó²»ÄÜÊ¹ÓÃ»º´æ
-	        connection.setUseCaches(false);
-	        
-	        //connection.setFollowRedirects(true);
-	        
-	        connection.setInstanceFollowRedirects(true);
-	        
-	        // ÅäÖÃapplication/x-www-form-urlencoded
-	        connection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-	        connection.setRequestProperty("Content-Length", String.valueOf(data.getBytes(charset).length));   
-	        // ÅäÖÃ±ØĞëÒªÔÚconnectÖ®Ç°Íê³É
-	        connection.connect();
-	   
-	        LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "2.³É¹¦´´½¨Á¬½Óµ½["+url+"]Á¬½Ó", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
-			
-	        out = new DataOutputStream(connection.getOutputStream());
-	        //out.writeBytes(content); 
-	        out.write(data.getBytes(charset));
-	        out.flush();
-	       
-	        reader = new BufferedReader(new InputStreamReader( connection.getInputStream(),charset));
-	        StringBuffer buffer = new StringBuffer();
-	        String line;
-	        while ((line = reader.readLine()) != null) {
-	        	buffer.append(line);
-	        }
-	        
-	        String httpResult = buffer.toString();
-	        if(httpResult.trim().length() > 0){
-	        	resultJson = JSONUtils.getJsonFromString(httpResult);
-	        }
-	        
-	        LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "3.³É¹¦»ñµÃÊı¾İ³¤¶È["+buffer.toString().length()+"],²¢¶Ï¿ªÁ¬½Ó", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
-		} catch (MalformedURLException e) {
-			LogUtil.log(CT.LOG_CATEGORY_ERR, "URLµØÖ·½âÎöÊ§°Ü", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
-		} catch (IOException e) {
-			LogUtil.log(CT.LOG_CATEGORY_ERR, "ÍøÂçÊı¾İÁ÷²Ù×÷Ê§°Ü", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
-		} finally{
-			 try {
-				    if(out != null) out.close();
-					if(reader != null) reader.close();
-					if(connection != null) connection.disconnect();
-				} catch (IOException e) {
-					LogUtil.log(CT.LOG_CATEGORY_ERR, "¹Ø±ÕÊı¾İÁ÷²Ù×÷Ê§°Ü", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
-				}
-		}
-		
-		return resultJson;
-	}
+    @Override
+    public String httpPost(String content, String url, String charset) {
+        HttpURLConnection connection = null;
+        DataOutputStream out = null;
+        BufferedReader reader = null;
+        StringBuffer sb = new StringBuffer();
+        try {
+            LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "1.å°†è¿›è¡ŒHttpPostè¯·æ±‚", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
 
-	/**
-	 * ²»ÓÃÊµÏÖ
-	 */
-	public String simplePost(JSONObject jsonParam, String remoteUrl,
-			String charSet) {
-		return null;
-	}
+            URL postUrl = new URL(url);
+            connection = (HttpURLConnection) postUrl.openConnection();
+            // è®¾ç½®æ˜¯å¦å‘connectionè¾“å‡º
+            connection.setDoOutput(true);
+            // è®¾ç½®æ˜¯å¦å‘connectionè¾“å…¥
+            connection.setDoInput(true);
+            // Default is GET
+            connection.setRequestMethod("POST");
+            // Postè¯·æ±‚ä¸èƒ½ä½¿ç”¨ç¼“å­˜
+            connection.setUseCaches(false);
 
-	public JSONObject wxHttpsPost(JSONObject paramContent, String url) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+            // connection.setFollowRedirects(true);
 
-	public JSONObject wxHttpsPost(String paramContent, String url) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+            connection.setInstanceFollowRedirects(true);
 
-	public JSONObject wxHttpsGet(JSONObject paramContent, String url) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+            // é…ç½®application/x-www-form-urlencoded
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("Content-Length", String.valueOf(content.getBytes().length));
+            // é…ç½®å¿…é¡»è¦åœ¨connectä¹‹å‰å®Œæˆ
+            connection.connect();
+
+            LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "2.æˆåŠŸåˆ›å»ºè¿æ¥åˆ°[" + url + "]è¿æ¥", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
+
+            out = new DataOutputStream(connection.getOutputStream());
+            // out.writeBytes(content);
+            out.write(content.getBytes(charset));
+            out.flush();
+
+            reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), charset));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+
+            LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "3.æˆåŠŸè·å¾—æ•°æ®é•¿åº¦[" + sb.toString().length() + "],å¹¶æ–­å¼€è¿æ¥", null, LogUtilMg.LOG_INFO,
+                    CT.LOG_PATTERN_COMMUNICATION);
+        } catch (MalformedURLException e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "URLåœ°å€è§£æå¤±è´¥", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        } catch (IOException e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "ç½‘ç»œæ•°æ®æµæ“ä½œå¤±è´¥", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (reader != null) {
+                    reader.close();
+                }
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            } catch (IOException e) {
+                LogUtil.log(CT.LOG_CATEGORY_ERR, "å…³é—­æ•°æ®æµæ“ä½œå¤±è´¥", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+            }
+        }
+
+        return sb.toString();
+    }
+
+    @Override
+    public JSONObject httpPost(JSONObject requestJson, String url, String charset) {
+        HttpURLConnection connection = null;
+        DataOutputStream out = null;
+        BufferedReader reader = null;
+        JSONObject resultJson = null;
+        try {
+            LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "1.å°†è¿›è¡ŒHttpPostè¯·æ±‚", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
+
+            Iterator<?> it = requestJson.keySet().iterator();
+            StringBuffer content = new StringBuffer();
+            while (it.hasNext()) {
+                Object nextObj = it.next();
+                if (nextObj != null) {
+                    String name = nextObj.toString();
+                    content.append(name).append(CT.SYMBOL_DYH).append(requestJson.getString(name)).append(CT.SYMBOL_ADF);
+                }
+            }
+            String data = content.substring(0, content.length() - 1);
+
+            URL postUrl = new URL(url);
+            connection = (HttpURLConnection) postUrl.openConnection();
+            // è®¾ç½®æ˜¯å¦å‘connectionè¾“å‡º
+            connection.setDoOutput(true);
+            // è®¾ç½®æ˜¯å¦å‘connectionè¾“å…¥
+            connection.setDoInput(true);
+            // Default is GET
+            connection.setRequestMethod("POST");
+            // Postè¯·æ±‚ä¸èƒ½ä½¿ç”¨ç¼“å­˜
+            connection.setUseCaches(false);
+
+            // connection.setFollowRedirects(true);
+
+            connection.setInstanceFollowRedirects(true);
+
+            // é…ç½®application/x-www-form-urlencoded
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("Content-Length", String.valueOf(data.getBytes(charset).length));
+            // é…ç½®å¿…é¡»è¦åœ¨connectä¹‹å‰å®Œæˆ
+            connection.connect();
+
+            LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "2.æˆåŠŸåˆ›å»ºè¿æ¥åˆ°[" + url + "]è¿æ¥", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
+
+            out = new DataOutputStream(connection.getOutputStream());
+            // out.writeBytes(content);
+            out.write(data.getBytes(charset));
+            out.flush();
+
+            reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), charset));
+            StringBuffer buffer = new StringBuffer();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line);
+            }
+
+            String httpResult = buffer.toString();
+            if (httpResult.trim().length() > 0) {
+                resultJson = JSONUtils.getJsonFromString(httpResult);
+            }
+
+            LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "3.æˆåŠŸè·å¾—æ•°æ®é•¿åº¦[" + buffer.toString().length() + "],å¹¶æ–­å¼€è¿æ¥", null, LogUtilMg.LOG_INFO,
+                    CT.LOG_PATTERN_COMMUNICATION);
+        } catch (MalformedURLException e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "URLåœ°å€è§£æå¤±è´¥", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        } catch (IOException e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "ç½‘ç»œæ•°æ®æµæ“ä½œå¤±è´¥", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (reader != null) {
+                    reader.close();
+                }
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            } catch (IOException e) {
+                LogUtil.log(CT.LOG_CATEGORY_ERR, "å…³é—­æ•°æ®æµæ“ä½œå¤±è´¥", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+            }
+        }
+
+        return resultJson;
+    }
+
+    /**
+     * ä¸ç”¨å®ç°
+     */
+    @Override
+    public String simplePost(JSONObject jsonParam, String remoteUrl, String charSet) {
+        return null;
+    }
+
+    @Override
+    public JSONObject wxHttpsPost(JSONObject paramContent, String url) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public JSONObject wxHttpsPost(String paramContent, String url) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public JSONObject wxHttpsGet(JSONObject paramContent, String url) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

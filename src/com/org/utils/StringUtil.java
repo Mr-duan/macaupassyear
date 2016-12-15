@@ -24,121 +24,130 @@ import java.util.regex.Pattern;
 import com.org.common.CommonConstant;
 
 public class StringUtil {
-    public static String mapStringToString(Map<String,String> map){
-    	StringBuffer sb = null;
-    	if(map != null && map.size() > 0){
-    		sb = new StringBuffer();
-    		Iterator<Entry<String,String>>  it = map.entrySet().iterator();
-    		while(it.hasNext()){
-    			Entry<String,String> entity = it.next();
-    			sb.append(entity.getKey()+ "=" +entity.getValue().toString()+" ");
-    		}
-    	}
-    	return sb.toString();
+    public static String mapStringToString(Map<String, String> map) {
+        StringBuffer sb = null;
+        if (map != null && map.size() > 0) {
+            sb = new StringBuffer();
+            Iterator<Entry<String, String>> it = map.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<String, String> entity = it.next();
+                sb.append(entity.getKey() + "=" + entity.getValue().toString() + " ");
+            }
+        }
+        return sb.toString();
     }
-	public  static String getUUIDValue(){
-		return  UUID.randomUUID().toString()+System.currentTimeMillis();
-	}
-	
 
-	
-    public static byte[] union(byte[]bs1,byte[]bs2){
-        byte[]bs=new byte[bs1.length+bs2.length];
-        for(int i=0;i<bs1.length;i++)
-            bs[i]=bs1[i];
-        for(int i=0;i<bs2.length;i++)
-            bs[bs1.length+i]=bs2[i];
+    public static String getUUIDValue() {
+        return UUID.randomUUID().toString() + System.currentTimeMillis();
+    }
+
+    public static byte[] union(byte[] bs1, byte[] bs2) {
+        byte[] bs = new byte[bs1.length + bs2.length];
+        for (int i = 0; i < bs1.length; i++) {
+            bs[i] = bs1[i];
+        }
+        for (int i = 0; i < bs2.length; i++) {
+            bs[bs1.length + i] = bs2[i];
+        }
         return bs;
     }
-    
+
     /**
-     * ¶Ô´ı×ª»»ÎªbcdµÄasciiÂëÖÆ×Ö·û´®µÄÑéÖ¤Ä£°å
+     * å¯¹å¾…è½¬æ¢ä¸ºbcdçš„asciiç åˆ¶å­—ç¬¦ä¸²çš„éªŒè¯æ¨¡æ¿
      */
     public static Pattern patternBcd = Pattern.compile("^[\\d|:|;|<|=|>|\\?]*$");
-    
+
     /**
-     * ¶Ô´ı×ª»»ÎªhexµÄasciiÂëÖÆ×Ö·û´®µÄÑéÖ¤Ä£°å
+     * å¯¹å¾…è½¬æ¢ä¸ºhexçš„asciiç åˆ¶å­—ç¬¦ä¸²çš„éªŒè¯æ¨¡æ¿
      */
     public static Pattern patternHex = Pattern.compile("^[\\d|a-f|A-F]*$");
 
     /**
-     * »»ĞĞ×Ö·û
+     * æ¢è¡Œå­—ç¬¦
      */
     public static String LINE = System.getProperty("line.separator");
-    
-	private static final String[]NUMBER_ARRAY = {"Áã","Ò¼","·¡","Èş","ËÁ","Îé","Â½","Æâ","°Æ","¾Á"};
-	
-	private static final String[]CURR_ARRAY = {"·Ö","½Ç","Ôª","Ê°","°Û","Çª","Íò","Ê°","°Û","Çª","ÒÚ","Ê°","°Û","Çª","Íò","Õ×","Ê°","°Û","Çª","Íò"};
-	
-	private static final String UNITS="ÔªÍòÒÚÕ×";
+
+    private static final String[] NUMBER_ARRAY = { "é›¶", "å£¹", "è´°", "å", "è‚†", "ä¼", "é™†", "æŸ’", "æŒ", "ç–" };
+
+    private static final String[] CURR_ARRAY = { "åˆ†", "è§’", "å…ƒ", "æ‹¾", "ä½°", "ä»Ÿ", "ä¸‡", "æ‹¾", "ä½°", "ä»Ÿ", "äº¿", "æ‹¾", "ä½°", "ä»Ÿ", "ä¸‡", "å…†", "æ‹¾", "ä½°", "ä»Ÿ", "ä¸‡" };
+
+    private static final String UNITS = "å…ƒä¸‡äº¿å…†";
 
     /**
-     * ×ó¡¢ÓÒ¡¢Á½±ßÌî³ä×Ö·û
+     * å·¦ã€å³ã€ä¸¤è¾¹å¡«å……å­—ç¬¦
      * 
      * @param str
-     *            ´ıÌî³äµÄ×Ö·û´®£¬¿ÉÒÔÎªnull
+     *            å¾…å¡«å……çš„å­—ç¬¦ä¸²ï¼Œå¯ä»¥ä¸ºnull
      * @param fillChar
-     *            Ìî³äµÄ×Ö·û
+     *            å¡«å……çš„å­—ç¬¦
      * @param fillSide ['left','right','both']
-     *            Ìî³äµÄ·½Ïò£¬
+     *            å¡«å……çš„æ–¹å‘ï¼Œ
      * @param size
-     *            Êä³ö×Ö·û´®µÄ¹Ì¶¨byte³¤¶È¡£
+     *            è¾“å‡ºå­—ç¬¦ä¸²çš„å›ºå®šbyteé•¿åº¦ã€‚
      * @return String
      */
-    public static String charFill(String str, char fillChar, String  fillSide, int size) {
+    public static String charFill(String str, char fillChar, String fillSide, int size) {
         str = (str == null) ? "" : str;
         StringBuffer sb = new StringBuffer(str);
         int len = str.length();
-        if (len >= size) 
+        if (len >= size) {
             return (("left".equals(fillSide)) ? str.substring(len - size) : str.substring(0, size));
+        }
         int n = size - len;
-        if ("left".equals(fillSide))
-        	for (int i = 0; i < n; ++i)
-        		sb.insert(0, fillChar);
-        else if ("right".equals(fillSide))
-        	for (int i = 0; i < n; ++i)
-        		sb.append(fillChar);
-        else if ("both".equals(fillSide)) {
-        	for (int i = 0; i < n; ++i) {
-        		if (i % 2 == 0)
-        			sb.insert(0, fillChar);
-        		else
-        			sb.append(fillChar);
+        if ("left".equals(fillSide)) {
+            for (int i = 0; i < n; ++i) {
+                sb.insert(0, fillChar);
+            }
+        } else if ("right".equals(fillSide)) {
+            for (int i = 0; i < n; ++i) {
+                sb.append(fillChar);
+            }
+        } else if ("both".equals(fillSide)) {
+            for (int i = 0; i < n; ++i) {
+                if (i % 2 == 0) {
+                    sb.insert(0, fillChar);
+                } else {
+                    sb.append(fillChar);
+                }
             }
         }
         return sb.toString();
     }
 
     /**
-     * È¥³ı(×ó¡¢ÓÒ¡¢Á½±ß)Ìî³äµÄ×Ö·û
+     * å»é™¤(å·¦ã€å³ã€ä¸¤è¾¹)å¡«å……çš„å­—ç¬¦
      * 
-     * @param str      ´ıÈ¥³ı×Ö·ûµÄ×Ö·û´®
-     * @param trimChar ´ıÈ¥³ıµÄ×Ö·û
-     * @param trimSide ·½Ïò ['left','right','both']
+     * @param str      å¾…å»é™¤å­—ç¬¦çš„å­—ç¬¦ä¸²
+     * @param trimChar å¾…å»é™¤çš„å­—ç¬¦
+     * @param trimSide æ–¹å‘ ['left','right','both']
      * @return String
      */
     public static String trimChar(String str, char trimChar, String fillSide) {
-        if (str == null) return null;
-        if (("left".equals(fillSide)) || ("both".equals(fillSide)) )
-        	str = str.replaceAll("^" + trimChar + "+", "");
-        if (("rigth".equals(fillSide)) || ("both".equals(fillSide)) )
-        	str = str.replaceAll(trimChar + "+$", "");
+        if (str == null) {
+            return null;
+        }
+        if (("left".equals(fillSide)) || ("both".equals(fillSide))) {
+            str = str.replaceAll("^" + trimChar + "+", "");
+        }
+        if (("rigth".equals(fillSide)) || ("both".equals(fillSide))) {
+            str = str.replaceAll(trimChar + "+$", "");
+        }
         return str;
     }
 
-
     /**
      * ASCII -> BCD  <p>
-     * ¸Ã·½·¨»á¶ÔasciiÂëÖÆµÄ²ÎÊıstr½øĞĞ¼ì²â£¬ÒÔ±£Ö¤ÄÜÕıÈ·×ª»»ÎªBCD
+     * è¯¥æ–¹æ³•ä¼šå¯¹asciiç åˆ¶çš„å‚æ•°strè¿›è¡Œæ£€æµ‹ï¼Œä»¥ä¿è¯èƒ½æ­£ç¡®è½¬æ¢ä¸ºBCD
      * @param str
      * @return String
      */
     public static String ascii2bcd(String str) {
         try {
             Matcher m = patternBcd.matcher(str);
-            if (!m.matches())
-                throw new RuntimeException("²»ÄÜ½«ascii×Ö·û´®\"" + str + "\"×ª»»Îªbcd¸ñÊ½¡£");
-           
+            if (!m.matches()) {
+                throw new RuntimeException("ä¸èƒ½å°†asciiå­—ç¬¦ä¸²\"" + str + "\"è½¬æ¢ä¸ºbcdæ ¼å¼ã€‚");
+            }
+
             return new String(ascii2bcd(str.getBytes(CommonConstant.UTF8)), CommonConstant.UTF8);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e.getMessage());
@@ -147,16 +156,17 @@ public class StringUtil {
 
     public static byte[] ascii2bcd(byte[] bs) {
         byte[] res = new byte[bs.length / 2];
-        for (int i = 0, n = bs.length; i < n; i += 2)
+        for (int i = 0, n = bs.length; i < n; i += 2) {
             res[i / 2] = (byte) ((bs[i] << 4) | (bs[i + 1] & 0x0f));
+        }
         return res;
     }
 
     /**
-     * BCD×ª»»ÎªAsciiÂë
+     * BCDè½¬æ¢ä¸ºAsciiç 
      * @param bcdData
-     *            ´ı×ª»»µÄbcd×Ö·û´®
-     * @return ×ªÎªÎªasciiºóµÄ×Ö·û´®
+     *            å¾…è½¬æ¢çš„bcdå­—ç¬¦ä¸²
+     * @return è½¬ä¸ºä¸ºasciiåçš„å­—ç¬¦ä¸²
      */
     public static String bcd2ascii(String bcdData) {
         try {
@@ -174,57 +184,60 @@ public class StringUtil {
         }
         return res;
     }
-    
+
     /**
-     * Hex×ª»»ÎªAsciiÂë
+     * Hexè½¬æ¢ä¸ºAsciiç 
      * <p>
      * 
-     * <strong>×¢Òâ: </strong> ¸Ã·½·¨ÔÚwindowsÏÂ£¬½«byte×ª»»ÎªStringÊ±£¬ÓĞ¿ÉÄÜ´æÔÚÊı¾İ¶ªÊ§£¬´ËÊ±Ó¦¸Ã
-     * Ê¹ÓÃbcd2ascii(byte[]bs)·½·¨¡£
+     * <strong>æ³¨æ„: </strong> è¯¥æ–¹æ³•åœ¨windowsä¸‹ï¼Œå°†byteè½¬æ¢ä¸ºStringæ—¶ï¼Œæœ‰å¯èƒ½å­˜åœ¨æ•°æ®ä¸¢å¤±ï¼Œæ­¤æ—¶åº”è¯¥
+     * ä½¿ç”¨bcd2ascii(byte[]bs)æ–¹æ³•ã€‚
      * 
      * @param str
-     *            ´ı×ª»»µÄ×Ö·û´®
-     * @return ×ªÎªÎªasciiºóµÄ×Ö·û´®
+     *            å¾…è½¬æ¢çš„å­—ç¬¦ä¸²
+     * @return è½¬ä¸ºä¸ºasciiåçš„å­—ç¬¦ä¸²
      */
     public static String hex2ascii(String str) {
         try {
-        	
+
             return new String(hex2ascii(str.getBytes(CommonConstant.UTF8)), CommonConstant.UTF8);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e.getMessage());
         }
     }
-    
+
     public static byte[] hex2ascii(byte[] bs) {
         byte[] res = new byte[bs.length * 2];
         for (int i = 0; i < bs.length; i++) {
             int ti = bs[i];
             ti = ti < 0 ? ti + 256 : ti;
             String t = Integer.toHexString(ti);
-            if (t.length() < 2) t = "0" + t;
+            if (t.length() < 2) {
+                t = "0" + t;
+            }
             res[i * 2] = (byte) t.charAt(0);
             res[i * 2 + 1] = (byte) t.charAt(1);
         }
         return res;
     }
-    
+
     /**
-     * Ascii×ª»»Îª16½øÖÆ<br>
-     * ¸Ã·½·¨»á¶Ô²ÎÊısrt½øĞĞ¼ì²é£¬ÊÇ·ñ°üº¬·Ç·¨×Ö·û¡£
+     * Asciiè½¬æ¢ä¸º16è¿›åˆ¶<br>
+     * è¯¥æ–¹æ³•ä¼šå¯¹å‚æ•°srtè¿›è¡Œæ£€æŸ¥ï¼Œæ˜¯å¦åŒ…å«éæ³•å­—ç¬¦ã€‚
      * @param str
      * @return String
      */
     public static String ascii2hex(String str) {
         Matcher m = patternHex.matcher(str);
-        if (!m.matches())
-            throw new RuntimeException("²»ÄÜ½«ascii×Ö·û´® \"" + str + "\" ×ª»»ÎªHex¸ñÊ½¡£");
+        if (!m.matches()) {
+            throw new RuntimeException("ä¸èƒ½å°†asciiå­—ç¬¦ä¸² \"" + str + "\" è½¬æ¢ä¸ºHexæ ¼å¼ã€‚");
+        }
         try {
             return new String(ascii2hex(str.getBytes(CommonConstant.UTF8)), CommonConstant.UTF8);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e.getMessage());
         }
     }
-    
+
     public static byte[] ascii2hex(byte[] bs) {
         byte[] res = new byte[bs.length / 2];
         for (int i = 0, n = bs.length; i < n; i += 2) {
@@ -234,116 +247,113 @@ public class StringUtil {
     }
 
     /**
-     * ¼ì²éÊÇ·ñÈ«²¿ÊÇhexºÏ·¨×Ö·û<br>
-     * Ö÷ÒªÊÇjdk1.3²»Ö§³ÖÕıÔò±í´ïÊ½
+     * æ£€æŸ¥æ˜¯å¦å…¨éƒ¨æ˜¯hexåˆæ³•å­—ç¬¦<br>
+     * ä¸»è¦æ˜¯jdk1.3ä¸æ”¯æŒæ­£åˆ™è¡¨è¾¾å¼
      */
     @SuppressWarnings("unused")
-	private static void checkHexChar(String str){
-        if(str!=null){
-            byte[]bs=str.toUpperCase().getBytes();
-            for(int i=0;i<bs.length;i++){
-                if(!(bs[i]>0x29&&bs[i]<0x3a)&&!(bs[i]>0x40&&bs[i]<0x5b)){
-                    throw new RuntimeException("\""+str+"\"ÖĞ°üº¬·Ç·¨µÄHex×Ö·û¡£±ØĞëÊÇ0-9,a-z,A-Z¡£");
+    private static void checkHexChar(String str) {
+        if (str != null) {
+            byte[] bs = str.toUpperCase().getBytes();
+            for (int i = 0; i < bs.length; i++) {
+                if (!(bs[i] > 0x29 && bs[i] < 0x3a) && !(bs[i] > 0x40 && bs[i] < 0x5b)) {
+                    throw new RuntimeException("\"" + str + "\"ä¸­åŒ…å«éæ³•çš„Hexå­—ç¬¦ã€‚å¿…é¡»æ˜¯0-9,a-z,A-Zã€‚");
                 }
             }
+        } else {
+            throw new RuntimeException("\"" + str + "\"ä¸­åŒ…å«éæ³•çš„Hexå­—ç¬¦ã€‚å¿…é¡»æ˜¯0-9,a-z,A-Zã€‚");
         }
-        else
-            throw new RuntimeException("\""+str+"\"ÖĞ°üº¬·Ç·¨µÄHex×Ö·û¡£±ØĞëÊÇ0-9,a-z,A-Z¡£");
     }
 
     /**
-     * ¼ì²éÊÇ·ñÈ«²¿ÊÇbcdºÏ·¨×Ö·û<br>
-     * Ö÷ÒªÊÇjdk1.3²»Ö§³ÖÕıÔò±í´ïÊ½
+     * æ£€æŸ¥æ˜¯å¦å…¨éƒ¨æ˜¯bcdåˆæ³•å­—ç¬¦<br>
+     * ä¸»è¦æ˜¯jdk1.3ä¸æ”¯æŒæ­£åˆ™è¡¨è¾¾å¼
      */
     @SuppressWarnings("unused")
-	private static void checkBcdChar(String str){
-        if(str!=null){
-            byte[]bs=str.getBytes();
-            for(int i=0;i<bs.length;i++){
-                if(!(bs[i]>0x29&&bs[i]<0x40)){
-                    throw new RuntimeException("\""+str+"\"ÖĞ°üº¬·Ç·¨µÄBcd×Ö·û¡£±ØĞëÊÇ0-9:;<=>?");
+    private static void checkBcdChar(String str) {
+        if (str != null) {
+            byte[] bs = str.getBytes();
+            for (int i = 0; i < bs.length; i++) {
+                if (!(bs[i] > 0x29 && bs[i] < 0x40)) {
+                    throw new RuntimeException("\"" + str + "\"ä¸­åŒ…å«éæ³•çš„Bcdå­—ç¬¦ã€‚å¿…é¡»æ˜¯0-9:;<=>?");
                 }
             }
+        } else {
+            throw new RuntimeException("\"" + str + "\"ä¸­åŒ…å«éæ³•çš„Bcdå­—ç¬¦ã€‚å¿…é¡»æ˜¯0-9:;<=>?");
         }
-        else
-            throw new RuntimeException("\""+str+"\"ÖĞ°üº¬·Ç·¨µÄBcd×Ö·û¡£±ØĞëÊÇ0-9:;<=>?");
     }
-    
+
     /**
-     * »ñÈ¡×Ö·û´®µÄ³¤¶È
+     * è·å–å­—ç¬¦ä¸²çš„é•¿åº¦
      * @param str
      * @return int
      */
-    public static int getByteLength(String str){
-    	try{
-    		return str.getBytes(CommonConstant.UTF8).length;
-    	}catch(Exception e){
-    		return -1;
-    	}
+    public static int getByteLength(String str) {
+        try {
+            return str.getBytes(CommonConstant.UTF8).length;
+        } catch (Exception e) {
+            return -1;
+        }
     }
-    
+
     /**
-     * Ö»ÏÔÊ¾0x20 - 0x80 Ö®¼äµÄ×Ö·û
+     * åªæ˜¾ç¤º0x20 - 0x80 ä¹‹é—´çš„å­—ç¬¦
      */
-    public static String getByteText(byte[] bs){
-        byte[] bs2=new byte[bs.length];
-        for(int i=0;i<bs.length;i++)
-            bs2[i]=(bs[i]<0x20 || bs[i]>0x80)?0x20:bs[i];
+    public static String getByteText(byte[] bs) {
+        byte[] bs2 = new byte[bs.length];
+        for (int i = 0; i < bs.length; i++) {
+            bs2[i] = (bs[i] < 0x20 || bs[i] > 0x80) ? 0x20 : bs[i];
+        }
         return new String(bs2);
     }
-    
-	/**
-	 * ½ğ¶î´óĞ´×ª»»
-	 * @param moneyStr
-	 * @return
-	 */
-	public static String transMoney(String moneyStr) {
-		BigDecimal bdNum = new BigDecimal(moneyStr);
-		moneyStr = bdNum.multiply(new BigDecimal(100)).toString();
-		int donet=moneyStr.indexOf(".");
-		moneyStr=donet!=-1?moneyStr.substring(0,donet):moneyStr;
-		int n = moneyStr.length();
-		if(n>CURR_ARRAY.length){
-			throw new RuntimeException("Êı¾İµÄÕûÊı²¿·Ö³¤¶È²»ÄÜ³¬¹ı"+(CURR_ARRAY.length-2)+"Î»¡£");
-		}
-		StringBuffer sb=new StringBuffer();
-		boolean needUnit = false,preIsZero = false;
-		for(int i=0;i<n;i++) { //Ö»ÒªÓĞÒ»¸öÔªËØ²»Îª0,¾ÍĞèÒªµ¥Î»£» Èç¹ûÇ°ÃæÓĞÁã£¬Ôò²»ÖØ¸´Ìí¼Ó¡£
-			int a123=Integer.parseInt(moneyStr.substring(i,i+1));
-			String numStr = NUMBER_ARRAY[a123];
-			String currStr =CURR_ARRAY[n-i-1];
-			boolean isUnit=UNITS.indexOf(currStr)!=-1;
-			needUnit=needUnit||a123!=0;
-			sb.append(a123!=0?((preIsZero&&(i<n-2)?"Áã":"")+numStr+currStr):((needUnit&&isUnit)||(i==n-3)?currStr:""));
-			needUnit=isUnit?false:needUnit;
-			preIsZero=(a123!=0||(isUnit&&needUnit))?false:true;
-		}
-		return sb.append("Õû").toString();
-	}
-	
-	
-	
 
-	/**
-	 * ½«double×ª»»Îª·ÖµÄÕûĞÎ×Ö·û´®
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static String toFen(double value){
-		return format(value).replaceAll(",","").replaceAll("\\.","");
-	}
-	
-	
-	/**
-	 * ½«·Ö¸ñÊ½»¯ÎªÕıÈ·µÄÔª½Ç·Ö¸ñÊ½
-	 * @param str
-	 * @return
-	 */
-	public static String format(double value){
-		return NumberFormat.getCurrencyInstance(Locale.CHINA).format(value).replaceAll("£¤","");
-	}
-	
+    /**
+     * é‡‘é¢å¤§å†™è½¬æ¢
+     * @param moneyStr
+     * @return
+     */
+    public static String transMoney(String moneyStr) {
+        BigDecimal bdNum = new BigDecimal(moneyStr);
+        moneyStr = bdNum.multiply(new BigDecimal(100)).toString();
+        int donet = moneyStr.indexOf(".");
+        moneyStr = donet != -1 ? moneyStr.substring(0, donet) : moneyStr;
+        int n = moneyStr.length();
+        if (n > CURR_ARRAY.length) {
+            throw new RuntimeException("æ•°æ®çš„æ•´æ•°éƒ¨åˆ†é•¿åº¦ä¸èƒ½è¶…è¿‡" + (CURR_ARRAY.length - 2) + "ä½ã€‚");
+        }
+        StringBuffer sb = new StringBuffer();
+        boolean needUnit = false, preIsZero = false;
+        for (int i = 0; i < n; i++) { // åªè¦æœ‰ä¸€ä¸ªå…ƒç´ ä¸ä¸º0,å°±éœ€è¦å•ä½ï¼› å¦‚æœå‰é¢æœ‰é›¶ï¼Œåˆ™ä¸é‡å¤æ·»åŠ ã€‚
+            int a123 = Integer.parseInt(moneyStr.substring(i, i + 1));
+            String numStr = NUMBER_ARRAY[a123];
+            String currStr = CURR_ARRAY[n - i - 1];
+            boolean isUnit = UNITS.indexOf(currStr) != -1;
+            needUnit = needUnit || a123 != 0;
+            sb.append(a123 != 0 ? ((preIsZero && (i < n - 2) ? "é›¶" : "") + numStr + currStr) : ((needUnit && isUnit) || (i == n - 3) ? currStr : ""));
+            needUnit = isUnit ? false : needUnit;
+            preIsZero = (a123 != 0 || (isUnit && needUnit)) ? false : true;
+        }
+        return sb.append("æ•´").toString();
+    }
+
+    /**
+     * å°†doubleè½¬æ¢ä¸ºåˆ†çš„æ•´å½¢å­—ç¬¦ä¸²
+     * 
+     * @param value
+     * @return
+     */
+    public static String toFen(double value) {
+        return format(value).replaceAll(",", "").replaceAll("\\.", "");
+    }
+
+    /**
+     * å°†åˆ†æ ¼å¼åŒ–ä¸ºæ­£ç¡®çš„å…ƒè§’åˆ†æ ¼å¼
+     * @param str
+     * @return
+     */
+    public static String format(double value) {
+        return NumberFormat.getCurrencyInstance(Locale.CHINA).format(value).replaceAll("ï¿¥", "");
+    }
+
     /**
      * equals function that actually compares two buffers.
      *
@@ -351,8 +361,10 @@ public class StringUtil {
      * @param twoarray Second buffer
      * @return true if one and two contain exactly the same content, else false.
      */
-    public static boolean bufEquals(byte onearray[], byte twoarray[] ) {
-    	if (onearray == twoarray) return true;
+    public static boolean bufEquals(byte onearray[], byte twoarray[]) {
+        if (onearray == twoarray) {
+            return true;
+        }
         boolean ret = (onearray.length == twoarray.length);
         if (!ret) {
             return ret;
@@ -364,50 +376,50 @@ public class StringUtil {
         }
         return true;
     }
-    
-    private static final char[] hexchars = { '0', '1', '2', '3', '4', '5',
-                                            '6', '7', '8', '9', 'A', 'B',
-                                            'C', 'D', 'E', 'F' };
+
+    private static final char[] hexchars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
     /**
      * 
      * @param s 
      * @return 
      */
     static String toXMLString(String s) {
-        if (s == null)
+        if (s == null) {
             return "";
+        }
 
         StringBuilder sb = new StringBuilder();
         for (int idx = 0; idx < s.length(); idx++) {
-          char ch = s.charAt(idx);
-          if (ch == '<') {
-            sb.append("&lt;");
-          } else if (ch == '&') {
-            sb.append("&amp;");
-          } else if (ch == '%') {
-            sb.append("%25");
-          } else if (ch < 0x20) {
-            sb.append("%");
-            sb.append(hexchars[ch/16]);
-            sb.append(hexchars[ch%16]);
-          } else {
-            sb.append(ch);
-          }
+            char ch = s.charAt(idx);
+            if (ch == '<') {
+                sb.append("&lt;");
+            } else if (ch == '&') {
+                sb.append("&amp;");
+            } else if (ch == '%') {
+                sb.append("%25");
+            } else if (ch < 0x20) {
+                sb.append("%");
+                sb.append(hexchars[ch / 16]);
+                sb.append(hexchars[ch % 16]);
+            } else {
+                sb.append(ch);
+            }
         }
         return sb.toString();
     }
-    
+
     static private int h2c(char ch) {
-      if (ch >= '0' && ch <= '9') {
-        return ch - '0';
-      } else if (ch >= 'A' && ch <= 'F') {
-        return ch - 'A';
-      } else if (ch >= 'a' && ch <= 'f') {
-        return ch - 'a';
-      }
-      return 0;
+        if (ch >= '0' && ch <= '9') {
+            return ch - '0';
+        } else if (ch >= 'A' && ch <= 'F') {
+            return ch - 'A';
+        } else if (ch >= 'a' && ch <= 'f') {
+            return ch - 'a';
+        }
+        return 0;
     }
-    
+
     /**
      * 
      * @param s 
@@ -416,60 +428,61 @@ public class StringUtil {
     static String fromXMLString(String s) {
         StringBuilder sb = new StringBuilder();
         for (int idx = 0; idx < s.length();) {
-          char ch = s.charAt(idx++);
-          if (ch == '%') {
-            char ch1 = s.charAt(idx++);
-            char ch2 = s.charAt(idx++);
-            char res = (char)(h2c(ch1)*16 + h2c(ch2));
-            sb.append(res);
-          } else {
-            sb.append(ch);
-          }
+            char ch = s.charAt(idx++);
+            if (ch == '%') {
+                char ch1 = s.charAt(idx++);
+                char ch2 = s.charAt(idx++);
+                char res = (char) (h2c(ch1) * 16 + h2c(ch2));
+                sb.append(res);
+            } else {
+                sb.append(ch);
+            }
         }
-        
+
         return sb.toString();
     }
-    
+
     /**
      * 
      * @param s 
      * @return 
      */
-   public  static String toCSVString(String s) {
-        if (s == null)
+    public static String toCSVString(String s) {
+        if (s == null) {
             return "";
+        }
 
-        StringBuilder sb = new StringBuilder(s.length()+1);
+        StringBuilder sb = new StringBuilder(s.length() + 1);
         sb.append('\'');
         int len = s.length();
         for (int i = 0; i < len; i++) {
             char c = s.charAt(i);
-            switch(c) {
-                case '\0':
-                    sb.append("%00");
-                    break;
-                case '\n':
-                    sb.append("%0A");
-                    break;
-                case '\r':
-                    sb.append("%0D");
-                    break;
-                case ',':
-                    sb.append("%2C");
-                    break;
-                case '}':
-                    sb.append("%7D");
-                    break;
-                case '%':
-                    sb.append("%25");
-                    break;
-                default:
-                    sb.append(c);
+            switch (c) {
+            case '\0':
+                sb.append("%00");
+                break;
+            case '\n':
+                sb.append("%0A");
+                break;
+            case '\r':
+                sb.append("%0D");
+                break;
+            case ',':
+                sb.append("%2C");
+                break;
+            case '}':
+                sb.append("%7D");
+                break;
+            case '%':
+                sb.append("%25");
+                break;
+            default:
+                sb.append(c);
             }
         }
         return sb.toString();
     }
-    
+
     /**
      * 
      * @param s 
@@ -481,27 +494,35 @@ public class StringUtil {
             throw new IOException("Error deserializing string.");
         }
         int len = s.length();
-        StringBuilder sb = new StringBuilder(len-1);
+        StringBuilder sb = new StringBuilder(len - 1);
         for (int i = 1; i < len; i++) {
             char c = s.charAt(i);
             if (c == '%') {
-                char ch1 = s.charAt(i+1);
-                char ch2 = s.charAt(i+2);
+                char ch1 = s.charAt(i + 1);
+                char ch2 = s.charAt(i + 2);
                 i += 2;
-                if (ch1 == '0' && ch2 == '0') { sb.append('\0'); }
-                else if (ch1 == '0' && ch2 == 'A') { sb.append('\n'); }
-                else if (ch1 == '0' && ch2 == 'D') { sb.append('\r'); }
-                else if (ch1 == '2' && ch2 == 'C') { sb.append(','); }
-                else if (ch1 == '7' && ch2 == 'D') { sb.append('}'); }
-                else if (ch1 == '2' && ch2 == '5') { sb.append('%'); }
-                else {throw new IOException("Error deserializing string.");}
+                if (ch1 == '0' && ch2 == '0') {
+                    sb.append('\0');
+                } else if (ch1 == '0' && ch2 == 'A') {
+                    sb.append('\n');
+                } else if (ch1 == '0' && ch2 == 'D') {
+                    sb.append('\r');
+                } else if (ch1 == '2' && ch2 == 'C') {
+                    sb.append(',');
+                } else if (ch1 == '7' && ch2 == 'D') {
+                    sb.append('}');
+                } else if (ch1 == '2' && ch2 == '5') {
+                    sb.append('%');
+                } else {
+                    throw new IOException("Error deserializing string.");
+                }
             } else {
                 sb.append(c);
             }
         }
         return sb.toString();
     }
-    
+
     /**
      * 
      * @param s 
@@ -511,170 +532,163 @@ public class StringUtil {
         if (barr == null || barr.length == 0) {
             return "";
         }
-        StringBuilder sb = new StringBuilder(2*barr.length);
+        StringBuilder sb = new StringBuilder(2 * barr.length);
         for (int idx = 0; idx < barr.length; idx++) {
             sb.append(Integer.toHexString(barr[idx]));
         }
         return sb.toString();
     }
-    
+
     /**
      * 
      * @param s 
      * @throws java.io.IOException 
      * @return 
      */
-    static byte[] fromXMLBuffer(String s)
-    throws IOException {
-        ByteArrayOutputStream stream =  new ByteArrayOutputStream();
-        if (s.length() == 0) { return stream.toByteArray(); }
-        int blen = s.length()/2;
+    static byte[] fromXMLBuffer(String s) throws IOException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        if (s.length() == 0) {
+            return stream.toByteArray();
+        }
+        int blen = s.length() / 2;
         byte[] barr = new byte[blen];
         for (int idx = 0; idx < blen; idx++) {
-            char c1 = s.charAt(2*idx);
-            char c2 = s.charAt(2*idx+1);
-            barr[idx] = Byte.parseByte(""+c1+c2, 16);
+            char c1 = s.charAt(2 * idx);
+            char c2 = s.charAt(2 * idx + 1);
+            barr[idx] = Byte.parseByte("" + c1 + c2, 16);
         }
         stream.write(barr);
         return stream.toByteArray();
     }
-   
-    
+
     /**
      * 
-     * @param date ÈÕÆÚ
-     * @param patteran  ¸ñÊ½»¯ÈÕÆÚÊä³ö
+     * @param date æ—¥æœŸ
+     * @param patteran  æ ¼å¼åŒ–æ—¥æœŸè¾“å‡º
      * @return
      */
-    public static String getDateString(Date date,String pattern){
-    	SimpleDateFormat sf = new SimpleDateFormat(pattern);
-    	return sf.format(date);
+    public static String getDateString(Date date, String pattern) {
+        SimpleDateFormat sf = new SimpleDateFormat(pattern);
+        return sf.format(date);
     }
-    
-    
+
     /**
-     * ×Ö·û´®×ª¶ÔÓ¦ÈÕÆÚ¸ñÊ½
-     * @param dateStr ×Ö·û´®ÈÕÆÚ
+     * å­—ç¬¦ä¸²è½¬å¯¹åº”æ—¥æœŸæ ¼å¼
+     * @param dateStr å­—ç¬¦ä¸²æ—¥æœŸ
      * @param pattern  yyyyMMddHHmmss
      * @return
      */
-    public static Date getDate(String dateStr,String pattern){
-    	SimpleDateFormat sf = new SimpleDateFormat(pattern);
-    	try {
-			return sf.parse(dateStr);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return null;
+    public static Date getDate(String dateStr, String pattern) {
+        SimpleDateFormat sf = new SimpleDateFormat(pattern);
+        try {
+            return sf.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-    
+
     /**
      * 
-     * @param length ³¤¶ÈÖµ
-     * @param size ×ª»¯Îª×Ö·û´®ºóµÄ³¤¶ÈÎ»
-     * @return ³¤¶ÈµÄ×Ö·û±íÊ¾ĞÎÊ½ ÖĞ¼äÌí¼Ó¿Õ¸ñ
+     * @param length é•¿åº¦å€¼
+     * @param size è½¬åŒ–ä¸ºå­—ç¬¦ä¸²åçš„é•¿åº¦ä½
+     * @return é•¿åº¦çš„å­—ç¬¦è¡¨ç¤ºå½¢å¼ ä¸­é—´æ·»åŠ ç©ºæ ¼
      */
-    public static String toLenStr(int length,int size){
-    	String lenStr = ""+length;
-    	for (int i = lenStr.length(); i < size; i++) {
-    		if( (i%2) == 0){
-    			lenStr = "0 " + lenStr;
-    		}else{
-    			lenStr = "0" + lenStr;
-    		}
-    		
-		}
-    	return lenStr;
+    public static String toLenStr(int length, int size) {
+        String lenStr = "" + length;
+        for (int i = lenStr.length(); i < size; i++) {
+            if ((i % 2) == 0) {
+                lenStr = "0 " + lenStr;
+            } else {
+                lenStr = "0" + lenStr;
+            }
+
+        }
+        return lenStr;
     }
-    
+
     /**
      * 
-     * @param length ³¤¶ÈÖµ
-     * @param size ×ª»¯Îª×Ö·û´®ºóµÄ³¤¶ÈÎ»
-     * @return ³¤¶ÈµÄ×Ö·û±íÊ¾ĞÎÊ½ ×ó±ß²¹0
+     * @param length é•¿åº¦å€¼
+     * @param size è½¬åŒ–ä¸ºå­—ç¬¦ä¸²åçš„é•¿åº¦ä½
+     * @return é•¿åº¦çš„å­—ç¬¦è¡¨ç¤ºå½¢å¼ å·¦è¾¹è¡¥0
      */
-    public static String toLen(int length,int size){
-    	String lenStr = ""+length;
-    	for (int i = lenStr.length(); i < size; i++) {
-    	   lenStr = "0" + lenStr;
-		}
-    	return lenStr;
+    public static String toLen(int length, int size) {
+        String lenStr = "" + length;
+        for (int i = lenStr.length(); i < size; i++) {
+            lenStr = "0" + lenStr;
+        }
+        return lenStr;
     }
-    
-    public static String toMoneyStr(String money,int size){
-    	String moneyStr = "000000000000";
-    	if(money != null){
-    		int mlen = money.length();
-    		for (; mlen < size; mlen++) {
-    			money = "0" + money;
-			}
-    		moneyStr = money;
-    	}
-    	return moneyStr;
+
+    public static String toMoneyStr(String money, int size) {
+        String moneyStr = "000000000000";
+        if (money != null) {
+            int mlen = money.length();
+            for (; mlen < size; mlen++) {
+                money = "0" + money;
+            }
+            moneyStr = money;
+        }
+        return moneyStr;
     }
-    
-    
-    public static String toBitMapStr(boolean[] bitmap){
-    	StringBuffer sb = new StringBuffer();
-    	for (int i = 0; i < bitmap.length; i++) {
-    		if(i%8 == 0 && i > 0){//8µÄ±¶Êı ¼ÓÒ»¸ö¿Õ¸ñ
-    			sb.append(" ");
-    		}
-    		if(bitmap[i]){
-				sb.append("1");
-			}else{
-				sb.append("0");
-			}
-		
-		}
-    	return sb.toString();
+
+    public static String toBitMapStr(boolean[] bitmap) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < bitmap.length; i++) {
+            if (i % 8 == 0 && i > 0) {// 8çš„å€æ•° åŠ ä¸€ä¸ªç©ºæ ¼
+                sb.append(" ");
+            }
+            if (bitmap[i]) {
+                sb.append("1");
+            } else {
+                sb.append("0");
+            }
+
+        }
+        return sb.toString();
     }
-    
-    
-    
-	/**
-	 * »ñÈ¡Ö¸¶¨ÈÕÆÚÇ°Ò»ÌìµÄ×Ö·û´®
-	 * 
-	 * @param patten
-	 *            ¸ñÊ½»¯×Ö·û´®
-	 * @return
-	 */
-	public static String getBeforeDate(Date date, String patten) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(date);
-		c.set(Calendar.DAY_OF_MONTH, c.get(Calendar.DAY_OF_MONTH)-1);
-		SimpleDateFormat sf = new SimpleDateFormat(patten);
-		return sf.format(c.getTime());
-	}
-	
-	public static String getAfterDate(Date date, String patten,int day) {
-		Calendar c = Calendar.getInstance();
-		c.setTime(date);
-		c.set(Calendar.DAY_OF_MONTH, c.get(Calendar.DAY_OF_MONTH)+day);
-		SimpleDateFormat sf = new SimpleDateFormat(patten);
-		return sf.format(c.getTime());
-	}
-	
-	
-	
-    
+
+    /**
+     * è·å–æŒ‡å®šæ—¥æœŸå‰ä¸€å¤©çš„å­—ç¬¦ä¸²
+     * 
+     * @param patten
+     *            æ ¼å¼åŒ–å­—ç¬¦ä¸²
+     * @return
+     */
+    public static String getBeforeDate(Date date, String patten) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.set(Calendar.DAY_OF_MONTH, c.get(Calendar.DAY_OF_MONTH) - 1);
+        SimpleDateFormat sf = new SimpleDateFormat(patten);
+        return sf.format(c.getTime());
+    }
+
+    public static String getAfterDate(Date date, String patten, int day) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.set(Calendar.DAY_OF_MONTH, c.get(Calendar.DAY_OF_MONTH) + day);
+        SimpleDateFormat sf = new SimpleDateFormat(patten);
+        return sf.format(c.getTime());
+    }
+
     /**
      * 
      * @param buf 
      * @return 
      */
-   public static String toCSVBuffer(byte barr[]) {
+    public static String toCSVBuffer(byte barr[]) {
         if (barr == null || barr.length == 0) {
             return "";
         }
         StringBuilder sb = new StringBuilder(barr.length + 1);
         sb.append('#');
-        for(int idx = 0; idx < barr.length; idx++) {
+        for (int idx = 0; idx < barr.length; idx++) {
             sb.append(Integer.toHexString(barr[idx]));
         }
         return sb.toString();
     }
-    
+
     /**
      * Converts a CSV-serialized representation of buffer to a new
      * ByteArrayOutputStream.
@@ -682,170 +696,175 @@ public class StringUtil {
      * @throws java.io.IOException 
      * @return Deserialized ByteArrayOutputStream
      */
-    static byte[] fromCSVBuffer(String s)
-    throws IOException {
+    static byte[] fromCSVBuffer(String s) throws IOException {
         if (s.charAt(0) != '#') {
             throw new IOException("Error deserializing buffer.");
         }
-        ByteArrayOutputStream stream =  new ByteArrayOutputStream();
-        if (s.length() == 1) { return stream.toByteArray(); }
-        int blen = (s.length()-1)/2;
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        if (s.length() == 1) {
+            return stream.toByteArray();
+        }
+        int blen = (s.length() - 1) / 2;
         byte[] barr = new byte[blen];
         for (int idx = 0; idx < blen; idx++) {
-            char c1 = s.charAt(2*idx+1);
-            char c2 = s.charAt(2*idx+2);
-            barr[idx] = Byte.parseByte(""+c1+c2, 16);
+            char c1 = s.charAt(2 * idx + 1);
+            char c2 = s.charAt(2 * idx + 2);
+            barr[idx] = Byte.parseByte("" + c1 + c2, 16);
         }
         stream.write(barr);
         return stream.toByteArray();
     }
+
     public static int compareBytes(byte b1[], int off1, int len1, byte b2[], int off2, int len2) {
-    	int i;
-    	for(i=0; i < len1 && i < len2; i++) {
-    		if (b1[off1+i] != b2[off2+i]) {
-    			return b1[off1+i] < b2[off2+1] ? -1 : 1;
-    		}
-    	}
-    	if (len1 != len2) {
-    		return len1 < len2 ? -1 : 1;
-    	}
-    	return 0;
-    } 
-    
-    public static String arraysToString(Object[] obj){
-    	if(obj != null)
-    		return Arrays.toString(obj);
-    	else
-    		return null;
-    } 
-    
-    public static String mapToString(Map<String,String[]> map){
-    	StringBuffer sb = new StringBuffer();
-    	if(map != null && map.size() > 0){
-    		sb = new StringBuffer();
-    		Iterator<Entry<String, String[]>>  it = map.entrySet().iterator();
-    		while(it.hasNext()){
-    			Entry<String, String[]> entity = it.next();
-    			sb.append(Arrays.toString(entity.getValue()));
-    		}
-    	}
-    	return sb.toString();
-    } 
-    
-    public static String mapObjectToString(Map<Integer,Object> map){
-    	StringBuffer sb = null;
-    	if(map != null && map.size() > 0){
-    		sb = new StringBuffer();
-    		Iterator<Entry<Integer, Object>>  it = map.entrySet().iterator();
-    		while(it.hasNext()){
-    			Entry<Integer, Object> entity = it.next();
-    			sb.append(entity.getValue().toString()).append(",");
-    		}
-    	}
-    	return sb.toString();
+        int i;
+        for (i = 0; i < len1 && i < len2; i++) {
+            if (b1[off1 + i] != b2[off2 + i]) {
+                return b1[off1 + i] < b2[off2 + 1] ? -1 : 1;
+            }
+        }
+        if (len1 != len2) {
+            return len1 < len2 ? -1 : 1;
+        }
+        return 0;
     }
-    
-    public static String bigdecimalToString(BigDecimal amount){
-    	return amount.multiply(new BigDecimal("100")).setScale(0, BigDecimal.ROUND_HALF_DOWN).toString();
+
+    public static String arraysToString(Object[] obj) {
+        if (obj != null) {
+            return Arrays.toString(obj);
+        } else {
+            return null;
+        }
     }
-    
-    public static BigDecimal stringToBigDecimal(String  amount){
-    	return new BigDecimal(amount).multiply(new BigDecimal("0.01")).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+
+    public static String mapToString(Map<String, String[]> map) {
+        StringBuffer sb = new StringBuffer();
+        if (map != null && map.size() > 0) {
+            sb = new StringBuffer();
+            Iterator<Entry<String, String[]>> it = map.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<String, String[]> entity = it.next();
+                sb.append(Arrays.toString(entity.getValue()));
+            }
+        }
+        return sb.toString();
     }
-    
-    public static long dateStringToLong(String dateString,String pattern){
-    	return StringUtil.getDate(dateString, pattern).getTime();
+
+    public static String mapObjectToString(Map<Integer, Object> map) {
+        StringBuffer sb = null;
+        if (map != null && map.size() > 0) {
+            sb = new StringBuffer();
+            Iterator<Entry<Integer, Object>> it = map.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<Integer, Object> entity = it.next();
+                sb.append(entity.getValue().toString()).append(",");
+            }
+        }
+        return sb.toString();
     }
-    
-    //Ğ£ÑéÎ» = 10 ¨C [(ÆæÊıÎ»µÄºÍ)*3 + (Å¼ÊıÎ»µÄºÍ)]µÄ¸öÎ»
-    public static String calParityBit(String org){
-    	String parityBit = "";
-    	if(org != null && org.trim().length() > 0){
-    		int len = org.length();
-    		int init = 10;
-    		int odd  = 0;
-    		int even = 0;
-    		for (int i = 0; i < len; i++) {
-				if((i+1)%2 == 0){//Å¼Êı
-					even = even + Integer.parseInt(org.substring(i, i+1));
-				}else{//ÆæÊı
-					odd = odd + Integer.parseInt(org.substring(i, i+1));
-				}
-			}
-    		parityBit = (init - (odd * 3 + even))+"";
-    		parityBit = parityBit.substring(parityBit.length()-1, parityBit.length());
-    	}
-    	return parityBit;
-    } 
-    
-    public static Map<String,String> translateMap(String str){
-    	Map<String, String> map = null;
-    	if(str != null && str.length() > 0){
-    		map = new HashMap<String, String>();
-    		String name = "";
-    		String value = "";
-    		int beg = 0;  
-    		int end = 0;
-    		int i = 0;
-    		while((i = str.indexOf("[", beg)) >0){
-    			end  = i;
-    			i    = 0;
-    			name  = str.substring(beg,end);
-    			beg   = str.indexOf("]", end);
-    			value = str.substring(end+1,beg);
-    			
-    			beg = beg +1;
-    			map.put(name, value);
-    		}
-    	}
-    	return map;	
+
+    public static String bigdecimalToString(BigDecimal amount) {
+        return amount.multiply(new BigDecimal("100")).setScale(0, BigDecimal.ROUND_HALF_DOWN).toString();
     }
-    
-    public static Map<String,String> mediumTypeMap = new HashMap<String, String>();
+
+    public static BigDecimal stringToBigDecimal(String amount) {
+        return new BigDecimal(amount).multiply(new BigDecimal("0.01")).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+    }
+
+    public static long dateStringToLong(String dateString, String pattern) {
+        return StringUtil.getDate(dateString, pattern).getTime();
+    }
+
+    // æ ¡éªŒä½ = 10 â€“ [(å¥‡æ•°ä½çš„å’Œ)*3 + (å¶æ•°ä½çš„å’Œ)]çš„ä¸ªä½
+    public static String calParityBit(String org) {
+        String parityBit = "";
+        if (org != null && org.trim().length() > 0) {
+            int len = org.length();
+            int init = 10;
+            int odd = 0;
+            int even = 0;
+            for (int i = 0; i < len; i++) {
+                if ((i + 1) % 2 == 0) {// å¶æ•°
+                    even = even + Integer.parseInt(org.substring(i, i + 1));
+                } else {// å¥‡æ•°
+                    odd = odd + Integer.parseInt(org.substring(i, i + 1));
+                }
+            }
+            parityBit = (init - (odd * 3 + even)) + "";
+            parityBit = parityBit.substring(parityBit.length() - 1, parityBit.length());
+        }
+        return parityBit;
+    }
+
+    public static Map<String, String> translateMap(String str) {
+        Map<String, String> map = null;
+        if (str != null && str.length() > 0) {
+            map = new HashMap<String, String>();
+            String name = "";
+            String value = "";
+            int beg = 0;
+            int end = 0;
+            int i = 0;
+            while ((i = str.indexOf("[", beg)) > 0) {
+                end = i;
+                i = 0;
+                name = str.substring(beg, end);
+                beg = str.indexOf("]", end);
+                value = str.substring(end + 1, beg);
+
+                beg = beg + 1;
+                map.put(name, value);
+            }
+        }
+        return map;
+    }
+
+    public static Map<String, String> mediumTypeMap = new HashMap<String, String>();
     static {
-    	//00:É¼µÂ±¦Í¨ÓÃÕË 01£ºÉ¼µÂ±¦×¨ÓÃÕË»§ 02£ºÉ¼µÂ¿¨ÕË»§ 03£ºÉ¼µÂ¿¨Ç®°ü  
-    	mediumTypeMap.put("00", "0");
-    	mediumTypeMap.put("01", "1");
-    	mediumTypeMap.put("02", "2");
-    	mediumTypeMap.put("03", "2");
-    	mediumTypeMap.put("04", "2");
-    	mediumTypeMap.put("05", "2");
+        // 00:æ‰å¾·å®é€šç”¨è´¦ 01ï¼šæ‰å¾·å®ä¸“ç”¨è´¦æˆ· 02ï¼šæ‰å¾·å¡è´¦æˆ· 03ï¼šæ‰å¾·å¡é’±åŒ…
+        mediumTypeMap.put("00", "0");
+        mediumTypeMap.put("01", "1");
+        mediumTypeMap.put("02", "2");
+        mediumTypeMap.put("03", "2");
+        mediumTypeMap.put("04", "2");
+        mediumTypeMap.put("05", "2");
     }
-    public static String getMediumType(String mediumType){
-    	if(mediumTypeMap.containsKey(mediumType)){
-    		return mediumTypeMap.get(mediumType);
-    	}
-    	return "";
+
+    public static String getMediumType(String mediumType) {
+        if (mediumTypeMap.containsKey(mediumType)) {
+            return mediumTypeMap.get(mediumType);
+        }
+        return "";
     }
-    
+
     /**
-     * @param num  Èç£º000000001230
+     * @param num  å¦‚ï¼š000000001230
      * @return numStr  1230
      */
-    public static String numberToNumStr(String num){
-    	return "" + Long.parseLong(num);
+    public static String numberToNumStr(String num) {
+        return "" + Long.parseLong(num);
     }
-    
+
     /**
      * @param numStr  1230
      * @return num 000000001230
      */
-    public static String strNumToNumber(String numStr){
-    	return StringUtil.charFill(numStr, '0', "left", 12);
+    public static String strNumToNumber(String numStr) {
+        return StringUtil.charFill(numStr, '0', "left", 12);
     }
-    
-    public static String getIp(){
-    	String ip = "";
-		try {
-			InetAddress address = InetAddress.getLocalHost();
-			ip = address.getHostAddress();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}   
-    	return ip;
+
+    public static String getIp() {
+        String ip = "";
+        try {
+            InetAddress address = InetAddress.getLocalHost();
+            ip = address.getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return ip;
     }
+
     /**
-     * ¼ì²é×Ö·û´®ÊÇ·ñÊÇ¿Õ°×£º<code>null</code>¡¢¿Õ×Ö·û´®<code>""</code>»òÖ»ÓĞ¿Õ°××Ö·û¡£
+     * æ£€æŸ¥å­—ç¬¦ä¸²æ˜¯å¦æ˜¯ç©ºç™½ï¼š<code>null</code>ã€ç©ºå­—ç¬¦ä¸²<code>""</code>æˆ–åªæœ‰ç©ºç™½å­—ç¬¦ã€‚
      * <pre>
      * StringUtil.isBlank(null)      = true
      * StringUtil.isBlank("")        = true
@@ -854,9 +873,9 @@ public class StringUtil {
      * StringUtil.isBlank("  bob  ") = false
      * </pre>
      *
-     * @param str Òª¼ì²éµÄ×Ö·û´®
+     * @param str è¦æ£€æŸ¥çš„å­—ç¬¦ä¸²
      *
-     * @return Èç¹ûÎª¿Õ°×, Ôò·µ»Ø<code>true</code>
+     * @return å¦‚æœä¸ºç©ºç™½, åˆ™è¿”å›<code>true</code>
      */
     public static boolean isBlank(String str) {
         int length;
@@ -873,7 +892,7 @@ public class StringUtil {
 
         return true;
     }
-    
+
     public static String simpleClassName(Class<?> clazz) {
         if (clazz == null) {
             return "null_class";
@@ -886,75 +905,76 @@ public class StringUtil {
             return clazz.getName();
         }
     }
-     
-	public static void main(String [] args){
+
+    public static void main(String[] args) {
 //		String s      = "sysCode[01]cardNo[7279906001000007]issueNo[050001]rechargeNo[0727990601000007]physicalNo[]expiredDate[20230528]";
 //		
 //		StringUtil.translateMap(s);
-		
-		for (int i = 0; i < 5; i++) {
-    		System.out.println((int)(5*Math.random()));
-		}
-	}
 
-	public static String toEntityName(String fieldName, boolean toUpper) {
-		String newFieldName = "";
-		String[] fieldNameAry = fieldName.split("");
-		for (int i = 0; i < fieldNameAry.length; i++) {
-			String fieldNameTmp = fieldNameAry[i];
-			if(fieldNameTmp.equals("_")){
-				i++;
-				fieldNameTmp = fieldNameAry[i];
-				if(toUpper){
-					fieldNameTmp = fieldNameTmp.toUpperCase();
-				}
-			}
-			newFieldName += fieldNameTmp;
-		}
-
-		return newFieldName;
-	}
-    public static Long getTimestamp(){
-    	return new Date().getTime()/1000;
-    } 
-    
-    public static int[] randomCommon(int min, int max, int n){  
-    	if(max <= min) {
-    		return null;
-    	}
-    	int[] result;
-        if (n > max) {
-        	result = new int[max];
-        	// Èç¹ûÄ¿±ê¸öÊın ´óÓÚÊµ¼ÊÊı×é¸öÊımax£¬ ÔòÖ»È¡maxÀïÃæËùÓĞµÄË÷Òı¼´¿É
-        	for (int i = 0; i < max; i++) {
-        		result[i] = i;
-			}
-            return result;  
+        for (int i = 0; i < 5; i++) {
+            System.out.println((int) (5 * Math.random()));
         }
-        
+    }
+
+    public static String toEntityName(String fieldName, boolean toUpper) {
+        String newFieldName = "";
+        String[] fieldNameAry = fieldName.split("");
+        for (int i = 0; i < fieldNameAry.length; i++) {
+            String fieldNameTmp = fieldNameAry[i];
+            if (fieldNameTmp.equals("_")) {
+                i++;
+                fieldNameTmp = fieldNameAry[i];
+                if (toUpper) {
+                    fieldNameTmp = fieldNameTmp.toUpperCase();
+                }
+            }
+            newFieldName += fieldNameTmp;
+        }
+
+        return newFieldName;
+    }
+
+    public static Long getTimestamp() {
+        return new Date().getTime() / 1000;
+    }
+
+    public static int[] randomCommon(int min, int max, int n) {
+        if (max <= min) {
+            return null;
+        }
+        int[] result;
+        if (n > max) {
+            result = new int[max];
+            // å¦‚æœç›®æ ‡ä¸ªæ•°n å¤§äºå®é™…æ•°ç»„ä¸ªæ•°maxï¼Œ åˆ™åªå–maxé‡Œé¢æ‰€æœ‰çš„ç´¢å¼•å³å¯
+            for (int i = 0; i < max; i++) {
+                result[i] = i;
+            }
+            return result;
+        }
+
         int count = 0;
         result = new int[n];
-        while(count < n) {  
-            int num = (int) (Math.random() * (max - min)) + min;  
-            boolean flag = true;  
-            for (int j = 0; j < n; j++) {  
-                if(num == result[j]){  
-                    flag = false;  
-                    break;  
-                }  
-            }  
-            if(flag){  
-                result[count] = num;  
-                count++;  
-            }  
-        }  
-        return result;  
-    } 
-
-    public static Map<String,String> memMap = new HashMap<String, String>();
-    static{
-    	memMap.put("5", "1");
-    	memMap.put("4", "1");
+        while (count < n) {
+            int num = (int) (Math.random() * (max - min)) + min;
+            boolean flag = true;
+            for (int j = 0; j < n; j++) {
+                if (num == result[j]) {
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                result[count] = num;
+                count++;
+            }
+        }
+        return result;
     }
-    
+
+    public static Map<String, String> memMap = new HashMap<String, String>();
+    static {
+        memMap.put("5", "1");
+        memMap.put("4", "1");
+    }
+
 }

@@ -11,99 +11,93 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.org.model.reflect.ReflectDbModel;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import com.org.model.reflect.ReflectDbModel;
-
-
 public class ResultSetUtil {
 
-	public static <T> List<T> parseResultSet(ResultSet rs, T entity)
-			throws SQLException, IllegalArgumentException, IllegalAccessException,
-			InvocationTargetException {
-		List<T> list = new ArrayList<T>();
-		ResultSetMetaData rsmd = rs.getMetaData();
-		// ÁĞÊı
-		int columnCounts = rsmd.getColumnCount();
-		//
-		ReflectDbModel model = new ReflectDbModel();
-		Method m = null;
-		while (rs.next()) {
-			// Õâ¸öµØ·½Ïàµ±ÓÚÃ¿ÓÃÒ»´Î¾ÍnewÒ»´Î,·ñÔòÊı¾İ»á¸²¸ÇÉÏÒ»´ÎµÄÊı¾İ
-			for (int i = 1; i <= columnCounts; i++) {
-				initReflectDbModel(rs, model, i);
-				if (model.getValue() != null && model.getValue() != "") {
-					try {
-						m = entity.getClass().getDeclaredMethod("set" + model.getKey(),
-								model.getValue().getClass());
-						m.invoke(entity, model.getValue());
-					} catch (SecurityException e) {
-						e.printStackTrace();
-					} catch (NoSuchMethodException e) {
-						System.out.println(e.getMessage() + ": NoSuchMethodException");
-					}
-				}
-			}
-			list.add(entity);
-		}
-		return list;
-	}
+    public static <T> List<T> parseResultSet(ResultSet rs, T entity)
+            throws SQLException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        List<T> list = new ArrayList<T>();
+        ResultSetMetaData rsmd = rs.getMetaData();
+        // åˆ—æ•°
+        int columnCounts = rsmd.getColumnCount();
+        //
+        ReflectDbModel model = new ReflectDbModel();
+        Method m = null;
+        while (rs.next()) {
+            // è¿™ä¸ªåœ°æ–¹ç›¸å½“äºæ¯ç”¨ä¸€æ¬¡å°±newä¸€æ¬¡,å¦åˆ™æ•°æ®ä¼šè¦†ç›–ä¸Šä¸€æ¬¡çš„æ•°æ®
+            for (int i = 1; i <= columnCounts; i++) {
+                initReflectDbModel(rs, model, i);
+                if (model.getValue() != null && model.getValue() != "") {
+                    try {
+                        m = entity.getClass().getDeclaredMethod("set" + model.getKey(), model.getValue().getClass());
+                        m.invoke(entity, model.getValue());
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchMethodException e) {
+                        System.out.println(e.getMessage() + ": NoSuchMethodException");
+                    }
+                }
+            }
+            list.add(entity);
+        }
+        return list;
+    }
 
-	/**
-	 * ½«±í×Ö¶ÎÃûÒÔÍÕ·åÃüÃû·¨ÃüÃû
-	 * @param fieldName
-	 * @param toUpper true ×ª, false ²»×ªÍÕ·å
-	 * @return
-	 */
-	public static JSONArray parseResultSetToJSONArray(ResultSet rs, boolean collumToUpper)
-			throws SQLException, IllegalArgumentException, IllegalAccessException,
-			InvocationTargetException {
-		JSONArray list = new JSONArray();
-		ResultSetMetaData rsmd = rs.getMetaData();
-		// ÁĞÊı
-		int columnCounts = rsmd.getColumnCount();
-		//
-		JSONObject jo = null;
-		while (rs.next()) {
-			jo = new JSONObject();
-			for (int i = 1; i <= columnCounts; i++) {
-				String key = rsmd.getColumnName(i);
-				//  ×ªÊµÀıÃû
-				key = StringUtil.toEntityName(rsmd.getColumnName(i), collumToUpper);
-				Object value = rs.getObject(i);
-				value = (value == null) ? "" : value.toString();
-				jo.put(key, value);
-			}
-			list.add(jo);
-		}
-		return list;
-	}
-	
-	public static void initReflectDbModel(ResultSet rs, ReflectDbModel model,
-			int index) throws SQLException {
-		ResultSetMetaData rsmd = rs.getMetaData();
-		String key = rsmd.getColumnName(index);
-		// ×ªÊµÀıÃû
-		key = StringUtil.toEntityName(rsmd.getColumnName(index), false);
-		
-		String paramType = rsmd.getColumnClassName(index);
-		Object value = rs.getObject(index);
+    /**
+     * å°†è¡¨å­—æ®µåä»¥é©¼å³°å‘½åæ³•å‘½å
+     * @param fieldName
+     * @param toUpper true è½¬, false ä¸è½¬é©¼å³°
+     * @return
+     */
+    public static JSONArray parseResultSetToJSONArray(ResultSet rs, boolean collumToUpper)
+            throws SQLException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        JSONArray list = new JSONArray();
+        ResultSetMetaData rsmd = rs.getMetaData();
+        // åˆ—æ•°
+        int columnCounts = rsmd.getColumnCount();
+        //
+        JSONObject jo = null;
+        while (rs.next()) {
+            jo = new JSONObject();
+            for (int i = 1; i <= columnCounts; i++) {
+                String key = rsmd.getColumnName(i);
+                // è½¬å®ä¾‹å
+                key = StringUtil.toEntityName(rsmd.getColumnName(i), collumToUpper);
+                Object value = rs.getObject(i);
+                value = (value == null) ? "" : value.toString();
+                jo.put(key, value);
+            }
+            list.add(jo);
+        }
+        return list;
+    }
 
-		// Ê××ÖÄ¸´óĞ´
-		key = String.valueOf(key.charAt(0)).toUpperCase() + key.substring(1);
-		paramType = paramType.substring(paramType.lastIndexOf(".") + 1);
+    public static void initReflectDbModel(ResultSet rs, ReflectDbModel model, int index) throws SQLException {
+        ResultSetMetaData rsmd = rs.getMetaData();
+        String key = rsmd.getColumnName(index);
+        // è½¬å®ä¾‹å
+        key = StringUtil.toEntityName(rsmd.getColumnName(index), false);
 
-		model.setKey(key);
-		model.setParamType(paramType);
-		model.setValue(value);
-	}
-	
-	public static void setStatmentParams(PreparedStatement ps, Map<Integer, Object> params) throws SQLException{
-		for (Iterator<Integer> iterator = params.keySet().iterator(); iterator
-				.hasNext();) {
-			Integer key = Integer.valueOf(iterator.next().toString());
-			ps.setObject(key, params.get(key));
-		}
-	}
+        String paramType = rsmd.getColumnClassName(index);
+        Object value = rs.getObject(index);
+
+        // é¦–å­—æ¯å¤§å†™
+        key = String.valueOf(key.charAt(0)).toUpperCase() + key.substring(1);
+        paramType = paramType.substring(paramType.lastIndexOf(".") + 1);
+
+        model.setKey(key);
+        model.setParamType(paramType);
+        model.setValue(value);
+    }
+
+    public static void setStatmentParams(PreparedStatement ps, Map<Integer, Object> params) throws SQLException {
+        for (Iterator<Integer> iterator = params.keySet().iterator(); iterator.hasNext();) {
+            Integer key = Integer.valueOf(iterator.next().toString());
+            ps.setObject(key, params.get(key));
+        }
+    }
 }

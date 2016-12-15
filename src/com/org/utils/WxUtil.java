@@ -21,15 +21,15 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public class WxUtil {
-    public static String WX_TOKEN = "wxToken" + PropertiesUtil.getValue("wx", "appid"); // Î¢ĞÅ¶ËµÄtoken key
+    public static String WX_TOKEN = "wxToken" + PropertiesUtil.getValue("wx", "appid"); // å¾®ä¿¡ç«¯çš„token key
     public static String ENTER_CHATING_ROOM = "enterChatingroom";
     public static String EXIT_CHATING_ROOM = "exitChatingroom";
 
     private static Log log = LogFactory.getLog(WxUtil.class);
-    private static final String LOCAL_TOKEN = PropertiesUtil.getValue("wx", "local_token"); // ÅäÖÃµ½ÅäÖÃÎÄ¼ş
+    private static final String LOCAL_TOKEN = PropertiesUtil.getValue("wx", "local_token"); // é…ç½®åˆ°é…ç½®æ–‡ä»¶
     private static final String ACCESS_TOKEN_KEY = "access_token";
-    private static String WX_TICKET = "wxTicket"; // Î¢ĞÅ¶ËµÄticket
-    private static int CACHE_TIME = 7000; // Î¢ĞÅ¶ËµÄticket
+    private static String WX_TICKET = "wxTicket"; // å¾®ä¿¡ç«¯çš„ticket
+    private static int CACHE_TIME = 7000; // å¾®ä¿¡ç«¯çš„ticket
     private static Timer timer = new Timer();
 
     public static boolean checkSignature(String signature, String timestamp, String nonce) {
@@ -53,22 +53,22 @@ public class WxUtil {
         String appid = PropertiesUtil.getValue("wx", "appid");
         String secret = PropertiesUtil.getValue("wx", "secret");
 
-        requestJson.put("grant_type", grant_type); // Î¢ĞÅ½Ó¿Ú
+        requestJson.put("grant_type", grant_type); // å¾®ä¿¡æ¥å£
         requestJson.put("appid", appid);
         requestJson.put("secret", secret);
 
         HttpTool http = new HttpApacheClient();
         JSONObject responseJson = http.httpPost(requestJson, remoteUrl, CT.ENCODE_UTF8);
 
-        // ´æ·Åµ½memcache
-        log.info("´æ·ÅÇ°====> " + Memcache.getInstance().getValue(WX_TOKEN));
+        // å­˜æ”¾åˆ°memcache
+        log.info("å­˜æ”¾å‰====> " + Memcache.getInstance().getValue(WX_TOKEN));
         Memcache.getInstance().setValue(WX_TOKEN, CACHE_TIME, responseJson.getString(ACCESS_TOKEN_KEY));
-        log.info("´æ·ÅÇ°====> " + Memcache.getInstance().getValue(WX_TOKEN));
+        log.info("å­˜æ”¾å‰====> " + Memcache.getInstance().getValue(WX_TOKEN));
         return responseJson.getString(ACCESS_TOKEN_KEY);
     }
 
     /**
-     * ¸ù¾İtokenÇëÇóticket
+     * æ ¹æ®tokenè¯·æ±‚ticket
      * 
      * @return
      */
@@ -77,19 +77,19 @@ public class WxUtil {
         String remoteUrl = PropertiesUtil.getValue("wx", "wx_ticket_url");
         String type = PropertiesUtil.getValue("wx", "type_for_ticket");
 
-        requestJson.put(ACCESS_TOKEN_KEY, token); // Î¢ĞÅ½Ó¿Ú
+        requestJson.put(ACCESS_TOKEN_KEY, token); // å¾®ä¿¡æ¥å£
         requestJson.put("type", type);
 
         HttpTool http = new HttpApacheClient();
         JSONObject responseJson = http.httpPost(requestJson, remoteUrl, CT.ENCODE_UTF8);
 
         if (0 == responseJson.getInt("errcode")) {
-            // »ñÈ¡³É¹¦
-            // ´æ·Åµ½memcache
+            // è·å–æˆåŠŸ
+            // å­˜æ”¾åˆ°memcache
             Memcache.getInstance().setValue(WX_TICKET, CACHE_TIME, responseJson.getString("ticket"));
             return true;
         } else {
-            LogUtil.log(WxUtil.class, "initTicket Ê§°Ü£º" + responseJson.get("errmsg"), null, LogUtilMg.LOG_DEBUG, CT.LOG_PATTERN_NULL);
+            LogUtil.log(WxUtil.class, "initTicket å¤±è´¥ï¼š" + responseJson.get("errmsg"), null, LogUtilMg.LOG_DEBUG, CT.LOG_PATTERN_NULL);
             return false;
         }
     }
@@ -105,7 +105,7 @@ public class WxUtil {
     }
 
     /**
-     * ´Ómemcache»ñÈ¡token
+     * ä»memcacheè·å–token
      * @return
      */
     public static String getToken() {
@@ -117,13 +117,13 @@ public class WxUtil {
      * @param timeInterval
      */
     public static void autoRun() {
-        // Í¬Ê±ÆôÒ»¸ö¶¨Ê±ÈÎÎñ,Ã¿Á½Ğ¡Ê±Ö´ĞĞÒ»´Î
+        // åŒæ—¶å¯ä¸€ä¸ªå®šæ—¶ä»»åŠ¡,æ¯ä¸¤å°æ—¶æ‰§è¡Œä¸€æ¬¡
         Calendar calendar = Calendar.getInstance();
 
         Long timeInterval = Long.valueOf(PropertiesUtil.getValue("wx", "time_interval"));
-        Date date = calendar.getTime(); // µÚÒ»´ÎÖ´ĞĞ¶¨Ê±ÈÎÎñµÄÊ±¼ä
+        Date date = calendar.getTime(); // ç¬¬ä¸€æ¬¡æ‰§è¡Œå®šæ—¶ä»»åŠ¡çš„æ—¶é—´
         WxTimerTask task = new WxTimerTask();
-        // °²ÅÅÖ¸¶¨µÄÈÎÎñÔÚÖ¸¶¨µÄÊ±¼ä¿ªÊ¼½øĞĞÖØ¸´µÄ¹Ì¶¨ÑÓ³ÙÖ´ĞĞ¡£
+        // å®‰æ’æŒ‡å®šçš„ä»»åŠ¡åœ¨æŒ‡å®šçš„æ—¶é—´å¼€å§‹è¿›è¡Œé‡å¤çš„å›ºå®šå»¶è¿Ÿæ‰§è¡Œã€‚
         timer.schedule(task, date, timeInterval * 1000);
     }
 
@@ -132,11 +132,11 @@ public class WxUtil {
     }
 
     /**
-     * ±¾µØÇ©Ãû, Î¢ĞÅ½Ó¿ÚÇ©ÃûÓÃµÄ noncestrºÍtimestamp±ØĞëÓëwx.configÖĞµÄnonceStrºÍtimestampÏàÍ¬¡£
+     * æœ¬åœ°ç­¾å, å¾®ä¿¡æ¥å£ç­¾åç”¨çš„ noncestrå’Œtimestampå¿…é¡»ä¸wx.configä¸­çš„nonceStrå’Œtimestampç›¸åŒã€‚
      * @param timestamp
      * @param nonceStr
      * @param url
-     *            ±ØĞëÊÇµ÷ÓÃJS½Ó¿ÚÒ³ÃæµÄÍêÕûURL
+     *            å¿…é¡»æ˜¯è°ƒç”¨JSæ¥å£é¡µé¢çš„å®Œæ•´URL
      * @return
      */
     public static String localSign(String timestamp, String noncestr, String url) {
@@ -154,7 +154,7 @@ public class WxUtil {
     public static void deleteBottomMenu() {
         HttpTool http = new HttpApacheClient();
         String token = Memcache.getInstance().getValue(WX_TOKEN);
-        // ÏÈÉ¾³ı£º
+        // å…ˆåˆ é™¤ï¼š
         StringBuffer deleteUrl = new StringBuffer(PropertiesUtil.getValue("wx", "wx_delete_bottommenu_url"));
         deleteUrl.append(token);
         String res = http.httpGet(deleteUrl.toString(), CT.ENCODE_UTF8);
@@ -170,7 +170,7 @@ public class WxUtil {
         Properties p = PropertiesUtil.getProperties("wx_botton_menu");
         String[] menuKeys = { "menua", "menub", "menuc" };
         for (int i = 0; i < menuKeys.length; i++) {
-            // Ò»¼¶
+            // ä¸€çº§
             String menuKeyTemp = menuKeys[i];
             String menuValTemp = p.getProperty(menuKeyTemp);
 
@@ -181,7 +181,7 @@ public class WxUtil {
                 for (int j = 0; j < submenuKeys.length; j++) {
                     String submenu = p.getProperty(menuKeyTemp + "_" + submenuKeys[j]);
                     if (StringUtils.isNotEmpty(submenu)) {
-                        // Èç¹û²»Îª¿Õ£¬
+                        // å¦‚æœä¸ä¸ºç©ºï¼Œ
                         submenuArray.add(submenu);
                     }
                 }
@@ -200,9 +200,9 @@ public class WxUtil {
         JSONObject responseJson = http.wxHttpsPost(menuJson, createUrl.toString());
 
         if (0 == responseJson.getInt("errcode")) {
-            LogUtil.log(WxUtil.class, "createBottomMenu ³É¹¦£º" + responseJson.get("errmsg"), null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_NULL);
+            LogUtil.log(WxUtil.class, "createBottomMenu æˆåŠŸï¼š" + responseJson.get("errmsg"), null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_NULL);
         } else {
-            LogUtil.log(WxUtil.class, "createBottomMenu Ê§°Ü£º" + responseJson.get("errmsg"), null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_NULL);
+            LogUtil.log(WxUtil.class, "createBottomMenu å¤±è´¥ï¼š" + responseJson.get("errmsg"), null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_NULL);
         }
 
     }
@@ -211,13 +211,13 @@ public class WxUtil {
         @Override
         public void run() {
             boolean res = WxUtil.wxInit();
-            LogUtil.log(WxTimerTask.class, "Ö´ĞĞ¶¨Ê±»ñÈ¡Î¢ĞÅÈÎÎñ", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_NULL);
+            LogUtil.log(WxTimerTask.class, "æ‰§è¡Œå®šæ—¶è·å–å¾®ä¿¡ä»»åŠ¡", null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_NULL);
 
             boolean anyTimes = Boolean.valueOf(PropertiesUtil.getValue("wx", "create_menu_by_interval"));
             if (anyTimes && res) {
-                // ³õÊ¼»¯²Ëµ¥
+                // åˆå§‹åŒ–èœå•
                 createBottomMenu();
-                // ³õÊ¼»¯ÓÃ»§»ù±¾ĞÅÏ¢
+                // åˆå§‹åŒ–ç”¨æˆ·åŸºæœ¬ä¿¡æ¯
                 // WxUserContainer.initUserInfo();
             }
 
@@ -225,49 +225,49 @@ public class WxUtil {
     }
 
     /*
-     * ´íÎóÂë£º
+     * é”™è¯¯ç ï¼š
      * 
-     * -1 ÏµÍ³·±Ã¦£¬´ËÊ±Çë¿ª·¢ÕßÉÔºòÔÙÊÔ 0 ÇëÇó³É¹¦ 40001
-     * »ñÈ¡access_tokenÊ±AppSecret´íÎó£¬»òÕßaccess_tokenÎŞĞ§
-     * ¡£Çë¿ª·¢ÕßÈÏÕæ±È¶ÔAppSecretµÄÕıÈ·ĞÔ£¬»ò²é¿´ÊÇ·ñÕıÔÚÎªÇ¡µ±µÄ¹«ÖÚºÅµ÷ÓÃ½Ó¿Ú 40002 ²»ºÏ·¨µÄÆ¾Ö¤ÀàĞÍ 40003
-     * ²»ºÏ·¨µÄOpenID£¬Çë¿ª·¢ÕßÈ·ÈÏOpenID£¨¸ÃÓÃ»§£©ÊÇ·ñÒÑ¹Ø×¢¹«ÖÚºÅ£¬»òÊÇ·ñÊÇÆäËû¹«ÖÚºÅµÄOpenID 40004 ²»ºÏ·¨µÄÃ½ÌåÎÄ¼şÀàĞÍ
-     * 40005 ²»ºÏ·¨µÄÎÄ¼şÀàĞÍ 40006 ²»ºÏ·¨µÄÎÄ¼ş´óĞ¡ 40007 ²»ºÏ·¨µÄÃ½ÌåÎÄ¼şid 40008 ²»ºÏ·¨µÄÏûÏ¢ÀàĞÍ 40009
-     * ²»ºÏ·¨µÄÍ¼Æ¬ÎÄ¼ş´óĞ¡ 40010 ²»ºÏ·¨µÄÓïÒôÎÄ¼ş´óĞ¡ 40011 ²»ºÏ·¨µÄÊÓÆµÎÄ¼ş´óĞ¡ 40012 ²»ºÏ·¨µÄËõÂÔÍ¼ÎÄ¼ş´óĞ¡ 40013
-     * ²»ºÏ·¨µÄAppID£¬Çë¿ª·¢Õß¼ì²éAppIDµÄÕıÈ·ĞÔ£¬±ÜÃâÒì³£×Ö·û£¬×¢Òâ´óĞ¡Ğ´ 40014
-     * ²»ºÏ·¨µÄaccess_token£¬Çë¿ª·¢ÕßÈÏÕæ±È¶Ôaccess_tokenµÄÓĞĞ§ĞÔ£¨ÈçÊÇ·ñ¹ıÆÚ£©£¬»ò²é¿´ÊÇ·ñÕıÔÚÎªÇ¡µ±µÄ¹«ÖÚºÅµ÷ÓÃ½Ó¿Ú 40015
-     * ²»ºÏ·¨µÄ²Ëµ¥ÀàĞÍ 40016 ²»ºÏ·¨µÄ°´Å¥¸öÊı 40017 ²»ºÏ·¨µÄ°´Å¥¸öÊı 40018 ²»ºÏ·¨µÄ°´Å¥Ãû×Ö³¤¶È 40019 ²»ºÏ·¨µÄ°´Å¥KEY³¤¶È
-     * 40020 ²»ºÏ·¨µÄ°´Å¥URL³¤¶È 40021 ²»ºÏ·¨µÄ²Ëµ¥°æ±¾ºÅ 40022 ²»ºÏ·¨µÄ×Ó²Ëµ¥¼¶Êı 40023 ²»ºÏ·¨µÄ×Ó²Ëµ¥°´Å¥¸öÊı 40024
-     * ²»ºÏ·¨µÄ×Ó²Ëµ¥°´Å¥ÀàĞÍ 40025 ²»ºÏ·¨µÄ×Ó²Ëµ¥°´Å¥Ãû×Ö³¤¶È 40026 ²»ºÏ·¨µÄ×Ó²Ëµ¥°´Å¥KEY³¤¶È 40027 ²»ºÏ·¨µÄ×Ó²Ëµ¥°´Å¥URL³¤¶È
-     * 40028 ²»ºÏ·¨µÄ×Ô¶¨Òå²Ëµ¥Ê¹ÓÃÓÃ»§ 40029 ²»ºÏ·¨µÄoauth_code 40030 ²»ºÏ·¨µÄrefresh_token 40031
-     * ²»ºÏ·¨µÄopenidÁĞ±í 40032 ²»ºÏ·¨µÄopenidÁĞ±í³¤¶È 40033 ²»ºÏ·¨µÄÇëÇó×Ö·û£¬²»ÄÜ°üº¬uxxxx¸ñÊ½µÄ×Ö·û 40035
-     * ²»ºÏ·¨µÄ²ÎÊı 40038 ²»ºÏ·¨µÄÇëÇó¸ñÊ½ 40039 ²»ºÏ·¨µÄURL³¤¶È 40050 ²»ºÏ·¨µÄ·Ö×éid 40051 ·Ö×éÃû×Ö²»ºÏ·¨ 40117
-     * ·Ö×éÃû×Ö²»ºÏ·¨ 40118 media_id´óĞ¡²»ºÏ·¨ 40119 buttonÀàĞÍ´íÎó 40120 buttonÀàĞÍ´íÎó 40121
-     * ²»ºÏ·¨µÄmedia_idÀàĞÍ 40132 Î¢ĞÅºÅ²»ºÏ·¨ 40137 ²»Ö§³ÖµÄÍ¼Æ¬¸ñÊ½ 41001 È±ÉÙaccess_token²ÎÊı 41002
-     * È±ÉÙappid²ÎÊı 41003 È±ÉÙrefresh_token²ÎÊı 41004 È±ÉÙsecret²ÎÊı 41005 È±ÉÙ¶àÃ½ÌåÎÄ¼şÊı¾İ 41006
-     * È±ÉÙmedia_id²ÎÊı 41007 È±ÉÙ×Ó²Ëµ¥Êı¾İ 41008 È±ÉÙoauth code 41009 È±ÉÙopenid 42001
-     * access_token³¬Ê±
-     * £¬Çë¼ì²éaccess_tokenµÄÓĞĞ§ÆÚ£¬Çë²Î¿¼»ù´¡Ö§³Ö-»ñÈ¡access_tokenÖĞ£¬¶Ôaccess_tokenµÄÏêÏ¸»úÖÆËµÃ÷ 42002
-     * refresh_token³¬Ê± 42003 oauth_code³¬Ê± 43001 ĞèÒªGETÇëÇó 43002 ĞèÒªPOSTÇëÇó 43003
-     * ĞèÒªHTTPSÇëÇó 43004 ĞèÒª½ÓÊÕÕß¹Ø×¢ 43005 ĞèÒªºÃÓÑ¹ØÏµ 44001 ¶àÃ½ÌåÎÄ¼şÎª¿Õ 44002 POSTµÄÊı¾İ°üÎª¿Õ 44003
-     * Í¼ÎÄÏûÏ¢ÄÚÈİÎª¿Õ 44004 ÎÄ±¾ÏûÏ¢ÄÚÈİÎª¿Õ 45001 ¶àÃ½ÌåÎÄ¼ş´óĞ¡³¬¹ıÏŞÖÆ 45002 ÏûÏ¢ÄÚÈİ³¬¹ıÏŞÖÆ 45003 ±êÌâ×Ö¶Î³¬¹ıÏŞÖÆ
-     * 45004 ÃèÊö×Ö¶Î³¬¹ıÏŞÖÆ 45005 Á´½Ó×Ö¶Î³¬¹ıÏŞÖÆ 45006 Í¼Æ¬Á´½Ó×Ö¶Î³¬¹ıÏŞÖÆ 45007 ÓïÒô²¥·ÅÊ±¼ä³¬¹ıÏŞÖÆ 45008
-     * Í¼ÎÄÏûÏ¢³¬¹ıÏŞÖÆ 45009 ½Ó¿Úµ÷ÓÃ³¬¹ıÏŞÖÆ 45010 ´´½¨²Ëµ¥¸öÊı³¬¹ıÏŞÖÆ 45015 »Ø¸´Ê±¼ä³¬¹ıÏŞÖÆ 45016 ÏµÍ³·Ö×é£¬²»ÔÊĞíĞŞ¸Ä
-     * 45017 ·Ö×éÃû×Ö¹ı³¤ 45018 ·Ö×éÊıÁ¿³¬¹ıÉÏÏŞ 46001 ²»´æÔÚÃ½ÌåÊı¾İ 46002 ²»´æÔÚµÄ²Ëµ¥°æ±¾ 46003 ²»´æÔÚµÄ²Ëµ¥Êı¾İ
-     * 46004 ²»´æÔÚµÄÓÃ»§ 47001 ½âÎöJSON/XMLÄÚÈİ´íÎó 48001
-     * api¹¦ÄÜÎ´ÊÚÈ¨£¬ÇëÈ·ÈÏ¹«ÖÚºÅÒÑ»ñµÃ¸Ã½Ó¿Ú£¬¿ÉÒÔÔÚ¹«ÖÚÆ½Ì¨¹ÙÍø-¿ª·¢ÕßÖĞĞÄÒ³ÖĞ²é¿´½Ó¿ÚÈ¨ÏŞ 50001 ÓÃ»§Î´ÊÚÈ¨¸Ãapi 50002
-     * ÓÃ»§ÊÜÏŞ£¬¿ÉÄÜÊÇÎ¥¹æºó½Ó¿Ú±»·â½û 61451 ²ÎÊı´íÎó(invalid parameter) 61452 ÎŞĞ§¿Í·şÕËºÅ(invalid
-     * kf_account) 61453 ¿Í·şÕÊºÅÒÑ´æÔÚ(kf_account exsited) 61454
-     * ¿Í·şÕÊºÅÃû³¤¶È³¬¹ıÏŞÖÆ(½öÔÊĞí10¸öÓ¢ÎÄ×Ö·û£¬²»°üÀ¨@¼°@ºóµÄ¹«ÖÚºÅµÄÎ¢ĞÅºÅ)(invalid kf_acount length) 61455
-     * ¿Í·şÕÊºÅÃû°üº¬·Ç·¨×Ö·û(½öÔÊĞíÓ¢ÎÄ+Êı×Ö)(illegal character in kf_account) 61456
-     * ¿Í·şÕÊºÅ¸öÊı³¬¹ıÏŞÖÆ(10¸ö¿Í·şÕËºÅ)(kf_account count exceeded) 61457 ÎŞĞ§Í·ÏñÎÄ¼şÀàĞÍ(invalid
-     * file type) 61450 ÏµÍ³´íÎó(system error) 61500 ÈÕÆÚ¸ñÊ½´íÎó 61501 ÈÕÆÚ·¶Î§´íÎó 9001001
-     * POSTÊı¾İ²ÎÊı²»ºÏ·¨ 9001002 Ô¶¶Ë·şÎñ²»¿ÉÓÃ 9001003 Ticket²»ºÏ·¨ 9001004 »ñÈ¡Ò¡ÖÜ±ßÓÃ»§ĞÅÏ¢Ê§°Ü 9001005
-     * »ñÈ¡ÉÌ»§ĞÅÏ¢Ê§°Ü 9001006 »ñÈ¡OpenIDÊ§°Ü 9001007 ÉÏ´«ÎÄ¼şÈ±Ê§ 9001008 ÉÏ´«ËØ²ÄµÄÎÄ¼şÀàĞÍ²»ºÏ·¨ 9001009
-     * ÉÏ´«ËØ²ÄµÄÎÄ¼ş³ß´ç²»ºÏ·¨ 9001010 ÉÏ´«Ê§°Ü 9001020 ÕÊºÅ²»ºÏ·¨ 9001021 ÒÑÓĞÉè±¸¼¤»îÂÊµÍÓÚ50%£¬²»ÄÜĞÂÔöÉè±¸
-     * 9001022 Éè±¸ÉêÇëÊı²»ºÏ·¨£¬±ØĞëÎª´óÓÚ0µÄÊı×Ö 9001023 ÒÑ´æÔÚÉóºËÖĞµÄÉè±¸IDÉêÇë 9001024 Ò»´Î²éÑ¯Éè±¸IDÊıÁ¿²»ÄÜ³¬¹ı50
-     * 9001025 Éè±¸ID²»ºÏ·¨ 9001026 Ò³ÃæID²»ºÏ·¨ 9001027 Ò³Ãæ²ÎÊı²»ºÏ·¨ 9001028 Ò»´ÎÉ¾³ıÒ³ÃæIDÊıÁ¿²»ÄÜ³¬¹ı10
-     * 9001029 Ò³ÃæÒÑÓ¦ÓÃÔÚÉè±¸ÖĞ£¬ÇëÏÈ½â³ıÓ¦ÓÃ¹ØÏµÔÙÉ¾³ı 9001030 Ò»´Î²éÑ¯Ò³ÃæIDÊıÁ¿²»ÄÜ³¬¹ı50 9001031 Ê±¼äÇø¼ä²»ºÏ·¨
-     * 9001032 ±£´æÉè±¸ÓëÒ³ÃæµÄ°ó¶¨¹ØÏµ²ÎÊı´íÎó 9001033 ÃÅµêID²»ºÏ·¨ 9001034 Éè±¸±¸×¢ĞÅÏ¢¹ı³¤ 9001035
-     * Éè±¸ÉêÇë²ÎÊı²»ºÏ·¨ 9001036 ²éÑ¯ÆğÊ¼Öµbegin²»ºÏ·¨
+     * -1 ç³»ç»Ÿç¹å¿™ï¼Œæ­¤æ—¶è¯·å¼€å‘è€…ç¨å€™å†è¯• 0 è¯·æ±‚æˆåŠŸ 40001
+     * è·å–access_tokenæ—¶AppSecreté”™è¯¯ï¼Œæˆ–è€…access_tokenæ— æ•ˆ
+     * ã€‚è¯·å¼€å‘è€…è®¤çœŸæ¯”å¯¹AppSecretçš„æ­£ç¡®æ€§ï¼Œæˆ–æŸ¥çœ‹æ˜¯å¦æ­£åœ¨ä¸ºæ°å½“çš„å…¬ä¼—å·è°ƒç”¨æ¥å£ 40002 ä¸åˆæ³•çš„å‡­è¯ç±»å‹ 40003
+     * ä¸åˆæ³•çš„OpenIDï¼Œè¯·å¼€å‘è€…ç¡®è®¤OpenIDï¼ˆè¯¥ç”¨æˆ·ï¼‰æ˜¯å¦å·²å…³æ³¨å…¬ä¼—å·ï¼Œæˆ–æ˜¯å¦æ˜¯å…¶ä»–å…¬ä¼—å·çš„OpenID 40004 ä¸åˆæ³•çš„åª’ä½“æ–‡ä»¶ç±»å‹
+     * 40005 ä¸åˆæ³•çš„æ–‡ä»¶ç±»å‹ 40006 ä¸åˆæ³•çš„æ–‡ä»¶å¤§å° 40007 ä¸åˆæ³•çš„åª’ä½“æ–‡ä»¶id 40008 ä¸åˆæ³•çš„æ¶ˆæ¯ç±»å‹ 40009
+     * ä¸åˆæ³•çš„å›¾ç‰‡æ–‡ä»¶å¤§å° 40010 ä¸åˆæ³•çš„è¯­éŸ³æ–‡ä»¶å¤§å° 40011 ä¸åˆæ³•çš„è§†é¢‘æ–‡ä»¶å¤§å° 40012 ä¸åˆæ³•çš„ç¼©ç•¥å›¾æ–‡ä»¶å¤§å° 40013
+     * ä¸åˆæ³•çš„AppIDï¼Œè¯·å¼€å‘è€…æ£€æŸ¥AppIDçš„æ­£ç¡®æ€§ï¼Œé¿å…å¼‚å¸¸å­—ç¬¦ï¼Œæ³¨æ„å¤§å°å†™ 40014
+     * ä¸åˆæ³•çš„access_tokenï¼Œè¯·å¼€å‘è€…è®¤çœŸæ¯”å¯¹access_tokençš„æœ‰æ•ˆæ€§ï¼ˆå¦‚æ˜¯å¦è¿‡æœŸï¼‰ï¼Œæˆ–æŸ¥çœ‹æ˜¯å¦æ­£åœ¨ä¸ºæ°å½“çš„å…¬ä¼—å·è°ƒç”¨æ¥å£ 40015
+     * ä¸åˆæ³•çš„èœå•ç±»å‹ 40016 ä¸åˆæ³•çš„æŒ‰é’®ä¸ªæ•° 40017 ä¸åˆæ³•çš„æŒ‰é’®ä¸ªæ•° 40018 ä¸åˆæ³•çš„æŒ‰é’®åå­—é•¿åº¦ 40019 ä¸åˆæ³•çš„æŒ‰é’®KEYé•¿åº¦
+     * 40020 ä¸åˆæ³•çš„æŒ‰é’®URLé•¿åº¦ 40021 ä¸åˆæ³•çš„èœå•ç‰ˆæœ¬å· 40022 ä¸åˆæ³•çš„å­èœå•çº§æ•° 40023 ä¸åˆæ³•çš„å­èœå•æŒ‰é’®ä¸ªæ•° 40024
+     * ä¸åˆæ³•çš„å­èœå•æŒ‰é’®ç±»å‹ 40025 ä¸åˆæ³•çš„å­èœå•æŒ‰é’®åå­—é•¿åº¦ 40026 ä¸åˆæ³•çš„å­èœå•æŒ‰é’®KEYé•¿åº¦ 40027 ä¸åˆæ³•çš„å­èœå•æŒ‰é’®URLé•¿åº¦
+     * 40028 ä¸åˆæ³•çš„è‡ªå®šä¹‰èœå•ä½¿ç”¨ç”¨æˆ· 40029 ä¸åˆæ³•çš„oauth_code 40030 ä¸åˆæ³•çš„refresh_token 40031
+     * ä¸åˆæ³•çš„openidåˆ—è¡¨ 40032 ä¸åˆæ³•çš„openidåˆ—è¡¨é•¿åº¦ 40033 ä¸åˆæ³•çš„è¯·æ±‚å­—ç¬¦ï¼Œä¸èƒ½åŒ…å«uxxxxæ ¼å¼çš„å­—ç¬¦ 40035
+     * ä¸åˆæ³•çš„å‚æ•° 40038 ä¸åˆæ³•çš„è¯·æ±‚æ ¼å¼ 40039 ä¸åˆæ³•çš„URLé•¿åº¦ 40050 ä¸åˆæ³•çš„åˆ†ç»„id 40051 åˆ†ç»„åå­—ä¸åˆæ³• 40117
+     * åˆ†ç»„åå­—ä¸åˆæ³• 40118 media_idå¤§å°ä¸åˆæ³• 40119 buttonç±»å‹é”™è¯¯ 40120 buttonç±»å‹é”™è¯¯ 40121
+     * ä¸åˆæ³•çš„media_idç±»å‹ 40132 å¾®ä¿¡å·ä¸åˆæ³• 40137 ä¸æ”¯æŒçš„å›¾ç‰‡æ ¼å¼ 41001 ç¼ºå°‘access_tokenå‚æ•° 41002
+     * ç¼ºå°‘appidå‚æ•° 41003 ç¼ºå°‘refresh_tokenå‚æ•° 41004 ç¼ºå°‘secretå‚æ•° 41005 ç¼ºå°‘å¤šåª’ä½“æ–‡ä»¶æ•°æ® 41006
+     * ç¼ºå°‘media_idå‚æ•° 41007 ç¼ºå°‘å­èœå•æ•°æ® 41008 ç¼ºå°‘oauth code 41009 ç¼ºå°‘openid 42001
+     * access_tokenè¶…æ—¶
+     * ï¼Œè¯·æ£€æŸ¥access_tokençš„æœ‰æ•ˆæœŸï¼Œè¯·å‚è€ƒåŸºç¡€æ”¯æŒ-è·å–access_tokenä¸­ï¼Œå¯¹access_tokençš„è¯¦ç»†æœºåˆ¶è¯´æ˜ 42002
+     * refresh_tokenè¶…æ—¶ 42003 oauth_codeè¶…æ—¶ 43001 éœ€è¦GETè¯·æ±‚ 43002 éœ€è¦POSTè¯·æ±‚ 43003
+     * éœ€è¦HTTPSè¯·æ±‚ 43004 éœ€è¦æ¥æ”¶è€…å…³æ³¨ 43005 éœ€è¦å¥½å‹å…³ç³» 44001 å¤šåª’ä½“æ–‡ä»¶ä¸ºç©º 44002 POSTçš„æ•°æ®åŒ…ä¸ºç©º 44003
+     * å›¾æ–‡æ¶ˆæ¯å†…å®¹ä¸ºç©º 44004 æ–‡æœ¬æ¶ˆæ¯å†…å®¹ä¸ºç©º 45001 å¤šåª’ä½“æ–‡ä»¶å¤§å°è¶…è¿‡é™åˆ¶ 45002 æ¶ˆæ¯å†…å®¹è¶…è¿‡é™åˆ¶ 45003 æ ‡é¢˜å­—æ®µè¶…è¿‡é™åˆ¶
+     * 45004 æè¿°å­—æ®µè¶…è¿‡é™åˆ¶ 45005 é“¾æ¥å­—æ®µè¶…è¿‡é™åˆ¶ 45006 å›¾ç‰‡é“¾æ¥å­—æ®µè¶…è¿‡é™åˆ¶ 45007 è¯­éŸ³æ’­æ”¾æ—¶é—´è¶…è¿‡é™åˆ¶ 45008
+     * å›¾æ–‡æ¶ˆæ¯è¶…è¿‡é™åˆ¶ 45009 æ¥å£è°ƒç”¨è¶…è¿‡é™åˆ¶ 45010 åˆ›å»ºèœå•ä¸ªæ•°è¶…è¿‡é™åˆ¶ 45015 å›å¤æ—¶é—´è¶…è¿‡é™åˆ¶ 45016 ç³»ç»Ÿåˆ†ç»„ï¼Œä¸å…è®¸ä¿®æ”¹
+     * 45017 åˆ†ç»„åå­—è¿‡é•¿ 45018 åˆ†ç»„æ•°é‡è¶…è¿‡ä¸Šé™ 46001 ä¸å­˜åœ¨åª’ä½“æ•°æ® 46002 ä¸å­˜åœ¨çš„èœå•ç‰ˆæœ¬ 46003 ä¸å­˜åœ¨çš„èœå•æ•°æ®
+     * 46004 ä¸å­˜åœ¨çš„ç”¨æˆ· 47001 è§£æJSON/XMLå†…å®¹é”™è¯¯ 48001
+     * apiåŠŸèƒ½æœªæˆæƒï¼Œè¯·ç¡®è®¤å…¬ä¼—å·å·²è·å¾—è¯¥æ¥å£ï¼Œå¯ä»¥åœ¨å…¬ä¼—å¹³å°å®˜ç½‘-å¼€å‘è€…ä¸­å¿ƒé¡µä¸­æŸ¥çœ‹æ¥å£æƒé™ 50001 ç”¨æˆ·æœªæˆæƒè¯¥api 50002
+     * ç”¨æˆ·å—é™ï¼Œå¯èƒ½æ˜¯è¿è§„åæ¥å£è¢«å°ç¦ 61451 å‚æ•°é”™è¯¯(invalid parameter) 61452 æ— æ•ˆå®¢æœè´¦å·(invalid
+     * kf_account) 61453 å®¢æœå¸å·å·²å­˜åœ¨(kf_account exsited) 61454
+     * å®¢æœå¸å·åé•¿åº¦è¶…è¿‡é™åˆ¶(ä»…å…è®¸10ä¸ªè‹±æ–‡å­—ç¬¦ï¼Œä¸åŒ…æ‹¬@åŠ@åçš„å…¬ä¼—å·çš„å¾®ä¿¡å·)(invalid kf_acount length) 61455
+     * å®¢æœå¸å·ååŒ…å«éæ³•å­—ç¬¦(ä»…å…è®¸è‹±æ–‡+æ•°å­—)(illegal character in kf_account) 61456
+     * å®¢æœå¸å·ä¸ªæ•°è¶…è¿‡é™åˆ¶(10ä¸ªå®¢æœè´¦å·)(kf_account count exceeded) 61457 æ— æ•ˆå¤´åƒæ–‡ä»¶ç±»å‹(invalid
+     * file type) 61450 ç³»ç»Ÿé”™è¯¯(system error) 61500 æ—¥æœŸæ ¼å¼é”™è¯¯ 61501 æ—¥æœŸèŒƒå›´é”™è¯¯ 9001001
+     * POSTæ•°æ®å‚æ•°ä¸åˆæ³• 9001002 è¿œç«¯æœåŠ¡ä¸å¯ç”¨ 9001003 Ticketä¸åˆæ³• 9001004 è·å–æ‘‡å‘¨è¾¹ç”¨æˆ·ä¿¡æ¯å¤±è´¥ 9001005
+     * è·å–å•†æˆ·ä¿¡æ¯å¤±è´¥ 9001006 è·å–OpenIDå¤±è´¥ 9001007 ä¸Šä¼ æ–‡ä»¶ç¼ºå¤± 9001008 ä¸Šä¼ ç´ æçš„æ–‡ä»¶ç±»å‹ä¸åˆæ³• 9001009
+     * ä¸Šä¼ ç´ æçš„æ–‡ä»¶å°ºå¯¸ä¸åˆæ³• 9001010 ä¸Šä¼ å¤±è´¥ 9001020 å¸å·ä¸åˆæ³• 9001021 å·²æœ‰è®¾å¤‡æ¿€æ´»ç‡ä½äº50%ï¼Œä¸èƒ½æ–°å¢è®¾å¤‡
+     * 9001022 è®¾å¤‡ç”³è¯·æ•°ä¸åˆæ³•ï¼Œå¿…é¡»ä¸ºå¤§äº0çš„æ•°å­— 9001023 å·²å­˜åœ¨å®¡æ ¸ä¸­çš„è®¾å¤‡IDç”³è¯· 9001024 ä¸€æ¬¡æŸ¥è¯¢è®¾å¤‡IDæ•°é‡ä¸èƒ½è¶…è¿‡50
+     * 9001025 è®¾å¤‡IDä¸åˆæ³• 9001026 é¡µé¢IDä¸åˆæ³• 9001027 é¡µé¢å‚æ•°ä¸åˆæ³• 9001028 ä¸€æ¬¡åˆ é™¤é¡µé¢IDæ•°é‡ä¸èƒ½è¶…è¿‡10
+     * 9001029 é¡µé¢å·²åº”ç”¨åœ¨è®¾å¤‡ä¸­ï¼Œè¯·å…ˆè§£é™¤åº”ç”¨å…³ç³»å†åˆ é™¤ 9001030 ä¸€æ¬¡æŸ¥è¯¢é¡µé¢IDæ•°é‡ä¸èƒ½è¶…è¿‡50 9001031 æ—¶é—´åŒºé—´ä¸åˆæ³•
+     * 9001032 ä¿å­˜è®¾å¤‡ä¸é¡µé¢çš„ç»‘å®šå…³ç³»å‚æ•°é”™è¯¯ 9001033 é—¨åº—IDä¸åˆæ³• 9001034 è®¾å¤‡å¤‡æ³¨ä¿¡æ¯è¿‡é•¿ 9001035
+     * è®¾å¤‡ç”³è¯·å‚æ•°ä¸åˆæ³• 9001036 æŸ¥è¯¢èµ·å§‹å€¼beginä¸åˆæ³•
      */
 }

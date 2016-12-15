@@ -24,8 +24,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import net.sf.json.JSONObject;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -52,288 +50,301 @@ import com.org.util.CT;
 import com.org.utils.JSONUtils;
 import com.org.utils.http.HttpTool;
 
+import net.sf.json.JSONObject;
+
 /**
  * @author Nano
  * 
- * HTTPClient µƒ∑‚◊∞
+ * HTTPClient ÁöÑÂ∞ÅË£Ö
  */
-public class HttpApacheClient implements HttpTool{
+public class HttpApacheClient implements HttpTool {
 
-	public String httpGet(String url,String charset) {
-		String httpResult = "";
-		AbstractHttpClient httpclient = null;
-		try{
-			HttpGet httpRequest = new HttpGet(url);
-			
-		    // …Ë÷√ ≥¨ ±ª˙÷∆ ∫¡√ÎŒ™µ•Œª,÷ÿ¡¨3ª˙÷∆
-            HttpParams params = new BasicHttpParams();  
-            HttpConnectionParams.setConnectionTimeout(params, 30 * 1000);  
-            HttpConnectionParams.setSoTimeout(params, 45 * 1000);    
+    @Override
+    public String httpGet(String url, String charset) {
+        String httpResult = "";
+        AbstractHttpClient httpclient = null;
+        try {
+            HttpGet httpRequest = new HttpGet(url);
+
+            // ËÆæÁΩÆ Ë∂ÖÊó∂Êú∫Âà∂ ÊØ´Áßí‰∏∫Âçï‰Ωç,ÈáçËøû3Êú∫Âà∂
+            HttpParams params = new BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(params, 30 * 1000);
+            HttpConnectionParams.setSoTimeout(params, 45 * 1000);
             HttpConnectionParams.setTcpNoDelay(params, true);
             HttpClientParams.setRedirecting(params, false);
-       
-            httpclient = new DefaultHttpClient(params); 
-            HttpRequestRetryHandler retryHandler = new DefaultHttpRequestRetryHandler(3,true);
+
+            httpclient = new DefaultHttpClient(params);
+            HttpRequestRetryHandler retryHandler = new DefaultHttpRequestRetryHandler(3, true);
             httpclient.setHttpRequestRetryHandler(retryHandler);
-            
-            
-			HttpResponse httpResponse = httpclient.execute(httpRequest);
-			
-			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){//«Î«Û≥…π¶ 
-				httpResult = EntityUtils.toString(httpResponse.getEntity(),charset);
-				
-				LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "HttpApacheClient  httpGet «Î«Û≥…π¶ --> " + httpResult, null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);	
-				
-			}else{
-				int statusCode = httpResponse.getStatusLine().getStatusCode() ;	
-				System.out.println("HttpApacheClient httpGet∑µªÿœ‡”¶¬Î --> " + statusCode);
-			}
-		}catch(Exception e){
-			LogUtil.log(CT.LOG_CATEGORY_ERR, "httpGet«Î«Û ß∞‹ ", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
-		}finally{
-			if(httpclient != null)httpclient.getConnectionManager().shutdown();  
-		}
-		return httpResult;
-	}
 
-	public String httpPost(String paramContent, String url,String charset) {
-		String httpResult = "";
-		AbstractHttpClient httpclient = null;
-		try{
-			HttpPost httpRequest = new HttpPost(url);
-			List<NameValuePair> params = new ArrayList<NameValuePair>(); 
-			String[] paramValues = paramContent.split("&");
-			for (int i = 0; i < paramValues.length; i++) {
-				String[] paramValue = paramValues[i].split("=");
-				if(paramValue != null && paramValue.length == 2){
-					params.add(new BasicNameValuePair(paramValue[0], paramValue[1]));					
-				}else{
-					LogUtil.log(CT.LOG_CATEGORY_ERR, "¥´µ›Ω¯¿¥µƒ≤Œ ˝Ω‚Œˆ≤ª∫œ∑®,‘≠ º ˝æ› --> "+ paramValues[i], null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_ERR);
-				}
-			}
-			
-			HttpEntity httpentity = new UrlEncodedFormEntity(params, charset);
-			httpRequest.setHeader("accept", "*/*");
-			httpRequest.setHeader("connection", "Keep-Alive");
-			httpRequest.setEntity(httpentity);
-			
-			//…Ë÷√≥¨ ± ∫¡√ÎŒ™µ•Œª,÷ÿ¡¨ª˙÷∆
-			HttpParams httpParams = new BasicHttpParams();  
-	        HttpConnectionParams.setConnectionTimeout(httpParams, 20 * 1000);  
-	        HttpConnectionParams.setSoTimeout(httpParams, 45 * 1000);    
-	        HttpConnectionParams.setTcpNoDelay(httpParams, true);
-	        HttpClientParams.setRedirecting(httpParams, false);
-	        
-		    httpclient = new DefaultHttpClient(httpParams);
-		    HttpRequestRetryHandler retryHandler = new DefaultHttpRequestRetryHandler(3,true);
+            HttpResponse httpResponse = httpclient.execute(httpRequest);
+
+            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {// ËØ∑Ê±ÇÊàêÂäü
+                httpResult = EntityUtils.toString(httpResponse.getEntity(), charset);
+
+                LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "HttpApacheClient  httpGet ËØ∑Ê±ÇÊàêÂäü --> " + httpResult, null, LogUtilMg.LOG_INFO,
+                        CT.LOG_PATTERN_COMMUNICATION);
+
+            } else {
+                int statusCode = httpResponse.getStatusLine().getStatusCode();
+                System.out.println("HttpApacheClient httpGetËøîÂõûÁõ∏Â∫îÁ†Å --> " + statusCode);
+            }
+        } catch (Exception e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "httpGetËØ∑Ê±ÇÂ§±Ë¥• ", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        } finally {
+            if (httpclient != null) {
+                httpclient.getConnectionManager().shutdown();
+            }
+        }
+        return httpResult;
+    }
+
+    @Override
+    public String httpPost(String paramContent, String url, String charset) {
+        String httpResult = "";
+        AbstractHttpClient httpclient = null;
+        try {
+            HttpPost httpRequest = new HttpPost(url);
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
+            String[] paramValues = paramContent.split("&");
+            for (int i = 0; i < paramValues.length; i++) {
+                String[] paramValue = paramValues[i].split("=");
+                if (paramValue != null && paramValue.length == 2) {
+                    params.add(new BasicNameValuePair(paramValue[0], paramValue[1]));
+                } else {
+                    LogUtil.log(CT.LOG_CATEGORY_ERR, "‰º†ÈÄíËøõÊù•ÁöÑÂèÇÊï∞Ëß£Êûê‰∏çÂêàÊ≥ï,ÂéüÂßãÊï∞ÊçÆ --> " + paramValues[i], null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_ERR);
+                }
+            }
+
+            HttpEntity httpentity = new UrlEncodedFormEntity(params, charset);
+            httpRequest.setHeader("accept", "*/*");
+            httpRequest.setHeader("connection", "Keep-Alive");
+            httpRequest.setEntity(httpentity);
+
+            // ËÆæÁΩÆË∂ÖÊó∂ ÊØ´Áßí‰∏∫Âçï‰Ωç,ÈáçËøûÊú∫Âà∂
+            HttpParams httpParams = new BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParams, 20 * 1000);
+            HttpConnectionParams.setSoTimeout(httpParams, 45 * 1000);
+            HttpConnectionParams.setTcpNoDelay(httpParams, true);
+            HttpClientParams.setRedirecting(httpParams, false);
+
+            httpclient = new DefaultHttpClient(httpParams);
+            HttpRequestRetryHandler retryHandler = new DefaultHttpRequestRetryHandler(3, true);
             httpclient.setHttpRequestRetryHandler(retryHandler);
-		   
-			HttpResponse httpResponse = httpclient.execute(httpRequest);
-			
-			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){//HttpStatus.SC_OK±Ì æ¡¨Ω”≥…π¶
-				 httpResult = EntityUtils.toString(httpResponse.getEntity(),charset);
-				 LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "HttpApacheClient  httpPost «Î«Û≥…π¶ --> " + httpResult, null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);		
-			}else{
-				 int statusCode = httpResponse.getStatusLine().getStatusCode() ;
-				 LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "HttpApacheClient httpPost∑µªÿœ‡”¶¬Î --> " + statusCode, null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);	
-			}
-		}catch(Exception e){
-			LogUtil.log(CT.LOG_CATEGORY_ERR, "httpPost «Î«Û ß∞‹ ", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
-		}finally{
-			if(httpclient != null)httpclient.getConnectionManager().shutdown();  
-		}
-		return httpResult;
-	} 
-	
-	public JSONObject httpPost(JSONObject requestJson, String url,
-			String charset) {
-		JSONObject resultJson = null;
-		AbstractHttpClient httpclient = null;
-		try {
-			HttpPost httpRequest = new HttpPost(url);
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			
-			Iterator<?> it = requestJson.keySet().iterator();
-			while(it.hasNext()){
-				Object nextObj = it.next();
-				if(nextObj != null) {
-					String name = nextObj.toString();
-					params.add(new BasicNameValuePair(name,requestJson.getString(name)));
-				}
-			}
-			
-			HttpEntity httpentity = new UrlEncodedFormEntity(params, charset);
-			httpRequest.setHeader("accept", "*/*");
-			httpRequest.setHeader("connection", "Keep-Alive");
-			httpRequest.setEntity(httpentity);
 
-			// …Ë÷√≥¨ ± ∫¡√ÎŒ™µ•Œª,÷ÿ¡¨ª˙÷∆
-			HttpParams httpParams = new BasicHttpParams();
-			HttpConnectionParams.setConnectionTimeout(httpParams, 20 * 1000);
-			HttpConnectionParams.setSoTimeout(httpParams, 45 * 1000);
-			HttpConnectionParams.setTcpNoDelay(httpParams, true);
-			HttpClientParams.setRedirecting(httpParams, false);
+            HttpResponse httpResponse = httpclient.execute(httpRequest);
 
-			httpclient = new DefaultHttpClient(httpParams);
-			HttpRequestRetryHandler retryHandler = new DefaultHttpRequestRetryHandler(
-					3, true);
-			httpclient.setHttpRequestRetryHandler(retryHandler);
+            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {// HttpStatus.SC_OKË°®Á§∫ËøûÊé•ÊàêÂäü
+                httpResult = EntityUtils.toString(httpResponse.getEntity(), charset);
+                LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "HttpApacheClient  httpPost ËØ∑Ê±ÇÊàêÂäü --> " + httpResult, null, LogUtilMg.LOG_INFO,
+                        CT.LOG_PATTERN_COMMUNICATION);
+            } else {
+                int statusCode = httpResponse.getStatusLine().getStatusCode();
+                LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "HttpApacheClient httpPostËøîÂõûÁõ∏Â∫îÁ†Å --> " + statusCode, null, LogUtilMg.LOG_INFO,
+                        CT.LOG_PATTERN_COMMUNICATION);
+            }
+        } catch (Exception e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "httpPost ËØ∑Ê±ÇÂ§±Ë¥• ", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        } finally {
+            if (httpclient != null) {
+                httpclient.getConnectionManager().shutdown();
+            }
+        }
+        return httpResult;
+    }
 
-			HttpResponse httpResponse = httpclient.execute(httpRequest);
+    @Override
+    public JSONObject httpPost(JSONObject requestJson, String url, String charset) {
+        JSONObject resultJson = null;
+        AbstractHttpClient httpclient = null;
+        try {
+            HttpPost httpRequest = new HttpPost(url);
+            List<NameValuePair> params = new ArrayList<NameValuePair>();
 
-			if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {// HttpStatus.SC_OK±Ì æ¡¨Ω”≥…π¶
-				String httpResult = EntityUtils.toString(httpResponse.getEntity(),charset);
+            Iterator<?> it = requestJson.keySet().iterator();
+            while (it.hasNext()) {
+                Object nextObj = it.next();
+                if (nextObj != null) {
+                    String name = nextObj.toString();
+                    params.add(new BasicNameValuePair(name, requestJson.getString(name)));
+                }
+            }
 
-				resultJson = JSONUtils.getJsonFromString(httpResult);
-//				LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION,"HttpApacheClient  httpPost «Î«Û≥…π¶ --> " + resultJson,
+            HttpEntity httpentity = new UrlEncodedFormEntity(params, charset);
+            httpRequest.setHeader("accept", "*/*");
+            httpRequest.setHeader("connection", "Keep-Alive");
+            httpRequest.setEntity(httpentity);
+
+            // ËÆæÁΩÆË∂ÖÊó∂ ÊØ´Áßí‰∏∫Âçï‰Ωç,ÈáçËøûÊú∫Âà∂
+            HttpParams httpParams = new BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParams, 20 * 1000);
+            HttpConnectionParams.setSoTimeout(httpParams, 45 * 1000);
+            HttpConnectionParams.setTcpNoDelay(httpParams, true);
+            HttpClientParams.setRedirecting(httpParams, false);
+
+            httpclient = new DefaultHttpClient(httpParams);
+            HttpRequestRetryHandler retryHandler = new DefaultHttpRequestRetryHandler(3, true);
+            httpclient.setHttpRequestRetryHandler(retryHandler);
+
+            HttpResponse httpResponse = httpclient.execute(httpRequest);
+
+            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {// HttpStatus.SC_OKË°®Á§∫ËøûÊé•ÊàêÂäü
+                String httpResult = EntityUtils.toString(httpResponse.getEntity(), charset);
+
+                resultJson = JSONUtils.getJsonFromString(httpResult);
+//				LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION,"HttpApacheClient  httpPost ËØ∑Ê±ÇÊàêÂäü --> " + resultJson,
 //						null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
-			} else {
-				int statusCode = httpResponse.getStatusLine().getStatusCode();
-				LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION,
-						"HttpApacheClient httpPost∑µªÿœ‡”¶¬Î --> " + statusCode,
-						null, LogUtilMg.LOG_INFO, CT.LOG_PATTERN_COMMUNICATION);
-			}
-		} catch (Exception e) {
-			LogUtil.log(CT.LOG_CATEGORY_ERR, "httpPost «Î«Û ß∞‹ ", e,LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
-		} finally {
-			if (httpclient != null){
-				httpclient.getConnectionManager().shutdown();
-			}
-		}
-		return resultJson;
-	}
+            } else {
+                int statusCode = httpResponse.getStatusLine().getStatusCode();
+                LogUtil.log(CT.LOG_CATEGORY_COMMUNICATION, "HttpApacheClient httpPostËøîÂõûÁõ∏Â∫îÁ†Å --> " + statusCode, null, LogUtilMg.LOG_INFO,
+                        CT.LOG_PATTERN_COMMUNICATION);
+            }
+        } catch (Exception e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "httpPost ËØ∑Ê±ÇÂ§±Ë¥• ", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        } finally {
+            if (httpclient != null) {
+                httpclient.getConnectionManager().shutdown();
+            }
+        }
+        return resultJson;
+    }
 
-	public JSONObject wxHttpsPost(JSONObject requestJson, String url) {
-		return httpsRequest(url, "POST", requestJson.toString());
-	}
-	
-	public JSONObject wxHttpsPost(String requestJson, String url) {
-		return httpsRequest(url, "POST", requestJson);
-	}
-	
-	public JSONObject wxHttpsGet(JSONObject requestJson, String url) {
-		return httpsRequest(url, "GET", requestJson.toString());
-	}
-	
-	public String simplePost(JSONObject jsonParam, String remoteUrl, String charSet){
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		String key ="";
-		for (Iterator<?> iterator = jsonParam.keys(); iterator.hasNext();) {
-			key = String.valueOf(iterator.next());
-			params.add(new BasicNameValuePair(key,jsonParam.getString(key)));
-		}
+    @Override
+    public JSONObject wxHttpsPost(JSONObject requestJson, String url) {
+        return httpsRequest(url, "POST", requestJson.toString());
+    }
 
-	    UrlEncodedFormEntity entity = null;
-		try {
-			entity = new UrlEncodedFormEntity(params,"UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+    @Override
+    public JSONObject wxHttpsPost(String requestJson, String url) {
+        return httpsRequest(url, "POST", requestJson);
+    }
 
-	    HttpPost post = new HttpPost(remoteUrl);
-		post.setHeader("accept", "*/*");
-	    post.setHeader("connection", "Keep-Alive");
-	    post.setEntity(entity);
-	    
-	    HttpClient client = new DefaultHttpClient();
-	    HttpResponse response = null;
-	    HttpEntity httpEntity = null;
-	    String result = "";
-		try {
-			response = client.execute(post);
-			httpEntity = response.getEntity();
-			result = EntityUtils.toString(httpEntity);
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	    return result;
-	}
-	
-	public JSONObject httpsRequest(String requestUrl, String httpMethod, String defaultStr){
-		JSONObject res = new JSONObject();
-		try {
-			TrustManager[] tm = {new MyX509TrustManager()};
-			SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
-			sslContext.init(null, tm, new SecureRandom());
-			SSLSocketFactory sf = sslContext.getSocketFactory();
-			
-			URL url = new URL(requestUrl);
-			HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-			conn.setSSLSocketFactory(sf);
-			conn.setDoInput(true);
-			conn.setDoOutput(true);
-			conn.setUseCaches(false);
-			conn.setRequestMethod(httpMethod);
-			
-			if(defaultStr != null) {
-				OutputStream os = conn.getOutputStream();
-				os.write(defaultStr.getBytes("UTF-8"));
-				os.close();
-			}
-			
-			InputStream is = conn.getInputStream();
-			InputStreamReader isr = new InputStreamReader(is, "UTF-8");
-			BufferedReader br = new BufferedReader(isr);
-			
-			String str = null;
-			StringBuffer sb = new StringBuffer();
-			while((str = br.readLine()) != null){
-				sb.append(str);
-			}
-			br.close();
-			isr.close();
-			is.close();
-			is = null;
-			conn.disconnect();
-			
-			res = JSONObject.fromObject(sb.toString());
-			
-		} catch (KeyManagementException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchProviderException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return res;
-	}
-	
-	public static void main(String[] args) {
+    @Override
+    public JSONObject wxHttpsGet(JSONObject requestJson, String url) {
+        return httpsRequest(url, "GET", requestJson.toString());
+    }
 
-		HttpApacheClient s = new HttpApacheClient();
-		//System.out.println(s.httpGet("http://172.28.250.129:3128/", "UTF-8"));
-		System.out.println(s.httpGet("http://www.baidu.com", "UTF-8"));
-	}
-	
-	public class MyX509TrustManager implements X509TrustManager {
+    @Override
+    public String simplePost(JSONObject jsonParam, String remoteUrl, String charSet) {
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        String key = "";
+        for (Iterator<?> iterator = jsonParam.keys(); iterator.hasNext();) {
+            key = String.valueOf(iterator.next());
+            params.add(new BasicNameValuePair(key, jsonParam.getString(key)));
+        }
 
-		// ºÏ≤ÈøÕªß∂À÷§ È
-		public void checkClientTrusted(X509Certificate[] chain, String authType)
-				throws CertificateException {
-			
-		}
-		
-		// ºÏ≤È∑˛ŒÒ∂À÷§ È
-		public void checkServerTrusted(X509Certificate[] chain, String authType)
-				throws CertificateException {
-			
-		}
-		
-		//∑µªÿ ‹–≈»ŒµƒX509 ˝◊È
-		public X509Certificate[] getAcceptedIssuers() {
-			return null;
-		}
-		
-	}
-	
+        UrlEncodedFormEntity entity = null;
+        try {
+            entity = new UrlEncodedFormEntity(params, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        HttpPost post = new HttpPost(remoteUrl);
+        post.setHeader("accept", "*/*");
+        post.setHeader("connection", "Keep-Alive");
+        post.setEntity(entity);
+
+        HttpClient client = new DefaultHttpClient();
+        HttpResponse response = null;
+        HttpEntity httpEntity = null;
+        String result = "";
+        try {
+            response = client.execute(post);
+            httpEntity = response.getEntity();
+            result = EntityUtils.toString(httpEntity);
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public JSONObject httpsRequest(String requestUrl, String httpMethod, String defaultStr) {
+        JSONObject res = new JSONObject();
+        try {
+            TrustManager[] tm = { new MyX509TrustManager() };
+            SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
+            sslContext.init(null, tm, new SecureRandom());
+            SSLSocketFactory sf = sslContext.getSocketFactory();
+
+            URL url = new URL(requestUrl);
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn.setSSLSocketFactory(sf);
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            conn.setUseCaches(false);
+            conn.setRequestMethod(httpMethod);
+
+            if (defaultStr != null) {
+                OutputStream os = conn.getOutputStream();
+                os.write(defaultStr.getBytes("UTF-8"));
+                os.close();
+            }
+
+            InputStream is = conn.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+            BufferedReader br = new BufferedReader(isr);
+
+            String str = null;
+            StringBuffer sb = new StringBuffer();
+            while ((str = br.readLine()) != null) {
+                sb.append(str);
+            }
+            br.close();
+            isr.close();
+            is.close();
+            is = null;
+            conn.disconnect();
+
+            res = JSONObject.fromObject(sb.toString());
+
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+    public static void main(String[] args) {
+
+        HttpApacheClient s = new HttpApacheClient();
+        // System.out.println(s.httpGet("http://172.28.250.129:3128/", "UTF-8"));
+        System.out.println(s.httpGet("http://www.baidu.com", "UTF-8"));
+    }
+
+    public class MyX509TrustManager implements X509TrustManager {
+
+        // Ê£ÄÊü•ÂÆ¢Êà∑Á´ØËØÅ‰π¶
+        @Override
+        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+        }
+
+        // Ê£ÄÊü•ÊúçÂä°Á´ØËØÅ‰π¶
+        @Override
+        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+        }
+
+        // ËøîÂõûÂèó‰ø°‰ªªÁöÑX509Êï∞ÁªÑ
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return null;
+        }
+
+    }
+
 }

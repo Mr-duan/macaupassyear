@@ -3,13 +3,13 @@
  * Project : lms
  * $Id$
  * $Revision$
- * Last Changed by SJ at 2014Äê3ÔÂ4ÈÕ ÏÂÎç4:07:24
+ * Last Changed by SJ at 2014å¹´3æœˆ4æ—¥ ä¸‹åˆ4:07:24
  * $URL$
  * 
  * Change Log
  * Author      Change Date    Comments
  *-------------------------------------------------------------
- * SJ         2014Äê3ÔÂ4ÈÕ        Initailized
+ * SJ         2014å¹´3æœˆ4æ—¥        Initailized
  */
 package com.org.utils;
 
@@ -21,15 +21,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Ê±¼ä¹¤¾ßÀà
+ * æ—¶é—´å·¥å…·ç±»
  * 
  */
-public class DateUtil
-{
+public class DateUtil {
     /**
      * yyyyMM
      */
-    public static final String yyyyMM     = "yyyyMM";
+    public static final String yyyyMM = "yyyyMM";
     /**
      * yyyyMMdd
      */
@@ -48,13 +47,12 @@ public class DateUtil
     public static final String yyyyMMddHHmmss = "yyyyMMddHHmmss";
 
     /**
-     * »ñµÃÏµÍ³µ±Ç°Ê±¼ä
+     * è·å¾—ç³»ç»Ÿå½“å‰æ—¶é—´
      * 
      * @return
      */
-    public static String getCurrentDateString()
-    {
-        SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT_DATE);// ÉèÖÃÈÕÆÚ¸ñÊ½
+    public static String getCurrentDateString() {
+        SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT_DATE);// è®¾ç½®æ—¥æœŸæ ¼å¼
         return df.format(new Date());
     }
 
@@ -62,9 +60,9 @@ public class DateUtil
 //    {
 //        return date.replaceAll("-", "");
 //    }
-    
-    public static String getDateStringByFormat(String format){
-        SimpleDateFormat df = new SimpleDateFormat(format);// ÉèÖÃÈÕÆÚ¸ñÊ½
+
+    public static String getDateStringByFormat(String format) {
+        SimpleDateFormat df = new SimpleDateFormat(format);// è®¾ç½®æ—¥æœŸæ ¼å¼
         return df.format(new Date());
     }
 
@@ -72,50 +70,46 @@ public class DateUtil
      * 
      * @return yyyyMMdd
      */
-    public static String getCurrentShortDateStr()
-    {
-        SimpleDateFormat df = new SimpleDateFormat(yyyyMMdd);// ÉèÖÃÈÕÆÚ¸ñÊ½
+    public static String getCurrentShortDateStr() {
+        SimpleDateFormat df = new SimpleDateFormat(yyyyMMdd);// è®¾ç½®æ—¥æœŸæ ¼å¼
         return df.format(new Date());
     }
 
     /**
-     * µ±Ç°ÈÕÆÚÇ°ÍÆÒ»¸öÔÂ
-     * Ä¬ÈÏ¸ñÊ½: yyyyMMdd
+     * å½“å‰æ—¥æœŸå‰æ¨ä¸€ä¸ªæœˆ
+     * é»˜è®¤æ ¼å¼: yyyyMMdd
      * @return
      */
-    public static String getBeforeMonth()
-    {
+    public static String getBeforeMonth() {
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(yyyyMMdd);// ¸ñÊ½»¯¶ÔÏó
-        Calendar calendar = Calendar.getInstance();// ÈÕÀú¶ÔÏó
-        calendar.setTime(date);// ÉèÖÃµ±Ç°ÈÕÆÚ
-        calendar.add(Calendar.MONTH, -1);// ÔÂ·İ¼õÒ»
+        SimpleDateFormat sdf = new SimpleDateFormat(yyyyMMdd);// æ ¼å¼åŒ–å¯¹è±¡
+        Calendar calendar = Calendar.getInstance();// æ—¥å†å¯¹è±¡
+        calendar.setTime(date);// è®¾ç½®å½“å‰æ—¥æœŸ
+        calendar.add(Calendar.MONTH, -1);// æœˆä»½å‡ä¸€
         return sdf.format(calendar.getTime());
     }
 
     /**
-     * µ±Ç°Ê±¼äÇ°ÍÆn¸öÔÂ
+     * å½“å‰æ—¶é—´å‰æ¨nä¸ªæœˆ
      * 
      * @param s
      * @return
      */
-    public static String getBeforeMonth(int s, String format)
-    {
+    public static String getBeforeMonth(int s, String format) {
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(format);// ¸ñÊ½»¯¶ÔÏó
-        Calendar calendar = Calendar.getInstance();// ÈÕÀú¶ÔÏó
-        calendar.setTime(date);// ÉèÖÃµ±Ç°ÈÕÆÚ
-        calendar.add(Calendar.MONTH, -s);// ÔÂ·İ¼õÒ»
+        SimpleDateFormat sdf = new SimpleDateFormat(format);// æ ¼å¼åŒ–å¯¹è±¡
+        Calendar calendar = Calendar.getInstance();// æ—¥å†å¯¹è±¡
+        calendar.setTime(date);// è®¾ç½®å½“å‰æ—¥æœŸ
+        calendar.add(Calendar.MONTH, -s);// æœˆä»½å‡ä¸€
         return sdf.format(calendar.getTime());
     }
 
     /**
-     * »ñµÃ±¾ÔÂ×îºóÒ»Ìì
+     * è·å¾—æœ¬æœˆæœ€åä¸€å¤©
      * 
      * @return
      */
-    public static String getLastDateByMonth()
-    {
+    public static String getLastDateByMonth() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));
         SimpleDateFormat format = new SimpleDateFormat(yyyyMMdd);
@@ -123,12 +117,11 @@ public class DateUtil
     }
 
     /**
-     * »ñµÃÖ¸¶¨ÔÂ·İµÚÒ»Ìì
+     * è·å¾—æŒ‡å®šæœˆä»½ç¬¬ä¸€å¤©
      * 
      * @return
      */
-    public static String getFirstDateByMonth(String date)
-    {
+    public static String getFirstDateByMonth(String date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(strFormatToDate(date, yyyyMM));
         calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DATE));
@@ -137,65 +130,54 @@ public class DateUtil
     }
 
     /**
-     * ×Ö·û´®×ªDate
+     * å­—ç¬¦ä¸²è½¬Date
      * 
      * @param date
      * @return
      */
-    public static Date strFormatToDate(String date, String format)
-    {
+    public static Date strFormatToDate(String date, String format) {
         SimpleDateFormat sdf = new SimpleDateFormat(format);
-        try
-        {
+        try {
             return sdf.parse(date);
-        }
-        catch (ParseException e)
-        {
+        } catch (ParseException e) {
             e.printStackTrace();
         }
         return new Date();
     }
 
-    public static String getBeforeWeek()
-    {
+    public static String getBeforeWeek() {
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(yyyyMMdd);// ¸ñÊ½»¯¶ÔÏó
-        Calendar calendar = Calendar.getInstance();// ÈÕÀú¶ÔÏó
-        calendar.setTime(date);// ÉèÖÃµ±Ç°ÈÕÆÚ
+        SimpleDateFormat sdf = new SimpleDateFormat(yyyyMMdd);// æ ¼å¼åŒ–å¯¹è±¡
+        Calendar calendar = Calendar.getInstance();// æ—¥å†å¯¹è±¡
+        calendar.setTime(date);// è®¾ç½®å½“å‰æ—¥æœŸ
         calendar.add(Calendar.DAY_OF_WEEK, -7);
         return sdf.format(calendar.getTime());
     }
 
-    public static List<String> getBeforeWeekList()
-    {
+    public static List<String> getBeforeWeekList() {
         List<String> list = new ArrayList<String>();
-        for (int i = 1; i <= 7; i++)
-        {
+        for (int i = 1; i <= 7; i++) {
             Date date = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat(yyyyMMdd);// ¸ñÊ½»¯¶ÔÏó
-            Calendar calendar = Calendar.getInstance();// ÈÕÀú¶ÔÏó
-            calendar.setTime(date);// ÉèÖÃµ±Ç°ÈÕÆÚ
+            SimpleDateFormat sdf = new SimpleDateFormat(yyyyMMdd);// æ ¼å¼åŒ–å¯¹è±¡
+            Calendar calendar = Calendar.getInstance();// æ—¥å†å¯¹è±¡
+            calendar.setTime(date);// è®¾ç½®å½“å‰æ—¥æœŸ
             calendar.add(Calendar.DATE, -i);
             list.add(sdf.format(calendar.getTime()));
         }
         return list;
     }
 
-    public static List<String> getBeforeMonthList()
-    {
+    public static List<String> getBeforeMonthList() {
         List<String> list = new ArrayList<String>();
-        for (int i = 0; i < 6; i++)
-        {
+        for (int i = 0; i < 6; i++) {
             list.add(getBeforeMonth(-i, yyyyMM));
         }
         return list;
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         List<String> list = getBeforeMonthList();
-        for (int i = 0; i < list.size(); i++)
-        {
+        for (int i = 0; i < list.size(); i++) {
 
             System.out.println(list.get(i));
         }

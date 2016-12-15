@@ -21,13 +21,13 @@ public class YearUtils {
      * @param timeInterval
      */
     public static void autoRun() {
-        // Í¬Ê±ÆôÒ»¸ö¶¨Ê±ÈÎÎñ,Ã¿Á½Ğ¡Ê±Ö´ĞĞÒ»´Î
+        // åŒæ—¶å¯ä¸€ä¸ªå®šæ—¶ä»»åŠ¡,æ¯ä¸¤å°æ—¶æ‰§è¡Œä¸€æ¬¡
         Calendar calendar = Calendar.getInstance();
 
         Long timeInterval = Long.valueOf(PropertiesUtil.getValue("wx", "time_interval"));
-        Date date = calendar.getTime(); // µÚÒ»´ÎÖ´ĞĞ¶¨Ê±ÈÎÎñµÄÊ±¼ä
+        Date date = calendar.getTime(); // ç¬¬ä¸€æ¬¡æ‰§è¡Œå®šæ—¶ä»»åŠ¡çš„æ—¶é—´
         YearUtilsTask task = new YearUtilsTask();
-        // °²ÅÅÖ¸¶¨µÄÈÎÎñÔÚÖ¸¶¨µÄÊ±¼ä¿ªÊ¼½øĞĞÖØ¸´µÄ¹Ì¶¨ÑÓ³ÙÖ´ĞĞ¡£
+        // å®‰æ’æŒ‡å®šçš„ä»»åŠ¡åœ¨æŒ‡å®šçš„æ—¶é—´å¼€å§‹è¿›è¡Œé‡å¤çš„å›ºå®šå»¶è¿Ÿæ‰§è¡Œã€‚
         timer.schedule(task, date, timeInterval * 1000);
     }
 }

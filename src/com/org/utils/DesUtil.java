@@ -8,85 +8,88 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 public class DesUtil {
-	private static final String Algorithm = "DESede"; // ¶¨Òå ¼ÓÃÜËã·¨,¿ÉÓÃ
-														// DES,DESede,Blowfish
-	public static final byte[] keyBytes = { 0x11, 0x22, 0x4F, 0x58, (byte) 0x88, 0x10, 0x40, 0x38, 0x28, 0x25, 0x79, 0x51, (byte) 0xCB, (byte) 0xDD,0x55, 0x66, 0x77, 0x29, 0x74, (byte) 0x98, 0x30, 0x40, 0x36,(byte) 0xE2 };
+    private static final String Algorithm = "DESede"; // å®šä¹‰ åŠ å¯†ç®—æ³•,å¯ç”¨
+                                                      // DES,DESede,Blowfish
+    public static final byte[] keyBytes = { 0x11, 0x22, 0x4F, 0x58, (byte) 0x88, 0x10, 0x40, 0x38, 0x28, 0x25, 0x79, 0x51, (byte) 0xCB, (byte) 0xDD,
+            0x55, 0x66, 0x77, 0x29, 0x74, (byte) 0x98, 0x30, 0x40, 0x36, (byte) 0xE2 };
 
-	// keybyteÎª¼ÓÃÜÃÜÔ¿£¬³¤¶ÈÎª24×Ö½Ú
-	// srcÎª±»¼ÓÃÜµÄÊı¾İ»º³åÇø£¨Ô´£©£¬ÒªÇósrc±ØĞèÎªutf-8¸ñÊ½
-	public static byte[] encryptMode(byte[] src) {
-		try {
-			// Éú³ÉÃÜÔ¿
-			SecretKey deskey = new SecretKeySpec(keyBytes, Algorithm);
-			// ¼ÓÃÜ
-			Cipher c1 = Cipher.getInstance(Algorithm);
-			c1.init(Cipher.ENCRYPT_MODE, deskey);
-			return c1.doFinal(src);
-		} catch (java.security.NoSuchAlgorithmException e1) {
-			e1.printStackTrace();
-		} catch (javax.crypto.NoSuchPaddingException e2) {
-			e2.printStackTrace();
-		} catch (java.lang.Exception e3) {
-			e3.printStackTrace();
-		}
-		return null;
-	}
+    // keybyteä¸ºåŠ å¯†å¯†é’¥ï¼Œé•¿åº¦ä¸º24å­—èŠ‚
+    // srcä¸ºè¢«åŠ å¯†çš„æ•°æ®ç¼“å†²åŒºï¼ˆæºï¼‰ï¼Œè¦æ±‚srcå¿…éœ€ä¸ºutf-8æ ¼å¼
+    public static byte[] encryptMode(byte[] src) {
+        try {
+            // ç”Ÿæˆå¯†é’¥
+            SecretKey deskey = new SecretKeySpec(keyBytes, Algorithm);
+            // åŠ å¯†
+            Cipher c1 = Cipher.getInstance(Algorithm);
+            c1.init(Cipher.ENCRYPT_MODE, deskey);
+            return c1.doFinal(src);
+        } catch (java.security.NoSuchAlgorithmException e1) {
+            e1.printStackTrace();
+        } catch (javax.crypto.NoSuchPaddingException e2) {
+            e2.printStackTrace();
+        } catch (java.lang.Exception e3) {
+            e3.printStackTrace();
+        }
+        return null;
+    }
 
-	// keybyteÎª¼ÓÃÜÃÜÔ¿£¬³¤¶ÈÎª24×Ö½Ú
-	// srcÎª¼ÓÃÜºóµÄ»º³åÇø
-	public static byte[] decryptMode(byte[] src) {
-		try {
-			// Éú³ÉÃÜÔ¿
-			SecretKey deskey = new SecretKeySpec(keyBytes, Algorithm);
+    // keybyteä¸ºåŠ å¯†å¯†é’¥ï¼Œé•¿åº¦ä¸º24å­—èŠ‚
+    // srcä¸ºåŠ å¯†åçš„ç¼“å†²åŒº
+    public static byte[] decryptMode(byte[] src) {
+        try {
+            // ç”Ÿæˆå¯†é’¥
+            SecretKey deskey = new SecretKeySpec(keyBytes, Algorithm);
 
-			// ½âÃÜ
-			Cipher c1 = Cipher.getInstance(Algorithm);
-			c1.init(Cipher.DECRYPT_MODE, deskey);
-			return c1.doFinal(src);
-		} catch (java.security.NoSuchAlgorithmException e1) {
-			e1.printStackTrace();
-		} catch (javax.crypto.NoSuchPaddingException e2) {
-			e2.printStackTrace();
-		} catch (java.lang.Exception e3) {
-			e3.printStackTrace();
-		}
-		return null;
-	}
+            // è§£å¯†
+            Cipher c1 = Cipher.getInstance(Algorithm);
+            c1.init(Cipher.DECRYPT_MODE, deskey);
+            return c1.doFinal(src);
+        } catch (java.security.NoSuchAlgorithmException e1) {
+            e1.printStackTrace();
+        } catch (javax.crypto.NoSuchPaddingException e2) {
+            e2.printStackTrace();
+        } catch (java.lang.Exception e3) {
+            e3.printStackTrace();
+        }
+        return null;
+    }
 
-	// ×ª»»³ÉÊ®Áù½øÖÆ×Ö·û´®
-	public static String byte2hex(byte[] b) {
-		String hs = "";
-		String stmp = "";
+    // è½¬æ¢æˆåå…­è¿›åˆ¶å­—ç¬¦ä¸²
+    public static String byte2hex(byte[] b) {
+        String hs = "";
+        String stmp = "";
 
-		for (int n = 0; n < b.length; n++) {
-			stmp = (java.lang.Integer.toHexString(b[n] & 0XFF));
-			if (stmp.length() == 1)
-				hs = hs + "0" + stmp;
-			else
-				hs = hs + stmp;
-			if (n < b.length - 1)
-				hs = hs + ":";
-		}
-		return hs.toUpperCase();
-	}
+        for (int n = 0; n < b.length; n++) {
+            stmp = (java.lang.Integer.toHexString(b[n] & 0XFF));
+            if (stmp.length() == 1) {
+                hs = hs + "0" + stmp;
+            } else {
+                hs = hs + stmp;
+            }
+            if (n < b.length - 1) {
+                hs = hs + ":";
+            }
+        }
+        return hs.toUpperCase();
+    }
 
-	public static void main(String[] args) throws UnsupportedEncodingException {
-		// Ìí¼ÓĞÂ°²È«Ëã·¨,Èç¹ûÓÃJCE¾ÍÒª°ÑËüÌí¼Ó½øÈ¥
-		Security.addProvider(new com.sun.crypto.provider.SunJCE());
+    public static void main(String[] args) throws UnsupportedEncodingException {
+        // æ·»åŠ æ–°å®‰å…¨ç®—æ³•,å¦‚æœç”¨JCEå°±è¦æŠŠå®ƒæ·»åŠ è¿›å»
+        Security.addProvider(new com.sun.crypto.provider.SunJCE());
 
-		String szSrc = "1233333333333333SFµØ";
+        String szSrc = "1233333333333333SFåœ°";
 
-		System.out.println("¼ÓÃÜÇ°µÄ×Ö·û´®:" + szSrc);
+        System.out.println("åŠ å¯†å‰çš„å­—ç¬¦ä¸²:" + szSrc);
 
-		byte[] encoded = encryptMode(szSrc.getBytes("UTF-8"));
-		// ´ÓÊı¾İ¿âÈ¡³öÇ°£¬ ÏÈÖ´ĞĞ¼ÓÃÜ£¬ Õ¹Ê¾µ½Ò³ÃæÊ±ÊÇÃÜÎÄ
-		String dnHex = ByteUtil.bytes2HexStr(encoded);
-		System.out.println("hexºóµÄ×Ö·û´®:" + dnHex);
-		System.out.println("hexºóµÄ×Ö·û´®ÔÙ»ØÀ´:" + ByteUtil.hex2Bytes(dnHex));
+        byte[] encoded = encryptMode(szSrc.getBytes("UTF-8"));
+        // ä»æ•°æ®åº“å–å‡ºå‰ï¼Œ å…ˆæ‰§è¡ŒåŠ å¯†ï¼Œ å±•ç¤ºåˆ°é¡µé¢æ—¶æ˜¯å¯†æ–‡
+        String dnHex = ByteUtil.bytes2HexStr(encoded);
+        System.out.println("hexåçš„å­—ç¬¦ä¸²:" + dnHex);
+        System.out.println("hexåçš„å­—ç¬¦ä¸²å†å›æ¥:" + ByteUtil.hex2Bytes(dnHex));
 
-		// ÄÃµ½Ò³Ãæ´«µİµÄ²ÎÊıºó
-		byte[] srcBytes = decryptMode(ByteUtil.hex2Bytes(dnHex));
-		System.out.println("½âÃÜºóµÄ×Ö·û´®:" + (new String(srcBytes, "UTF-8")));
-	}
+        // æ‹¿åˆ°é¡µé¢ä¼ é€’çš„å‚æ•°å
+        byte[] srcBytes = decryptMode(ByteUtil.hex2Bytes(dnHex));
+        System.out.println("è§£å¯†åçš„å­—ç¬¦ä¸²:" + (new String(srcBytes, "UTF-8")));
+    }
 
 }

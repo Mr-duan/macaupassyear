@@ -11,8 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspFactory;
 import javax.servlet.jsp.PageContext;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,110 +20,113 @@ import com.jspsmart.upload.SmartUpload;
 import com.jspsmart.upload.SmartUploadException;
 import com.org.common.CommonConstant;
 
+import net.sf.json.JSONObject;
+
 /**
  */
 public class FileUploadUtil {
-	//private static final String excelUploadPath = SmpPropertyUtil.getValue("filepath", "upload_file_path");
-	private static String excelUploadPath = "";
+    // private static final String excelUploadPath = SmpPropertyUtil.getValue("filepath", "upload_file_path");
+    private static String excelUploadPath = "";
 
-	public FileUploadUtil() {
-		super();
-	}
-	
-	/**
-	 * ÉÏ´«ÎÄ¼ş
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws Exception 
-	 * @throws IOException
-	 */
-	public static JSONObject uploadFile(HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
-		if(StringUtils.isEmpty(excelUploadPath)) {
-			excelUploadPath = request.getSession().getServletContext().getRealPath("/");
-		}
-		
-		JSONObject res = new JSONObject();
-		// ĞÂ½¨Ò»¸öSmartUpload¶ÔÏó
-		SmartUpload su = null;
-		try {
-			su = initSmartUpload(request, response);
-		} catch (java.lang.SecurityException e) {
-			//e.printStackTrace();
-			res.put(CommonConstant.RESP_CODE, "ERROR");
-			res.put(CommonConstant.RESP_MSG, "ÉÏ´«ÎÄ¼ş²»·ûºÏÒªÇó");
-			return res;
-		}
-		
-		JSONObject formParams = new JSONObject();
-		Enumeration<?> paramKey = su.getRequest().getParameterNames();
-		while (paramKey.hasMoreElements()) {
-			Object key = paramKey.nextElement();
-			if(key != null) {
-				formParams.put(String.valueOf(key), su.getRequest().getParameter(String.valueOf(key)));
-			}
-		}
+    public FileUploadUtil() {
+        super();
+    }
 
-		//Èç¹ûÒªÊµÏÖÎÄ¼şµÄÅúÁ¿ÉÏ´«£¬ÔòÖ»ĞèÓÃforÑ­»·£¬½«getFile(0)ÖĞµÄ0¸ÄÎªi¼´¿É
-		File file = su.getFiles().getFile(0);
-		file.getSize();
-		if(file != null) {
-			//ÎïÀíÂ·¾¶ 
-			StringBuffer physicalPathTemp = new StringBuffer();
-			//Ïà¶ÔÂ·¾¶´æ·Åµ½Êı¾İ¿âµÄ
-			StringBuffer relativePathTemp = new StringBuffer();
-			relativePathTemp = relativePathTemp.append("files/").append(DateUtil.getCurrentShortDateStr()).append("/");
-			
-			String fileName = new String(file.getFileName().getBytes(), "UTF-8");
-			physicalPathTemp = physicalPathTemp.append(excelUploadPath).append(relativePathTemp);
-			// ±£Ö¤ÎïÀíÂ·¾¶Ä¿Â¼´æÔÚ
-			java.io.File dir = new java.io.File(physicalPathTemp.toString());
-			if(!dir.exists()){
-				dir.mkdirs();
-			}
-			
-			relativePathTemp = relativePathTemp.append(fileName);
-			
-			// ±£´æÎÄ¼ş
-			file.saveAs(physicalPathTemp.append(fileName).toString());
-			formParams.put(CommonConstant.FILE_PATH, "/"+relativePathTemp.toString());
-		}
-		
-		// °ÑÎÄ¼ş´æ·ÅÂ·¾¶ÔÙ·µ»Ø³öÈ¥
-		res.put(CommonConstant.RESP_CODE, "10000");
-		res.put(CommonConstant.RESP_MSG, "");
-		res.put(CommonConstant.FORM_PARAMS, formParams);
-		
-		return res;
-	}
+    /**
+     * ä¸Šä¼ æ–‡ä»¶
+     * 
+     * @param request
+     * @param response
+     * @throws Exception 
+     * @throws IOException
+     */
+    public static JSONObject uploadFile(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        if (StringUtils.isEmpty(excelUploadPath)) {
+            excelUploadPath = request.getSession().getServletContext().getRealPath("/");
+        }
 
-	private static SmartUpload initSmartUpload(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException, SmartUploadException {
-		SmartUpload su = new SmartUpload();
-		// ÉÏ´«³õÊ¼»¯
-		JspFactory jspFactory = null;
+        JSONObject res = new JSONObject();
+        // æ–°å»ºä¸€ä¸ªSmartUploadå¯¹è±¡
+        SmartUpload su = null;
+        try {
+            su = initSmartUpload(request, response);
+        } catch (java.lang.SecurityException e) {
+            // e.printStackTrace();
+            res.put(CommonConstant.RESP_CODE, "ERROR");
+            res.put(CommonConstant.RESP_MSG, "ä¸Šä¼ æ–‡ä»¶ä¸ç¬¦åˆè¦æ±‚");
+            return res;
+        }
+
+        JSONObject formParams = new JSONObject();
+        Enumeration<?> paramKey = su.getRequest().getParameterNames();
+        while (paramKey.hasMoreElements()) {
+            Object key = paramKey.nextElement();
+            if (key != null) {
+                formParams.put(String.valueOf(key), su.getRequest().getParameter(String.valueOf(key)));
+            }
+        }
+
+        // å¦‚æœè¦å®ç°æ–‡ä»¶çš„æ‰¹é‡ä¸Šä¼ ï¼Œåˆ™åªéœ€ç”¨forå¾ªç¯ï¼Œå°†getFile(0)ä¸­çš„0æ”¹ä¸ºiå³å¯
+        File file = su.getFiles().getFile(0);
+        file.getSize();
+        if (file != null) {
+            // ç‰©ç†è·¯å¾„
+            StringBuffer physicalPathTemp = new StringBuffer();
+            // ç›¸å¯¹è·¯å¾„å­˜æ”¾åˆ°æ•°æ®åº“çš„
+            StringBuffer relativePathTemp = new StringBuffer();
+            relativePathTemp = relativePathTemp.append("files/").append(DateUtil.getCurrentShortDateStr()).append("/");
+
+            String fileName = new String(file.getFileName().getBytes(), "UTF-8");
+            physicalPathTemp = physicalPathTemp.append(excelUploadPath).append(relativePathTemp);
+            // ä¿è¯ç‰©ç†è·¯å¾„ç›®å½•å­˜åœ¨
+            java.io.File dir = new java.io.File(physicalPathTemp.toString());
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            relativePathTemp = relativePathTemp.append(fileName);
+
+            // ä¿å­˜æ–‡ä»¶
+            file.saveAs(physicalPathTemp.append(fileName).toString());
+            formParams.put(CommonConstant.FILE_PATH, "/" + relativePathTemp.toString());
+        }
+
+        // æŠŠæ–‡ä»¶å­˜æ”¾è·¯å¾„å†è¿”å›å‡ºå»
+        res.put(CommonConstant.RESP_CODE, "10000");
+        res.put(CommonConstant.RESP_MSG, "");
+        res.put(CommonConstant.FORM_PARAMS, formParams);
+
+        return res;
+    }
+
+    private static SmartUpload initSmartUpload(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, SQLException, SmartUploadException {
+        SmartUpload su = new SmartUpload();
+        // ä¸Šä¼ åˆå§‹åŒ–
+        JspFactory jspFactory = null;
         jspFactory = JspFactory.getDefaultFactory();
-        PageContext pc = jspFactory.getPageContext((HttpServlet)request.getSession().getAttribute(CommonConstant.SERVLET),request,response,"",true,8192,true);
-		su.initialize(pc);
-		log.info("ÉÏ´«ÇëÇóÄÚÈİ×Ö½Ú³¤¶È: " + request.getContentLength());
-		// Éè¶¨ÉÏ´«ÏŞÖÆ
-		// 1.ÏŞÖÆÃ¿¸öÉÏ´«ÎÄ¼şµÄ×î´ó³¤¶È¡£
-		su.setMaxFileSize(5000000);
-		// 2.ÏŞÖÆ×ÜÉÏ´«Êı¾İµÄ³¤¶È¡£
-		su.setTotalMaxFileSize(50000000);
-		// 3.Éè¶¨ÔÊĞíÉÏ´«µÄÎÄ¼ş£¨Í¨¹ıÀ©Õ¹ÃûÏŞÖÆ£©,½öÔÊĞídoc,txtÎÄ¼ş¡£
-		su.setAllowedFilesList("jpg,jpeg");
-		// 4.Éè¶¨½ûÖ¹ÉÏ´«µÄÎÄ¼ş£¨Í¨¹ıÀ©Õ¹ÃûÏŞÖÆ£©,½ûÖ¹ÉÏ´«´øÓĞexe,bat,jsp,htm,htmlÀ©Õ¹ÃûµÄÎÄ¼şºÍÃ»ÓĞÀ©Õ¹ÃûµÄÎÄ¼ş¡£
-		su.setDeniedFilesList("exe,bat,jsp,htm,html,xls,xlsx,,");
-		// ÉÏ´«ÎÄ¼ş
-		try {
-			su.upload();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return su;
-	}
+        PageContext pc = jspFactory.getPageContext((HttpServlet) request.getSession().getAttribute(CommonConstant.SERVLET), request, response, "",
+                true, 8192, true);
+        su.initialize(pc);
+        log.info("ä¸Šä¼ è¯·æ±‚å†…å®¹å­—èŠ‚é•¿åº¦: " + request.getContentLength());
+        // è®¾å®šä¸Šä¼ é™åˆ¶
+        // 1.é™åˆ¶æ¯ä¸ªä¸Šä¼ æ–‡ä»¶çš„æœ€å¤§é•¿åº¦ã€‚
+        su.setMaxFileSize(5000000);
+        // 2.é™åˆ¶æ€»ä¸Šä¼ æ•°æ®çš„é•¿åº¦ã€‚
+        su.setTotalMaxFileSize(50000000);
+        // 3.è®¾å®šå…è®¸ä¸Šä¼ çš„æ–‡ä»¶ï¼ˆé€šè¿‡æ‰©å±•åé™åˆ¶ï¼‰,ä»…å…è®¸doc,txtæ–‡ä»¶ã€‚
+        su.setAllowedFilesList("jpg,jpeg");
+        // 4.è®¾å®šç¦æ­¢ä¸Šä¼ çš„æ–‡ä»¶ï¼ˆé€šè¿‡æ‰©å±•åé™åˆ¶ï¼‰,ç¦æ­¢ä¸Šä¼ å¸¦æœ‰exe,bat,jsp,htm,htmlæ‰©å±•åçš„æ–‡ä»¶å’Œæ²¡æœ‰æ‰©å±•åçš„æ–‡ä»¶ã€‚
+        su.setDeniedFilesList("exe,bat,jsp,htm,html,xls,xlsx,,");
+        // ä¸Šä¼ æ–‡ä»¶
+        try {
+            su.upload();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-	private static Log log = LogFactory.getLog(FileUploadUtil.class);
+        return su;
+    }
+
+    private static Log log = LogFactory.getLog(FileUploadUtil.class);
 }

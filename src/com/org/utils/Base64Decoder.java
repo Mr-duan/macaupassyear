@@ -4,28 +4,30 @@ public class Base64Decoder {
     static byte[] ByteTable = new byte[256];
     static {
         // Initialize the table
-        for (int i = 0; i < 256; i++)
+        for (int i = 0; i < 256; i++) {
             ByteTable[i] = -1;
+        }
         // Initialize positions from 'A' to 'Z'
-        for (int i = (int) 'A'; i <= (int) 'Z'; i++)
-            ByteTable[i] = (byte) (i - (int) 'A');
+        for (int i = 'A'; i <= 'Z'; i++) {
+            ByteTable[i] = (byte) (i - 'A');
+        }
         // Initialize positions from 'a' to 'z'
-        for (int i = (int) 'a'; i <= (int) 'z'; i++)
-            ByteTable[i] = (byte) (26 + i - (int) 'a');
+        for (int i = 'a'; i <= 'z'; i++) {
+            ByteTable[i] = (byte) (26 + i - 'a');
+        }
         // Initialize positions from '0' to '9'
-        for (int i = (int) '0'; i <= (int) '9'; i++)
-            ByteTable[i] = (byte) (52 + i - (int) '0');
+        for (int i = '0'; i <= '9'; i++) {
+            ByteTable[i] = (byte) (52 + i - '0');
+        }
         // Initialize misc. positions.
-        ByteTable[(int) '+'] = (byte) 62;
-        ByteTable[(int) '/'] = (byte) 63;
-        ByteTable[(int) '='] = (byte) 64;
+        ByteTable['+'] = (byte) 62;
+        ByteTable['/'] = (byte) 63;
+        ByteTable['='] = (byte) 64;
     }
-
 
     private static int getByte(byte in) {
-        return (int) ByteTable[in];
+        return ByteTable[in];
     }
-
 
     private static byte[] decode(byte A, byte B, byte C, byte D) {
         byte[] output = new byte[3];
@@ -36,7 +38,6 @@ public class Base64Decoder {
         return output;
     }
 
-
     private static byte[] decode(byte A, byte B, byte C) {
         byte[] output = new byte[2];
 
@@ -45,7 +46,6 @@ public class Base64Decoder {
         return output;
     }
 
-
     private static byte[] decode(byte A, byte B) {
         byte[] output = new byte[1];
 
@@ -53,14 +53,12 @@ public class Base64Decoder {
         return output;
     }
 
-
     private static byte[] decode(byte A) {
         byte[] output = new byte[1];
 
         output[0] = (byte) (getByte(A) << 2);
         return output;
     }
-
 
     public static byte[] decode(String encString) {
         int len, i, j, writeCount;
@@ -77,13 +75,13 @@ public class Base64Decoder {
         writeCount = 0;
         j = 0;
         for (i = 0; i < len; i++) {
-            c = (int) encString.charAt(i);
+            c = encString.charAt(i);
             if (c != '=') {
                 buf[writeCount] = (byte) c;
                 writeCount++;
             }
             j++;
-            if ((j == 4) || (i == len - 1)) { 
+            if ((j == 4) || (i == len - 1)) {
                 switch (writeCount) {
                 case 1:
                     ret = decode(buf[0]);
@@ -107,7 +105,7 @@ public class Base64Decoder {
                 j = 0;
                 writeCount = 0;
             }
-        } 
+        }
 
         return decByte;
     }

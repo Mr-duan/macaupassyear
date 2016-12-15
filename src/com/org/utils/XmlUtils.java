@@ -12,8 +12,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONObject;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -25,98 +23,100 @@ import com.org.log.LogUtil;
 import com.org.log.impl.LogUtilMg;
 import com.org.util.CT;
 
+import net.sf.json.JSONObject;
+
 /**
  * @author Nano
  *
- * XML¹¤¾ßÀà
+ * XMLå·¥å…·ç±»
  */
 public class XmlUtils {
-	
-	public static JSONObject getDocumentFromRequest(HttpServletRequest request) throws IOException {
-		Document doc = XmlUtils.read(request.getInputStream());
-		JSONObject xmlJson = XmlUtils.documentToJSON(doc);
-		return xmlJson;
-	}
-	
-	public static JSONObject documentToJSON(Document doc){
-		JSONObject jsonObject = new JSONObject();
-		if(doc != null){
-			Element root = doc.getRootElement();
-			List<?> childList = root.getChildren();
-			Element e = null;
-			for (int i = 0; i < childList.size(); i++) {
-				e = (Element) childList.get(i);
-				jsonObject.put(e.getName(), e.getText()); 
-			}
-		}
-		return jsonObject;
-	}
 
-	/**
-	 * @param xmlContent xml¸ñÊ½µÄ×Ö·û´®
-	 */
-	public static Document read(String xmlContent,String encode){
-		ByteArrayInputStream in;
-		try {
-			in = new ByteArrayInputStream(xmlContent.getBytes(encode));
-			return read(in);
-		} catch (UnsupportedEncodingException e) {
-			LogUtil.log(CT.LOG_CATEGORY_ERR, "×Ö·û´®±àÂë´íÎó", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);		
-		}
-	     return null;
-	}
-	
-	/**
-	 * @param xmlByte xml¸ñÊ½×Ö½Ú
-	 * 
-	 */
-	public static Document read(byte[] xmlByte){
-		ByteArrayInputStream in = new ByteArrayInputStream(xmlByte);
-		return read(in);
-	}
-	
-	/**
-	 * @param file xmlÎÄ¼þ
-	 */
-	public static Document read(File file){
-		try {
-			FileInputStream in = new FileInputStream(file);
-			return read(in);
-		} catch (FileNotFoundException e) {
-			LogUtil.log(CT.LOG_CATEGORY_ERR, "Ã»ÓÐÕÒµ½Ö¸¶¨µÄÎÄ¼þ", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);				
-		}
-		return null;
-	}
-	
-	/**
-	 * 
-	 * @param xmlDoc  Document
-	 * @param encoding ×Ö·û´®±àÂë
-	 * @return ×ª»¯Îªxml×Ö·û´®
-	 */
-	public static String toXmlContent(Document xmlDoc, String encoding) { 
-	        ByteArrayOutputStream byteRep = new ByteArrayOutputStream(); 
-	        Format format = Format.getPrettyFormat(); 
-	        format.setEncoding(encoding); 
-	        XMLOutputter docWriter = new XMLOutputter(format); 
-	        try {
-				docWriter.output(xmlDoc, byteRep);
-			} catch (IOException e) {
-				LogUtil.log(CT.LOG_CATEGORY_ERR, "xml¸ñÊ½×ª»¯´íÎó", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);				
-			} 
-	        return byteRep.toString(); 
-	 } 
-	
-	public static Document read(InputStream in){
-		SAXBuilder sb = new SAXBuilder();
-		Document doc = null;
-		try {
-			 doc = sb.build(in);
-		} catch (JDOMException e) {
-			LogUtil.log(CT.LOG_CATEGORY_ERR, "jdom½âÎö´íÎó", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);				
-		} catch (IOException e) {
-			LogUtil.log(CT.LOG_CATEGORY_ERR, "¶ÁÈ¡xmlÊý¾ÝÁ÷²Ù×÷´íÎó", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);				
-		} 
-		return doc;
-	}
+    public static JSONObject getDocumentFromRequest(HttpServletRequest request) throws IOException {
+        Document doc = XmlUtils.read(request.getInputStream());
+        JSONObject xmlJson = XmlUtils.documentToJSON(doc);
+        return xmlJson;
+    }
+
+    public static JSONObject documentToJSON(Document doc) {
+        JSONObject jsonObject = new JSONObject();
+        if (doc != null) {
+            Element root = doc.getRootElement();
+            List<?> childList = root.getChildren();
+            Element e = null;
+            for (int i = 0; i < childList.size(); i++) {
+                e = (Element) childList.get(i);
+                jsonObject.put(e.getName(), e.getText());
+            }
+        }
+        return jsonObject;
+    }
+
+    /**
+     * @param xmlContent xmlæ ¼å¼çš„å­—ç¬¦ä¸²
+     */
+    public static Document read(String xmlContent, String encode) {
+        ByteArrayInputStream in;
+        try {
+            in = new ByteArrayInputStream(xmlContent.getBytes(encode));
+            return read(in);
+        } catch (UnsupportedEncodingException e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "å­—ç¬¦ä¸²ç¼–ç é”™è¯¯", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        }
+        return null;
+    }
+
+    /**
+     * @param xmlByte xmlæ ¼å¼å­—èŠ‚
+     * 
+     */
+    public static Document read(byte[] xmlByte) {
+        ByteArrayInputStream in = new ByteArrayInputStream(xmlByte);
+        return read(in);
+    }
+
+    /**
+     * @param file xmlæ–‡ä»¶
+     */
+    public static Document read(File file) {
+        try {
+            FileInputStream in = new FileInputStream(file);
+            return read(in);
+        } catch (FileNotFoundException e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "æ²¡æœ‰æ‰¾åˆ°æŒ‡å®šçš„æ–‡ä»¶", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        }
+        return null;
+    }
+
+    /**
+     * 
+     * @param xmlDoc  Document
+     * @param encoding å­—ç¬¦ä¸²ç¼–ç 
+     * @return è½¬åŒ–ä¸ºxmlå­—ç¬¦ä¸²
+     */
+    public static String toXmlContent(Document xmlDoc, String encoding) {
+        ByteArrayOutputStream byteRep = new ByteArrayOutputStream();
+        Format format = Format.getPrettyFormat();
+        format.setEncoding(encoding);
+        XMLOutputter docWriter = new XMLOutputter(format);
+        try {
+            docWriter.output(xmlDoc, byteRep);
+        } catch (IOException e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "xmlæ ¼å¼è½¬åŒ–é”™è¯¯", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        }
+        return byteRep.toString();
+    }
+
+    public static Document read(InputStream in) {
+        SAXBuilder sb = new SAXBuilder();
+        Document doc = null;
+        try {
+            doc = sb.build(in);
+        } catch (JDOMException e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "jdomè§£æžé”™è¯¯", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        } catch (IOException e) {
+            LogUtil.log(CT.LOG_CATEGORY_ERR, "è¯»å–xmlæ•°æ®æµæ“ä½œé”™è¯¯", e, LogUtilMg.LOG_ERROR, CT.LOG_PATTERN_ERR);
+        }
+        return doc;
+    }
 }
