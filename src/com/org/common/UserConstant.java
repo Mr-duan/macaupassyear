@@ -1,37 +1,37 @@
 package com.org.common;
 
 public class UserConstant {
-	/**
-	 * ÓÃ»§session¼üÃû
-	 */
-	public final static String SESSION_USER = "sessionUser";
-	/**
-	 * ÓÃ»§µÇÂ¼Ãû
-	 */
-	public final static String LOGIN_NAME = "loginName";
-	/**
-	 * ÓÃ»§êÇ³Æ
-	 */
-	public final static String NICK = "nick";
-	/**
-	 * ÓÃ»§ÊÖ»úºÅ
-	 */
-	public final static String MOBILE = "mobile";
-	/**
-	 * ÓÃ»§ÓÊÏä
-	 */
-	public final static String MAIL = "mail";
-	/**
-	 * ÓÃ»§×¢²áÀàĞÍ 0: ÏµÍ³  1£ºÓÃ»§
-	 */
-	public final static String REGIST_TYPE = "registType";
-	/**
-	 * 
-	 */
-	public final static String PWD = "pwd";
-	/**
-	 * 
-	 */
-	public final static String USERID = "id";
-	
+    /**
+     * ç”¨æˆ·sessioné”®å
+     */
+    public final static String SESSION_USER = "sessionUser";
+    /**
+     * ç”¨æˆ·ç™»å½•å
+     */
+    public final static String LOGIN_NAME = "loginName";
+    /**
+     * ç”¨æˆ·æ˜µç§°
+     */
+    public final static String NICK = "nick";
+    /**
+     * ç”¨æˆ·æ‰‹æœºå·
+     */
+    public final static String MOBILE = "mobile";
+    /**
+     * ç”¨æˆ·é‚®ç®±
+     */
+    public final static String MAIL = "mail";
+    /**
+     * ç”¨æˆ·æ³¨å†Œç±»å‹ 0: ç³»ç»Ÿ  1ï¼šç”¨æˆ·
+     */
+    public final static String REGIST_TYPE = "registType";
+    /**
+     * 
+     */
+    public final static String PWD = "pwd";
+    /**
+     * 
+     */
+    public final static String USERID = "id";
+
 }

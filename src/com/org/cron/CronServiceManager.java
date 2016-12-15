@@ -5,44 +5,42 @@ import org.springframework.core.task.TaskExecutor;
 /**
  * @author Nano
  * 
- * ºóÌ¨·şÎñ¹ÜÀíÆ÷
+ * åå°æœåŠ¡ç®¡ç†å™¨
  */
 public class CronServiceManager {
-	
-	private TaskExecutor taskExecutor;
 
-	public TaskExecutor getTaskExecutor() {
-		return taskExecutor;
-	}
+    private TaskExecutor taskExecutor;
 
-	public void setTaskExecutor(TaskExecutor taskExecutor) {
-		this.taskExecutor = taskExecutor;
-	}
-	
-	/**
-	 * ÉÌ»§¶©µ¥ºÍÖ§¸¶ÅÜÅú
-	 */
-	public void service_step0(){
-//		CronService service = CronServiceFactory.getInstance().createCronService("cronOrderService");
-//		taskExecutor.execute(service);
-	}
-	
-	/**
-	 * »º´æÊı¾İÅÜÁ¿¸üĞÂ´¦Àí
-	 */
-	public void service_step1(){
-//		CronService service = CronServiceFactory.getInstance().createCronService("cronCacheManagerService");
-//		taskExecutor.execute(service);
-	}
-	
-	/**
-	 * ÓÃ»§³£ÓÃÖ§¸¶¹¤¾ß·ÖÎö
-	 */
-	public void doUserCommonUtilsWork(){
-//		CronService service = CronServiceFactory.getInstance().createCronService("userCommonUtilManagerService");
-//		taskExecutor.execute(service);
-	}
-	
-	
-	
+    public TaskExecutor getTaskExecutor() {
+        return this.taskExecutor;
+    }
+
+    public void setTaskExecutor(TaskExecutor taskExecutor) {
+        this.taskExecutor = taskExecutor;
+    }
+
+    /**
+     * å•†æˆ·è®¢å•å’Œæ”¯ä»˜è·‘æ‰¹
+     */
+    public void service_step0() {
+//      CronService service = CronServiceFactory.getInstance().createCronService("cronOrderService");
+//      taskExecutor.execute(service);
+    }
+
+    /**
+     * ç¼“å­˜æ•°æ®è·‘é‡æ›´æ–°å¤„ç†
+     */
+    public void service_step1() {
+//      CronService service = CronServiceFactory.getInstance().createCronService("cronCacheManagerService");
+//      taskExecutor.execute(service);
+    }
+
+    /**
+     * ç”¨æˆ·å¸¸ç”¨æ”¯ä»˜å·¥å…·åˆ†æ
+     */
+    public void doUserCommonUtilsWork() {
+//      CronService service = CronServiceFactory.getInstance().createCronService("userCommonUtilManagerService");
+//      taskExecutor.execute(service);
+    }
+
 }

@@ -18,77 +18,76 @@ import com.org.utils.StringUtil;
 import com.org.utils.WxUtil;
 
 @Controller
-public class WxController extends SmpHttpServlet implements CommonController{
-	private static final long serialVersionUID = 2156792239072761671L;
+public class WxController extends SmpHttpServlet implements CommonController {
+    private static final long serialVersionUID = 2156792239072761671L;
 
-	public WxController(){
-		
-	}
-	
-	public void sandbao(HttpServletRequest request, HttpServletResponse response) throws Exception{
-		log.info("token" + this.getParamMap(request));
-		String echostr = request.getParameter("echostr");
-		if(StringUtils.isNotEmpty(echostr)) {
-			String wxsignature = request.getParameter("signature");
-			String wxtimestamp = request.getParameter("timestamp");
-			String nonce = request.getParameter("nonce");
-			
-			boolean signResult = WxUtil.checkSignature(wxsignature, wxtimestamp, nonce);
-			if(!signResult) {
-				log.info("ÑéÇ©´íÎó");
-				return;
-			}
-			log.info("ÑéÇ©³É¹¦");
-			// ±íÊ¾ÊÇÊ×´ÎÑéÇ©
-			this.write(echostr, CT.ENCODE_UTF8, response);
-			return;
-		}
-		
-		String token = WxUtil.getToken();
-		String timestamp = String.valueOf(StringUtil.getTimestamp()); // ±ØÌî£¬Éú³ÉÇ©ÃûµÄÊ±¼ä´Á
-		String nonceStr = UUID.randomUUID().toString(); // ±ØÌî£¬Ç©Ãû£¬¼û¸½Â¼1
-		String url = request.getRequestURL().toString();
-		String signature = WxUtil.localSign(timestamp, nonceStr, url); // ±ØÌî£¬ĞèÒªÊ¹ÓÃµÄJS½Ó¿ÚÁĞ±í£¬ËùÓĞJS½Ó¿ÚÁĞ±í¼û¸½Â¼2
-		String appid = PropertiesUtil.getValue("wx", "appid");
-		
-		request.setAttribute("timestamp", timestamp);
-		request.setAttribute("nonceStr", nonceStr);
-		request.setAttribute("url", url);
-		request.setAttribute("signature", signature);
-		request.setAttribute("cacheToken", token);
-		request.setAttribute("appId", appid);
-		
-		//this.forward("/www/html/wxtest.jsp", request, response);
-		this.forward("/view/login.jsp", request, response);
-		return;
-	}
-	
-	private Log log = LogFactory.getLog(WxController.class);
-	
-	// TODO ²âÊÔÓÃµÄ
-	public void toTest(HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
-		log.info("toTest: " + this.getParamMap(request));
-		String token = WxUtil.getToken();
-		String timestamp = String.valueOf(StringUtil.getTimestamp()); // ±ØÌî£¬Éú³ÉÇ©ÃûµÄÊ±¼ä´Á
-		String nonceStr = UUID.randomUUID().toString(); // ±ØÌî£¬Ç©Ãû£¬¼û¸½Â¼1
-		String url = request.getRequestURL().toString();
-		String signature = WxUtil.localSign(timestamp, nonceStr, url); // ±ØÌî£¬ĞèÒªÊ¹ÓÃµÄJS½Ó¿ÚÁĞ±í£¬ËùÓĞJS½Ó¿ÚÁĞ±í¼û¸½Â¼2
-		String appid = PropertiesUtil.getValue("wx", "appid");
-		
-		request.setAttribute("timestamp", timestamp);
-		request.setAttribute("nonceStr", nonceStr);
-		request.setAttribute("url", url);
-		request.setAttribute("signature", signature);
-		request.setAttribute("cacheToken", token);
-		request.setAttribute("appId", appid);
-		this.forward("/view/codebarscann.jsp", request, response);
-		return;
-	}
-	
-	public void post(HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
-		
-	}
-	
+    public WxController() {
+
+    }
+
+    public void sandbao(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        this.log.info("token" + this.getParamMap(request));
+        String echostr = request.getParameter("echostr");
+        if (StringUtils.isNotEmpty(echostr)) {
+            String wxsignature = request.getParameter("signature");
+            String wxtimestamp = request.getParameter("timestamp");
+            String nonce = request.getParameter("nonce");
+
+            boolean signResult = WxUtil.checkSignature(wxsignature, wxtimestamp, nonce);
+            if (!signResult) {
+                this.log.info("éªŒç­¾é”™è¯¯");
+                return;
+            }
+            this.log.info("éªŒç­¾æˆåŠŸ");
+            // è¡¨ç¤ºæ˜¯é¦–æ¬¡éªŒç­¾
+            this.write(echostr, CT.ENCODE_UTF8, response);
+            return;
+        }
+
+        String token = WxUtil.getToken();
+        String timestamp = String.valueOf(StringUtil.getTimestamp()); // å¿…å¡«ï¼Œç”Ÿæˆç­¾åçš„æ—¶é—´æˆ³
+        String nonceStr = UUID.randomUUID().toString(); // å¿…å¡«ï¼Œç­¾åï¼Œè§é™„å½•1
+        String url = request.getRequestURL().toString();
+        String signature = WxUtil.localSign(timestamp, nonceStr, url); // å¿…å¡«ï¼Œéœ€è¦ä½¿ç”¨çš„JSæ¥å£åˆ—è¡¨ï¼Œæ‰€æœ‰JSæ¥å£åˆ—è¡¨è§é™„å½•2
+        String appid = PropertiesUtil.getValue("wx", "appid");
+
+        request.setAttribute("timestamp", timestamp);
+        request.setAttribute("nonceStr", nonceStr);
+        request.setAttribute("url", url);
+        request.setAttribute("signature", signature);
+        request.setAttribute("cacheToken", token);
+        request.setAttribute("appId", appid);
+
+        // this.forward("/www/html/wxtest.jsp", request, response);
+        this.forward("/view/login.jsp", request, response);
+        return;
+    }
+
+    private Log log = LogFactory.getLog(WxController.class);
+
+    // TODO æµ‹è¯•ç”¨çš„
+    public void toTest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        this.log.info("toTest: " + this.getParamMap(request));
+        String token = WxUtil.getToken();
+        String timestamp = String.valueOf(StringUtil.getTimestamp()); // å¿…å¡«ï¼Œç”Ÿæˆç­¾åçš„æ—¶é—´æˆ³
+        String nonceStr = UUID.randomUUID().toString(); // å¿…å¡«ï¼Œç­¾åï¼Œè§é™„å½•1
+        String url = request.getRequestURL().toString();
+        String signature = WxUtil.localSign(timestamp, nonceStr, url); // å¿…å¡«ï¼Œéœ€è¦ä½¿ç”¨çš„JSæ¥å£åˆ—è¡¨ï¼Œæ‰€æœ‰JSæ¥å£åˆ—è¡¨è§é™„å½•2
+        String appid = PropertiesUtil.getValue("wx", "appid");
+
+        request.setAttribute("timestamp", timestamp);
+        request.setAttribute("nonceStr", nonceStr);
+        request.setAttribute("url", url);
+        request.setAttribute("signature", signature);
+        request.setAttribute("cacheToken", token);
+        request.setAttribute("appId", appid);
+        this.forward("/view/codebarscann.jsp", request, response);
+        return;
+    }
+
+    @Override
+    public void post(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+    }
+
 }

@@ -24,120 +24,123 @@ import com.org.utils.PropertiesUtil;
 
 public class DispatcherServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-	private static Log log = LogFactory.getLog(DispatcherServlet.class);
-	private static Map<String, Method> mtdContainer = new HashMap<String, Method>();
-	
-	public DispatcherServlet() {
-		super();
-	}
-	
-	public void init() throws ServletException {
-		// Put your code here
-	}
-	public void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		doPost(request, response);
-	}
+    private static Log log = LogFactory.getLog(DispatcherServlet.class);
+    private static Map<String, Method> mtdContainer = new HashMap<String, Method>();
 
-	public void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		String targetUrl ="";
-		String servletName = "";
-		String _servletName ="";
-		try{
-			/* 0. …Ë÷√ ˝æ›≤øª∫¥Ê  */
-			response.setHeader("Pragma","no-cache"); 
-			response.setHeader("Cache-Control","no-cache"); 
-			response.setDateHeader("Expires", 0); 
-			
-			if(request.getSession().getAttribute(CommonConstant.SERVLET) == null){
-				request.getSession().setAttribute(CommonConstant.SERVLET, this);
-			}
-		    
-			String uri = request.getRequestURI();
-			_servletName = uri.substring(uri.indexOf("/")+1, uri.indexOf(".do"));
+    public DispatcherServlet() {
+        super();
+    }
 
-			servletName = _servletName;
-			String mtdName = "";
-			if(_servletName.indexOf("/") != -1){
-				servletName = _servletName.substring(0, _servletName.indexOf("/"));
-				mtdName = _servletName.substring(_servletName.lastIndexOf("/")+1);
-			}
-			
-			/*****≈–∂œ «∑ÒŒ™÷ÿ∏¥Ã·Ωª*************************/
-			String token=request.getParameter("token");
-			if(token!=null){
-				HttpSession session=request.getSession();
-				synchronized(session){
-					Object value=session.getAttribute(servletName);
-					if(value!=null){
-						//÷ÿ∏¥Ã·Ωª«Î«Û£¨÷±Ω”≤µªÿ
-						return ;
-					}
-					session.setAttribute(servletName, UUID.randomUUID());
-				}
-				String tokenParam=request.getSession().getAttribute("token")==null?"":request.getSession().getAttribute("tokenParam").toString();
-				
-				if(token.equals(tokenParam)){
-					request.getSession().removeAttribute("token");
-				}else{
-					return;
-				}
-			}
-			/*******************************************/
-			
+    @Override
+    public void init() throws ServletException {
+        // Put your code here
+    }
 
-			String relativeController = PropertiesUtil.getValue("namespace", servletName);
-			if(org.apache.commons.lang.StringUtils.isNotEmpty(relativeController)) {
-				// »Áπ˚¥Ê‘⁄≈‰÷√
-				servletName = relativeController;
-			} else {
-				servletName += "Controller";
-			}
-			
-			// Controller¥”spring»›∆˜÷–»°µ√
-			CommonController aim = (CommonController)SpringUtil.getBean(servletName);
-			
-			if(StringUtils.isEmpty(mtdName)){
-				aim.post(request, response);
-			} else {
-				Method m = null;
-				String mtdKey = servletName + mtdName;
-				if(mtdContainer.containsKey(mtdKey)) {
-					m = mtdContainer.get(mtdKey);
-				} else {
-					m = aim.getClass().getDeclaredMethod(mtdName, new Class<?>[]{HttpServletRequest.class, HttpServletResponse.class});
-					mtdContainer.put(servletName + mtdName, m);
-				}
-				
-				m.invoke(aim, request, response);
-			}
-			//¡˜≥Ã÷¥––ÕÍ£¨∏¸–¬tokenParam
-			request.getSession().removeAttribute(servletName);
-			log.debug("DispatcherServlet-->" + _servletName);
-		}catch(Exception se){
-			se.printStackTrace();
-			//request.getSession().removeAttribute(CT.COMP_LOCAL_USER);
-			targetUrl = PageConstant.ERROR;
-			request.setAttribute("respCode", "SYS001");
-			request.setAttribute("respMsg", "œµÕ≥¥ÌŒÛ");
-			try {
-				this.forward(targetUrl, request, response);		
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public void redirect(String targetUrl,HttpServletResponse response) throws Exception{
-		response.sendRedirect(targetUrl);
-	}
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request, response);
+    }
 
-	public void destroy() {
-	}
-	
-	private void forward(String targetUrl,HttpServletRequest request, HttpServletResponse response) throws Exception{
-		RequestDispatcher rd = request.getRequestDispatcher(targetUrl);
-		rd.forward(request, response);
-	}
+    @Override
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String targetUrl = "";
+        String servletName = "";
+        String _servletName = "";
+        try {
+            /* 0. ËÆæÁΩÆÊï∞ÊçÆÈÉ®ÁºìÂ≠ò  */
+            response.setHeader("Pragma", "no-cache");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setDateHeader("Expires", 0);
+
+            if (request.getSession().getAttribute(CommonConstant.SERVLET) == null) {
+                request.getSession().setAttribute(CommonConstant.SERVLET, this);
+            }
+
+            String uri = request.getRequestURI();
+            _servletName = uri.substring(uri.indexOf("/") + 1, uri.indexOf(".do"));
+
+            servletName = _servletName;
+            String mtdName = "";
+            if (_servletName.indexOf("/") != -1) {
+                servletName = _servletName.substring(0, _servletName.indexOf("/"));
+                mtdName = _servletName.substring(_servletName.lastIndexOf("/") + 1);
+            }
+
+            /*****Âà§Êñ≠ÊòØÂê¶‰∏∫ÈáçÂ§çÊèê‰∫§*************************/
+            String token = request.getParameter("token");
+            if (token != null) {
+                HttpSession session = request.getSession();
+                synchronized (session) {
+                    Object value = session.getAttribute(servletName);
+                    if (value != null) {
+                        // ÈáçÂ§çÊèê‰∫§ËØ∑Ê±ÇÔºåÁõ¥Êé•È©≥Âõû
+                        return;
+                    }
+                    session.setAttribute(servletName, UUID.randomUUID());
+                }
+                String tokenParam = request.getSession().getAttribute("token") == null ? ""
+                        : request.getSession().getAttribute("tokenParam").toString();
+
+                if (token.equals(tokenParam)) {
+                    request.getSession().removeAttribute("token");
+                } else {
+                    return;
+                }
+            }
+            /*******************************************/
+
+            String relativeController = PropertiesUtil.getValue("namespace", servletName);
+            if (org.apache.commons.lang.StringUtils.isNotEmpty(relativeController)) {
+                // Â¶ÇÊûúÂ≠òÂú®ÈÖçÁΩÆ
+                servletName = relativeController;
+            } else {
+                servletName += "Controller";
+            }
+
+            // Controller‰ªéspringÂÆπÂô®‰∏≠ÂèñÂæó
+            CommonController aim = (CommonController) SpringUtil.getBean(servletName);
+
+            if (StringUtils.isEmpty(mtdName)) {
+                aim.post(request, response);
+            } else {
+                Method m = null;
+                String mtdKey = servletName + mtdName;
+                if (mtdContainer.containsKey(mtdKey)) {
+                    m = mtdContainer.get(mtdKey);
+                } else {
+                    m = aim.getClass().getDeclaredMethod(mtdName, new Class<?>[] { HttpServletRequest.class, HttpServletResponse.class });
+                    mtdContainer.put(servletName + mtdName, m);
+                }
+
+                m.invoke(aim, request, response);
+            }
+            // ÊµÅÁ®ãÊâßË°åÂÆåÔºåÊõ¥Êñ∞tokenParam
+            request.getSession().removeAttribute(servletName);
+            log.debug("DispatcherServlet-->" + _servletName);
+        } catch (Exception se) {
+            se.printStackTrace();
+            // request.getSession().removeAttribute(CT.COMP_LOCAL_USER);
+            targetUrl = PageConstant.ERROR;
+            request.setAttribute("respCode", "SYS001");
+            request.setAttribute("respMsg", "Á≥ªÁªüÈîôËØØ");
+            try {
+                this.forward(targetUrl, request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void redirect(String targetUrl, HttpServletResponse response) throws Exception {
+        response.sendRedirect(targetUrl);
+    }
+
+    @Override
+    public void destroy() {
+    }
+
+    private void forward(String targetUrl, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        RequestDispatcher rd = request.getRequestDispatcher(targetUrl);
+        rd.forward(request, response);
+    }
 }

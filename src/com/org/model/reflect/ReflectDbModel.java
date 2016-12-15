@@ -1,58 +1,58 @@
 package com.org.model.reflect;
 
 /**
- * ÓÃÓÚ·´ÉäÊ±,ÁÙÊ±´æ·ÅÊı¾İµÄÈİÆ÷
+ * ç”¨äºåå°„æ—¶,ä¸´æ—¶å­˜æ”¾æ•°æ®çš„å®¹å™¨
  * @author Administrator
  *
  */
 public class ReflectDbModel {
-	private String key;
-	private String paramType;
-	private Object value;
+    private String key;
+    private String paramType;
+    private Object value;
 
-	/**
-	 * @return the key
-	 */
-	public String getKey() {
-		return key;
-	}
+    /**
+     * @return the key
+     */
+    public String getKey() {
+        return this.key;
+    }
 
-	/**
-	 * @param key
-	 *            the key to set
-	 */
-	public void setKey(String key) {
-		this.key = key;
-	}
+    /**
+     * @param key
+     *            the key to set
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-	/**
-	 * @return the paramType
-	 */
-	public String getParamType() {
-		return paramType;
-	}
+    /**
+     * @return the paramType
+     */
+    public String getParamType() {
+        return this.paramType;
+    }
 
-	/**
-	 * @param paramType
-	 *            the paramType to set
-	 */
-	public void setParamType(String paramType) {
-		this.paramType = paramType;
-	}
+    /**
+     * @param paramType
+     *            the paramType to set
+     */
+    public void setParamType(String paramType) {
+        this.paramType = paramType;
+    }
 
-	/**
-	 * @return the value
-	 */
-	public Object getValue() {
-		return value;
-	}
+    /**
+     * @return the value
+     */
+    public Object getValue() {
+        return this.value;
+    }
 
-	/**
-	 * @param value
-	 *            the value to set
-	 */
-	public void setValue(Object value) {
-		this.value = value;
-	}
+    /**
+     * @param value
+     *            the value to set
+     */
+    public void setValue(Object value) {
+        this.value = value;
+    }
 
 }

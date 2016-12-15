@@ -1,17 +1,17 @@
 package com.org.remote;
 
 /**
- * ½ÓÈëÔ¶³ÌÇëÇó
+ * æ¥å…¥è¿œç¨‹è¯·æ±‚
  * @author Administrator
  *
  */
 public interface RemoteService {
 
-	/**
-	 * @param request json ½á¹¹Êı¾İÌå
-	 * 
-	 * @return response json ½á¹¹Êı¾İÌå
-	 */
-	public String access(String request);
-	
+    /**
+     * @param request json ç»“æ„æ•°æ®ä½“
+     * 
+     * @return response json ç»“æ„æ•°æ®ä½“
+     */
+    public String access(String request);
+
 }

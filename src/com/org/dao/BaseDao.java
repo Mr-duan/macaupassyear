@@ -12,209 +12,203 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.org.model.reflect.ReflectDbModel;
+import com.org.services.HikaricpMysqlDataSourceService;
+import com.org.utils.ByteUtil;
+import com.org.utils.DesUtil;
+import com.org.utils.StringUtil;
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import com.org.model.reflect.ReflectDbModel;
-import com.org.services.HikaricpMysqlDataSourceService;
-import com.org.utils.StringUtil;
-import com.org.utils.ByteUtil;
-import com.org.utils.DesUtil;
-
-// TODO ÖØĞÂ×ö·ÖÒ³
+// TODO é‡æ–°åšåˆ†é¡µ
 public class BaseDao {
-	private static HikaricpMysqlDataSourceService dataSource = HikaricpMysqlDataSourceService.getInstance();
-	
-	protected java.sql.Connection getConnection(){
-		java.sql.Connection res = dataSource.getConnection();
-		return res;
-	}
+    private static HikaricpMysqlDataSourceService dataSource = HikaricpMysqlDataSourceService.getInstance();
 
-	protected <T> List<T> queryListByT(String sql, Map<Integer, Object> params, T entity)
-			throws SQLException, IllegalArgumentException, IllegalAccessException,
-			InvocationTargetException {
-		
-		java.sql.Connection connection = null;
-		List<T> list = new ArrayList<T>();
-		ResultSet rs = null;
-		PreparedStatement ps = null;
-		try{
-			connection = getConnection();
-			ps = connection.prepareStatement(sql);
-			setStatmentParams(ps, params);
-			rs = ps.executeQuery();
-			ResultSetMetaData rsmd = rs.getMetaData();
-			// ÁĞÊı
-			int columnCounts = rsmd.getColumnCount();
-			//
-			ReflectDbModel model = new ReflectDbModel();
-			Method m = null;
-			while (rs.next()) {
-				// Õâ¸öµØ·½Ïàµ±ÓÚÃ¿ÓÃÒ»´Î¾ÍnewÒ»´Î,·ñÔòÊı¾İ»á¸²¸ÇÉÏÒ»´ÎµÄÊı¾İ
-				for (int i = 1; i <= columnCounts; i++) {
-					initReflectDbModel(rs, model, i);
-					if (model.getValue() != null && model.getValue() != "") {
-						try {
-							m = entity.getClass().getDeclaredMethod("set" + model.getKey(), model.getValue().getClass());
-							m.invoke(entity, model.getValue());
-						} catch (SecurityException e) {
-							e.printStackTrace();
-						} catch (NoSuchMethodException e) {
-							System.out.println(e.getMessage() + ": NoSuchMethodException");
-						}
-					}
-				}
-				list.add(entity);
-			}
-		}finally{
-			releaseAll(rs, ps, connection);
-		}			
-		return list;
-	}
-	
-	/**
-	 * 
-	 * @param sql
-	 * @param params
-	 * @param collumToUpper ÊÇ·ñ×ñÊØÍÕ·å
-	 * @param secretColumn ÊÇ·ñÓĞ¼ÓÃÜÁĞµÄĞèÇó
-	 * @return
-	 * @throws SQLException
-	 */
-	protected JSONArray queryList(String sql, Map<Integer, Object> params, boolean collumToUpper, List<String> secretColumn) throws SQLException{
-		JSONArray list = new JSONArray();
-		java.sql.Connection connection = null;
-		ResultSet rs = null;
-		PreparedStatement ps = null;
-		try{
-			connection = getConnection();
-			ps = connection.prepareStatement(sql);
-			if(params != null){
-				setStatmentParams(ps, params);
-			}
-			rs = ps.executeQuery();
-			ResultSetMetaData rsmd = rs.getMetaData();
-			// ÁĞÊı
-			int columnCounts = rsmd.getColumnCount();
-			//
-			JSONObject jo = null;
-			String key = "";
-			String value = null;
-			while (rs.next()) {
-				jo = new JSONObject();
-				for (int i = 1; i <= columnCounts; i++) {
-					//  ×ªÊµÀıÃû
-					key = StringUtil.toEntityName(rsmd.getColumnName(i).toLowerCase(), collumToUpper);
-					value = (rs.getObject(i) == null) ? "" : rs.getObject(i).toString();
-					if(secretColumn != null && secretColumn.contains(key)){
-						// Èç¹ûÕâÁĞĞèÒª¼ÓÃÜ 
-						byte[] valueByte;
-						try {
-							valueByte = DesUtil.encryptMode(value.getBytes("UTF-8"));
-							// ´ÓÊı¾İ¿âÈ¡³öÇ°£¬ ÏÈÖ´ĞĞ¼ÓÃÜ
-							value = ByteUtil.bytes2HexStr(valueByte);
-						} catch (UnsupportedEncodingException e) {
-							e.printStackTrace();
-							
-						}
-						
-					}
-					jo.put(key, value);
-				}
-				list.add(jo);
-			}
-		}finally{
-			releaseAll(rs, ps, connection);
-		}			
-		return list;		
-	}
+    protected java.sql.Connection getConnection() {
+        java.sql.Connection res = dataSource.getConnection();
+        return res;
+    }
 
+    protected <T> List<T> queryListByT(String sql, Map<Integer, Object> params, T entity)
+            throws SQLException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 
-	
-	/**
-	 * 
-	 * @param sql
-	 * @param params
-	 * @param collumToUpper ÊÇ·ñ×ñÊØÍÕ·å
-	 * @param secretColumn ÊÇ·ñÓĞ¼ÓÃÜÁĞµÄĞèÇó
-	 * @return
-	 * @throws SQLException
-	 */
-	public JSONObject querySingle(String sql, Map<Integer, Object> params, boolean collumToUpper) throws SQLException{
-		java.sql.Connection connection = null;
-		ResultSet rs = null;
-		PreparedStatement ps = null;
-		JSONObject returnObj = null;
-		try{
-			connection = getConnection();
-			ps = connection.prepareStatement(sql);
-			if(params != null){
-				setStatmentParams(ps, params);
-			}
-			rs = ps.executeQuery();
-			ResultSetMetaData rsmd = rs.getMetaData();
-			// ÁĞÊı
-			int columnCounts = rsmd.getColumnCount();
-			//
-			String key = "";
-			String value = null;
-			while (rs.next()) {
-				returnObj = new JSONObject();
-				for (int i = 1; i <= columnCounts; i++) {
-					//  ×ªÊµÀıÃû
-					key = rsmd.getColumnName(i).toLowerCase();
-					value = (rs.getObject(i) == null) ? "" : rs.getObject(i).toString();
-					returnObj.put(key, value);
-				}
-				break;
-			}
-		}finally{
-			releaseAll(rs, ps, connection);
-		}			
-		return returnObj;		
-	}
-	
-	private void releaseAll(ResultSet rs, PreparedStatement ps,
-			java.sql.Connection connection) throws SQLException {
-		if(rs != null){
-			rs.close();
-		}
-		if(ps != null){
-			ps.close();
-		}
-		if(connection != null){
-			connection.close();
-		}
-	}
+        java.sql.Connection connection = null;
+        List<T> list = new ArrayList<T>();
+        ResultSet rs = null;
+        PreparedStatement ps = null;
+        try {
+            connection = getConnection();
+            ps = connection.prepareStatement(sql);
+            setStatmentParams(ps, params);
+            rs = ps.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            // åˆ—æ•°
+            int columnCounts = rsmd.getColumnCount();
+            //
+            ReflectDbModel model = new ReflectDbModel();
+            Method m = null;
+            while (rs.next()) {
+                // è¿™ä¸ªåœ°æ–¹ç›¸å½“äºæ¯ç”¨ä¸€æ¬¡å°±newä¸€æ¬¡,å¦åˆ™æ•°æ®ä¼šè¦†ç›–ä¸Šä¸€æ¬¡çš„æ•°æ®
+                for (int i = 1; i <= columnCounts; i++) {
+                    initReflectDbModel(rs, model, i);
+                    if (model.getValue() != null && model.getValue() != "") {
+                        try {
+                            m = entity.getClass().getDeclaredMethod("set" + model.getKey(), model.getValue().getClass());
+                            m.invoke(entity, model.getValue());
+                        } catch (SecurityException e) {
+                            e.printStackTrace();
+                        } catch (NoSuchMethodException e) {
+                            System.out.println(e.getMessage() + ": NoSuchMethodException");
+                        }
+                    }
+                }
+                list.add(entity);
+            }
+        } finally {
+            releaseAll(rs, ps, connection);
+        }
+        return list;
+    }
 
-	protected JSONArray queryList(String sql, Map<Integer, Object> params, List<String> secretColumn) throws SQLException{
-		return queryList(sql, params, true, secretColumn);		
-	}
-	
-	protected void setStatmentParams(PreparedStatement ps, Map<Integer, Object> params) throws SQLException{
-		for (Iterator<Integer> iterator = params.keySet().iterator(); iterator
-				.hasNext();) {
-			Integer key = iterator.next();
-			ps.setObject(key, params.get(key));
-		}
-	}
+    /**
+     * 
+     * @param sql
+     * @param params
+     * @param collumToUpper æ˜¯å¦éµå®ˆé©¼å³°
+     * @param secretColumn æ˜¯å¦æœ‰åŠ å¯†åˆ—çš„éœ€æ±‚
+     * @return
+     * @throws SQLException
+     */
+    protected JSONArray queryList(String sql, Map<Integer, Object> params, boolean collumToUpper, List<String> secretColumn) throws SQLException {
+        JSONArray list = new JSONArray();
+        java.sql.Connection connection = null;
+        ResultSet rs = null;
+        PreparedStatement ps = null;
+        try {
+            connection = getConnection();
+            ps = connection.prepareStatement(sql);
+            if (params != null) {
+                setStatmentParams(ps, params);
+            }
+            rs = ps.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            // åˆ—æ•°
+            int columnCounts = rsmd.getColumnCount();
+            //
+            JSONObject jo = null;
+            String key = "";
+            String value = null;
+            while (rs.next()) {
+                jo = new JSONObject();
+                for (int i = 1; i <= columnCounts; i++) {
+                    // è½¬å®ä¾‹å
+                    key = StringUtil.toEntityName(rsmd.getColumnName(i).toLowerCase(), collumToUpper);
+                    value = (rs.getObject(i) == null) ? "" : rs.getObject(i).toString();
+                    if (secretColumn != null && secretColumn.contains(key)) {
+                        // å¦‚æœè¿™åˆ—éœ€è¦åŠ å¯†
+                        byte[] valueByte;
+                        try {
+                            valueByte = DesUtil.encryptMode(value.getBytes("UTF-8"));
+                            // ä»æ•°æ®åº“å–å‡ºå‰ï¼Œ å…ˆæ‰§è¡ŒåŠ å¯†
+                            value = ByteUtil.bytes2HexStr(valueByte);
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
 
-	protected static void initReflectDbModel(ResultSet rs, ReflectDbModel model,
-			int index) throws SQLException {
-		ResultSetMetaData rsmd = rs.getMetaData();
-		String key = rsmd.getColumnName(index);
-		// ×ªÊµÀıÃû
-		key = StringUtil.toEntityName(rsmd.getColumnName(index), false);
-		
-		String paramType = rsmd.getColumnClassName(index);
-		Object value = rs.getObject(index);
+                        }
 
-		// Ê××ÖÄ¸´óĞ´
-		key = String.valueOf(key.charAt(0)).toUpperCase() + key.substring(1);
-		paramType = paramType.substring(paramType.lastIndexOf(".") + 1);
+                    }
+                    jo.put(key, value);
+                }
+                list.add(jo);
+            }
+        } finally {
+            releaseAll(rs, ps, connection);
+        }
+        return list;
+    }
 
-		model.setKey(key);
-		model.setParamType(paramType);
-		model.setValue(value);
-	}
+    /**
+     * 
+     * @param sql
+     * @param params
+     * @param collumToUpper æ˜¯å¦éµå®ˆé©¼å³°
+     * @param secretColumn æ˜¯å¦æœ‰åŠ å¯†åˆ—çš„éœ€æ±‚
+     * @return
+     * @throws SQLException
+     */
+    public JSONObject querySingle(String sql, Map<Integer, Object> params, boolean collumToUpper) throws SQLException {
+        java.sql.Connection connection = null;
+        ResultSet rs = null;
+        PreparedStatement ps = null;
+        JSONObject returnObj = null;
+        try {
+            connection = getConnection();
+            ps = connection.prepareStatement(sql);
+            if (params != null) {
+                setStatmentParams(ps, params);
+            }
+            rs = ps.executeQuery();
+            ResultSetMetaData rsmd = rs.getMetaData();
+            // åˆ—æ•°
+            int columnCounts = rsmd.getColumnCount();
+            //
+            String key = "";
+            String value = null;
+            while (rs.next()) {
+                returnObj = new JSONObject();
+                for (int i = 1; i <= columnCounts; i++) {
+                    // è½¬å®ä¾‹å
+                    key = rsmd.getColumnName(i).toLowerCase();
+                    value = (rs.getObject(i) == null) ? "" : rs.getObject(i).toString();
+                    returnObj.put(key, value);
+                }
+                break;
+            }
+        } finally {
+            releaseAll(rs, ps, connection);
+        }
+        return returnObj;
+    }
+
+    private void releaseAll(ResultSet rs, PreparedStatement ps, java.sql.Connection connection) throws SQLException {
+        if (rs != null) {
+            rs.close();
+        }
+        if (ps != null) {
+            ps.close();
+        }
+        if (connection != null) {
+            connection.close();
+        }
+    }
+
+    protected JSONArray queryList(String sql, Map<Integer, Object> params, List<String> secretColumn) throws SQLException {
+        return queryList(sql, params, true, secretColumn);
+    }
+
+    protected void setStatmentParams(PreparedStatement ps, Map<Integer, Object> params) throws SQLException {
+        for (Iterator<Integer> iterator = params.keySet().iterator(); iterator.hasNext();) {
+            Integer key = iterator.next();
+            ps.setObject(key, params.get(key));
+        }
+    }
+
+    protected static void initReflectDbModel(ResultSet rs, ReflectDbModel model, int index) throws SQLException {
+        ResultSetMetaData rsmd = rs.getMetaData();
+        String key = rsmd.getColumnName(index);
+        // è½¬å®ä¾‹å
+        key = StringUtil.toEntityName(rsmd.getColumnName(index), false);
+
+        String paramType = rsmd.getColumnClassName(index);
+        Object value = rs.getObject(index);
+
+        // é¦–å­—æ¯å¤§å†™
+        key = String.valueOf(key.charAt(0)).toUpperCase() + key.substring(1);
+        paramType = paramType.substring(paramType.lastIndexOf(".") + 1);
+
+        model.setKey(key);
+        model.setParamType(paramType);
+        model.setValue(value);
+    }
 }

@@ -7,28 +7,28 @@ import org.apache.commons.logging.LogFactory;
 
 public class SSocketException extends SocketException {
 
-	private static final long serialVersionUID = 1L;
-	
-	private static Log log = LogFactory.getLog(SSocketException.class);
-	
-	public SSocketException(){
-		super();
-	}
-	
-	public SSocketException(String ems){
-		super(ems);
-	}
-	
-	
-	public String getMessage() {
-		String errorMsg = super.getMessage();
-		return "SSocketException socket[通讯异常]: " + errorMsg;
-	}
+    private static final long serialVersionUID = 1L;
 
-	public void printStackTrace(){
-		log.error("SSocketException[通讯异常]");
-		super.printStackTrace();
-	}
-	
+    private static Log log = LogFactory.getLog(SSocketException.class);
+
+    public SSocketException() {
+        super();
+    }
+
+    public SSocketException(String ems) {
+        super(ems);
+    }
+
+    @Override
+    public String getMessage() {
+        String errorMsg = super.getMessage();
+        return "SSocketException socket[閫氳寮傚父]: " + errorMsg;
+    }
+
+    @Override
+    public void printStackTrace() {
+        log.error("SSocketException[閫氳寮傚父]");
+        super.printStackTrace();
+    }
 
 }

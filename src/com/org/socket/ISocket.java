@@ -6,42 +6,41 @@ import com.org.exception.SSocketException;
 /**
  * @author Nano
  * 
- * ×èÈûºÍ·Ç×èÈû¿Í»§¶ËÓÉ´Ë½Ó¿ÚÅÉÉú
+ * é˜»å¡å’Œéé˜»å¡å®¢æˆ·ç«¯ç”±æ­¤æ¥å£æ´¾ç”Ÿ
  * 
  * @since 2011-09-08 10:09:09
  * 
  */
 public interface ISocket {
-	
-	/**
-	 * @param hostName Ö÷»ú
-	 * @param port ¶Ë¿Ú
-	 * @param timeoutSeconds ÃëÎªµ¥Î»
-	 * @throws SSocketConnTimeoutException
-	 * @throws EaiRuntimeException
-	 */
-	public void connect(String hostName,int port,int timeoutSeconds) throws SSocketConnTimeoutException,SSocketException;
-	
-	/**
-	 * @return ¶ÁÈ¡×Ö½ÚÊı×é
-	 * 
-	 * @throws SSocketException
-	 */
-	public byte[] read() throws SSocketException;
-	
-	/**
-	 * 
-	 * @param data ´ı·¢ËÍµÄÊı¾İ
-	 * 
-	 * @param flush ÊÇ·ñÒ»´Î·¢ËÍ
-	 * 
-	 * @throws SSocketException
-	 */
-	public void write(byte[] data,boolean flush) throws SSocketException;
-	
-	public void close()throws SSocketException;
-	
-	public boolean isClose()throws SSocketException;
-	
+
+    /**
+     * @param hostName ä¸»æœº
+     * @param port ç«¯å£
+     * @param timeoutSeconds ç§’ä¸ºå•ä½
+     * @throws SSocketConnTimeoutException
+     * @throws EaiRuntimeException
+     */
+    public void connect(String hostName, int port, int timeoutSeconds) throws SSocketConnTimeoutException, SSocketException;
+
+    /**
+     * @return è¯»å–å­—èŠ‚æ•°ç»„
+     * 
+     * @throws SSocketException
+     */
+    public byte[] read() throws SSocketException;
+
+    /**
+     * 
+     * @param data å¾…å‘é€çš„æ•°æ®
+     * 
+     * @param flush æ˜¯å¦ä¸€æ¬¡å‘é€
+     * 
+     * @throws SSocketException
+     */
+    public void write(byte[] data, boolean flush) throws SSocketException;
+
+    public void close() throws SSocketException;
+
+    public boolean isClose() throws SSocketException;
 
 }

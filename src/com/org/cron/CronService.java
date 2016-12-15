@@ -4,46 +4,47 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.org.exception.BusinessException;
+
 /**
  * @author Nano
  * 
- * ¶¨Ê±·şÎñµÄ³éÏó
+ * å®šæ—¶æœåŠ¡çš„æŠ½è±¡
  */
 public abstract class CronService implements Runnable {
 
-	private Log log = LogFactory.getLog(CronServiceFactory.class);
-	
-	protected String cronDate;
-	
-	protected String cronDateTime;
-	
-	public String getCronDate() {
-		return cronDate;
-	}
+    private Log log = LogFactory.getLog(CronServiceFactory.class);
 
-	public void setCronDate(String cronDate) {
-		this.cronDate = cronDate;
-	}
+    protected String cronDate;
 
-	public String getCronDateTime() {
-		return cronDateTime;
-	}
+    protected String cronDateTime;
 
-	public void setCronDateTime(String cronDateTime) {
-		this.cronDateTime = cronDateTime;
-	}
+    public String getCronDate() {
+        return this.cronDate;
+    }
 
-	public abstract void service() throws BusinessException;
-	
-	
-	public void run() {
-		try{
-			log.info("¿ªÊ¼Ö´ĞĞ·şÎñ("+this.getClass().getName()+")");
-			this.service();
-			log.info("½áÊøÖ´ĞĞ·şÎñ("+this.getClass().getName()+")");
-		}catch(BusinessException ce){
-			ce.printStackTrace();
-		}
-	}
+    public void setCronDate(String cronDate) {
+        this.cronDate = cronDate;
+    }
+
+    public String getCronDateTime() {
+        return this.cronDateTime;
+    }
+
+    public void setCronDateTime(String cronDateTime) {
+        this.cronDateTime = cronDateTime;
+    }
+
+    public abstract void service() throws BusinessException;
+
+    @Override
+    public void run() {
+        try {
+            this.log.info("å¼€å§‹æ‰§è¡ŒæœåŠ¡(" + this.getClass().getName() + ")");
+            this.service();
+            this.log.info("ç»“æŸæ‰§è¡ŒæœåŠ¡(" + this.getClass().getName() + ")");
+        } catch (BusinessException ce) {
+            ce.printStackTrace();
+        }
+    }
 
 }

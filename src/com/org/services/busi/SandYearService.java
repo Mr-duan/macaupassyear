@@ -4,9 +4,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -17,459 +14,461 @@ import com.org.dao.CommonDao;
 import com.org.exception.SvcException;
 import com.org.util.SpringUtil;
 import com.org.utils.StringUtil;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 /**
- * …ºµ¬ƒÍª·
+ * ÊùâÂæ∑Âπ¥‰ºö
  *
  */
 @Service
 public class SandYearService {
-	
-	public JSONObject queryYearMember( String phoneNumber, String type){
-		JSONObject response = null;
-		JSONArray allSym = new JSONArray();
-		try {
-			response = new JSONObject();			
-			if("1".equals(type)){//µ«¬º,∑µªÿ”√ªß–≈œ¢,¥ÛΩ±–≈œ¢
-				String sql = "select a.*, b.roleflag from smp_year_member a left join smp_year_manager b on a.moible = b.moible where a.moible=?";
-				Map<Integer , Object> params = new HashMap<Integer, Object>();
-				params.put(1, phoneNumber);
-				CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");
-				JSONObject sym = commonDao.querySingle(sql, params, false);
-				if(sym==null){
-					response.put(CommonConstant.RESP_CODE, "10S710");
-					response.put(CommonConstant.RESP_MSG, "”√ªß≤ª¥Ê‘⁄");
-				}else{					
-					String queryRewardSql = "select a.*, b.roleflag from smp_year_member a left join smp_year_manager b on a.moible = b.moible where a.rewardstate=? or a.rewardstate=? or a.rewardstate=?";
-					Map<Integer , Object> rewardParam = new HashMap<Integer, Object>();
-					rewardParam.put(1, "t");
-					rewardParam.put(2, "1");
-					rewardParam.put(3, "2");
-					JSONArray rewardArrary = commonDao.queryJSONArray(queryRewardSql, rewardParam, false);
-					
-					JSONObject json = commonDao.querySingle("select count(*) from smp_year_member", new HashMap<Integer, Object>(), false);
-					sym.put("count", json.getString("count(*)"));
-					
-					response.put("usermeg", sym);
-					response.put("rewardarrary", rewardArrary);
-					
-					CommonContainer.saveData(CommonConstant.TER_12, rewardArrary);
-					
-					response.put(CommonConstant.RESP_CODE, "10000");
-					response.put(CommonConstant.RESP_MSG, "≥…π¶");				
-				}			
-			}else if ("2".equals(type)) {//≤È—ØÕ¨◊¿µƒ”√ªß
-				String sql = "select * from smp_year_member where moible=?";
-				Map<Integer , Object> params = new HashMap<Integer, Object>();
-				params.put(1, phoneNumber);
-				CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");
-				JSONObject sym = commonDao.querySingle(sql, params, false);
-				
-				String sql1="select * from smp_year_member where tableNum=? and company=?";//Õ¨◊¿–≈œ¢
-				Map<Integer , Object> param = new HashMap<Integer, Object>();
-				param.put(1, sym.getString("tablenum"));
-				param.put(2, sym.getString("company"));
-				allSym = commonDao.queryJSONArray(sql1, param, false);
-				response.put("usermeg", sym);
-				response.put("resultInfo", allSym);
-				response.put(CommonConstant.RESP_CODE, "10000");
-				response.put(CommonConstant.RESP_MSG, "≥…π¶");	
-			}				
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return response;
-	}
-	
-	//ƒÍª·Ω⁄ƒøÕ∂∆±
-	public JSONObject updateProgram(String phoneNumber,String pnumber, String type){
-		JSONObject response = new JSONObject();
-		try {
-			if("1".equals(type)){//Õ∂∆±£¨≤¢∑µªÿÕ∂∆±Ω·π˚
-				String sql = "select * from smp_year_member where moible=?";
-				Map<Integer , Object> params = new HashMap<Integer, Object>();
-				params.put(1, phoneNumber);
-				CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");			
-				JSONObject sym = commonDao.querySingle(sql, params, false);
-				if(StringUtils.isEmpty(sym.getString("pname"))){ //√ª”–Õ∂π˝∆±
-					String upYearProgramSql = "update smp_year_program set pcount=pcount+1 where pnumber=?";//∏¸–¬Ω⁄ƒø∆± ˝
-					Map<Integer , Object> upparam = new HashMap<Integer, Object>();
-					upparam.put(1, pnumber);
-					commonDao.update(upYearProgramSql, upparam);
-					
-					//String queryYearP = "select * from smp_year_program where pnumber=?";//≤È—ØΩ⁄ƒø√˚≥∆
-					//Map<Integer , Object> queryparam = new HashMap<Integer, Object>();
-					//upparam.put(1, pnumber);
-					//JSONObject yearProgram = commonDao.querySingle(queryYearP, queryparam, false);
-					
-					String upYearMemberSql = "update smp_year_member set pname=? where moible=?";//∏¸–¬”√ªßÕ∂∆±Ω⁄ƒø
-					Map<Integer , Object> upYearMemberparam = new HashMap<Integer, Object>();
-					upYearMemberparam.put(1, pnumber);
-					upYearMemberparam.put(2, phoneNumber);
-					commonDao.update(upYearMemberSql, upYearMemberparam);
-					
-					String queryProsql = "select * from smp_year_program order by pnumber";//≤È—ØÕ∂∆±Ω·π˚
-					JSONArray allProgram = commonDao.queryJSONArray(queryProsql, new HashMap<Integer, Object>(),false);				
-					response.put("respCode", "10000");
-					response.put("respMsg", "Õ∂∆±≥…π¶");
-					response.put("resultInfo", allProgram);
-				}else{//Õ∂π˝∆±µƒ÷±Ω”∑µªÿÕ∂∆±Ω·π˚
-					String queryProsql = "select * from smp_year_program order by pnumber";//≤È—ØÕ∂∆±Ω·π˚
-					JSONArray allProgram = commonDao.queryJSONArray(queryProsql, new HashMap<Integer, Object>(),false);				
-					response.put("respCode", "10S708");
-					response.put("respMsg", "“—Õ∂∆±");
-					response.put("resultInfo", allProgram);
-				}
-			}else if("2".equals(type)){//≤È—ØÕ∂∆±Ω·π˚
-				String sql="select * from smp_year_program order by pnumber";
-				CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");
-				JSONArray allProgram = commonDao.queryJSONArray(sql, new HashMap<Integer, Object>(),false);
-				response.put("respCode", "10000");
-				response.put("respMsg", "≥…π¶");
-				response.put("resultInfo", allProgram);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return response;	
-	}
-	
-	//ƒÍª·Ω⁄ƒøÕ∂∆±
-	public void updateProgramStartFlag(String isstart,String pnumber){
-		String sql="update smp_year_program set isstart= ? where pnumber = ?";
-		Map<Integer , Object> params = new HashMap<Integer, Object>();
-		params.put(1, isstart);
-		params.put(2, pnumber);
-		
-		CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");
-		try {
-			commonDao.update(sql, params);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public JSONObject userDraw(String phoneNumber,
-			String level, String type,String currentPage,String pageLine){
-		JSONObject response = new JSONObject();
-		try {
-			if("1".equals(type)){ //≤È—Ø”√ªß÷–Ω±£®Œ“µƒΩ±∆∑£©
-				String sql = "select * from smp_year_member where moible=?";
-				Map<Integer , Object> params = new HashMap<Integer, Object>();
-				params.put(1, phoneNumber);
-				CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");		
-				JSONObject yearMember = commonDao.querySingle(sql, params, false);
-				if(yearMember==null){
-					response.put(CommonConstant.RESP_CODE, "10S710");
-					response.put(CommonConstant.RESP_MSG, "”√ªß≤ª¥Ê‘⁄");
-				}else{
-					if(StringUtils.isNotBlank(yearMember.getString("rewardstate"))){
-						response.put("resultInfo",yearMember);
-						response.put("respCode", "10000");
-						response.put("respMsg", "≥…π¶");
-					}else{
-						response.put("respCode", "10S711");
-						response.put("respMsg", "Œ¥÷–Ω±");
-					}
-				}
-			}else if("2".equals(type)){ //Õ¯’æ≥ÈΩ±
-				String sql = "select * from smp_year_prize where pname=?";//≤È—ØΩ±œÓ
-				Map<Integer , Object> params = new HashMap<Integer, Object>();
-				params.put(1, level);
-				CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");		
-				JSONObject syPrize = commonDao.querySingle(sql, params, false);
-				if("0".equals(syPrize.getString("pstatus"))){//≈–∂œ∏√Ω±œÓ≥È»°◊¥Ã¨£¨∑¿÷π÷ÿ∏¥≥ÈΩ±
-					response.put("respCode", "10S716");
-					response.put("respMsg", "∏√Ω±œÓ“—æ≠≥È»°,≤ªƒ‹÷ÿ∏¥≥ÈΩ±");
-					return response;
-				}else{
-					JSONArray resultInfo = new JSONArray();
-					String allSql = "select * from smp_year_member where rewardstate is null and ischeck is null";//≤È—ØÀ˘”–Œ¥÷–Ω±”√ªß
-					JSONArray allSym = commonDao.queryJSONArray(allSql, new HashMap<Integer, Object>(),false);
-					int total = Integer.parseInt(syPrize.getString("pnumber"));
-					
-					String ssql = "select * from smp_year_member where ischeck=?";
-					Map<Integer , Object> sparam = new HashMap<Integer, Object>();
-					sparam.put(1, level);
-					JSONArray sMember = commonDao.queryJSONArray(ssql, sparam, false);
-					
-					total = total-sMember.size();
-					
-					int[] a = StringUtil.randomCommon(0, allSym.size(), total);
-					for(int i=0;i<a.length;i++){
-						int num = a[i];
-						JSONObject sym = allSym.getJSONObject(num);
-						resultInfo.add(sym);
-						String upUserAwardSql = "update smp_year_member set rewardState=? where moible=?";
-						Map<Integer , Object> upparam = new HashMap<Integer, Object>();
-						upparam.put(1, level);
-						upparam.put(2, sym.getString("moible"));
-						commonDao.update(upUserAwardSql, upparam);
-					}
-					if(sMember.size()>0){						
-						for(int i=0;i<sMember.size();i++){
-							resultInfo.add(sMember.getJSONObject(i));
-							String suSql = "update smp_year_member set rewardState=? where moible=?";
-							Map<Integer , Object> suparam = new HashMap<Integer, Object>();
-							suparam.put(1, level);
-							suparam.put(2, sMember.getJSONObject(i).get("moible"));
-							commonDao.update(suSql, suparam);
-						}												
-					}
-					
-					String updateYearPrizeSql = "update smp_year_prize set pstatus=? where pname=?";
-					Map<Integer , Object> upYearPrizeParam = new HashMap<Integer, Object>();
-					upYearPrizeParam.put(1, "0");
-					upYearPrizeParam.put(2, level);
-					commonDao.update(updateYearPrizeSql, upYearPrizeParam);
-					
-					if("5".equals(level)){
-						CommonContainer.saveData(CommonConstant.FIFTH_USERLIST, resultInfo);
-					}else if("4".equals(level)){
-						CommonContainer.saveData(CommonConstant.FOURTH_USERLIST, resultInfo);
-					}else if("3".equals(level)){
-						CommonContainer.saveData(CommonConstant.THIRD_USERLIST, resultInfo);
-					}else if("2".equals(level)){
-						CommonContainer.saveData(CommonConstant.SECOND_USERLIST, resultInfo);
-					}else if("1".equals(level)){
-						CommonContainer.saveData(CommonConstant.FIRST_USERLIST, resultInfo);
-					}else if("t".equals(level)){
-						CommonContainer.saveData(CommonConstant.LUCKY_USERLIST, resultInfo);
-					}				
-					
-					response.put("respCode", "10000");
-					response.put("respMsg", "≥…π¶");
-					response.put("resultInfo",resultInfo);
-				}
-			}else if("3".equals(type)){ //≤È—ØÀ˘”–÷–Ω±”√ªß(∑÷Ω±œÓ)
-				CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");		
-				String fivesql = "select memname from smp_year_member where rewardstate ='5'";//5µ»Ω±”√ªß
-				JSONArray fivePrizeArray = commonDao.queryJSONArray(fivesql, new HashMap<Integer, Object>(),false);
-				String fivePrize = arrayToString(fivePrizeArray);
-				response.put("fivePrize",fivePrize);
-				
-				String foursql = "select memname from smp_year_member where rewardstate ='4'";//≤È—ØÀ˘”–÷–Ω±”√ªß
-				JSONArray forePrizeArray = commonDao.queryJSONArray(foursql, new HashMap<Integer, Object>(),false);
-				String forePrize = arrayToString(forePrizeArray);
-				response.put("forePrize",forePrize);
-				
-				String threesql = "select memname from smp_year_member where rewardstate ='3'";//3µ»Ω±”√ªß
-				JSONArray threePrizeArray = commonDao.queryJSONArray(threesql, new HashMap<Integer, Object>(),false);
-				String threePrize = arrayToString(threePrizeArray);
-				response.put("threePrize",threePrize);
-				
-				String twosql = "select memname from smp_year_member where rewardstate ='2'";//2µ»Ω±”√ªß
-				JSONArray twoPrizeArray = commonDao.queryJSONArray(twosql, new HashMap<Integer, Object>(),false);
-				String twoPrize = arrayToString(twoPrizeArray);
-				response.put("twoPrize",twoPrize);
-				
-				String onesql = "select memname from smp_year_member where rewardstate ='1'";//1µ»Ω±”√ªß
-				JSONArray onePrizeArray = commonDao.queryJSONArray(onesql, new HashMap<Integer, Object>(),false);
-				String onePrize = arrayToString(onePrizeArray);
-				response.put("onePrize",onePrize);
-				
-				String tsql = "select memname from smp_year_member where rewardstate ='t'";//1µ»Ω±”√ªß
-				JSONArray tPrizeArray = commonDao.queryJSONArray(tsql, new HashMap<Integer, Object>(),false);
-				String tPrize = arrayToString(tPrizeArray);
-				response.put("tPrize",tPrize);
-				
-				response.put("respCode", "10000");
-				response.put("respMsg", "≥…π¶");
-				
-			}else if("5".equals(type)){ //∑÷“≥≤È—Ø
-				CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");
-				String allsql = "select * from smp_year_member where rewardstate is not null";
-				JSONArray allSym = commonDao.queryJSONArray(allsql, new HashMap<Integer, Object>(),false);
-				
-				int nowpage = Integer.valueOf(currentPage);
-				int count = Integer.valueOf(pageLine);			
-				int totalcount = allSym.size();				
-				int pageStart = 0;
-				int pageEnd = 0;
-				int totalpage =0;
-				if(totalcount>0){
-					totalpage = (int) Math.ceil((double) totalcount
-							/ (double) count);
-				}
-				if(nowpage ==1){
-					pageStart =0;
-					pageEnd = count;
-				}else if(nowpage >1){
-					if(nowpage == totalpage){
-						pageStart = (totalpage - 1)*count;
-						pageEnd =totalcount; 
-					}else {
-						pageStart = (nowpage - 1)*count;
-						pageEnd =nowpage*count; 
-					}	
-				}
-				String sql = "select * from ( select e.*, rownum rn from (select a.* from smp_year_member a where a.rewardstate is not null)e where rownum <=?) where rn >?";
-				Map<Integer , Object> pagingParam = new HashMap<Integer, Object>();
-				pagingParam.put(1, pageEnd);
-				pagingParam.put(2, pageStart);
-				JSONArray pagingSym = commonDao.queryJSONArray(sql, pagingParam,false);
-				response.put("respCode", "10000");
-				response.put("respMsg", "≥…π¶");
-				response.put("resultInfo",pagingSym);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return response;
-	}
-	
-	public JSONObject yearManage(String sql,Map<Integer , Object> params, String type){
-		JSONObject response = new JSONObject();
-		try {
-			response.put("respCode", "10S713");
-			response.put("respMsg", "ƒÍª·–≈œ¢π‹¿Ì ß∞‹");
-			CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");
-			if("2".equals(type)){//–¬‘ˆ
-				boolean result = commonDao.addSingle(sql, params);
-				if(result){
-					response.put("respCode", "10000");
-					response.put("respMsg", "≥…π¶");
-				}
-			}else if("1".equals(type)){//–ﬁ∏ƒ
-				 commonDao.update(sql, params);
-                 response.put("respCode", "10000");
-			     response.put("respMsg", "≥…π¶");		
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return response;
-	}
-	
-	public JSONObject acceptAward(String phoneNumber){
-		JSONObject response = new JSONObject();
-		try {
-			String sql = "select * from smp_year_member where moible=?";
-			Map<Integer , Object> params = new HashMap<Integer, Object>();
-			params.put(1, phoneNumber);
-			CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");
-			JSONObject sym = commonDao.querySingle(sql, params, false);
-			if(sym==null){
-				response.put(CommonConstant.RESP_CODE, "10S710");
-				response.put(CommonConstant.RESP_MSG, "”√ªß≤ª¥Ê‘⁄");
-			}else {
-				if(StringUtils.isBlank(sym.getString("rewardstate"))){//≈–∂œ «∑Ò÷–Ω±
-					response.put("respCode", "10S711");
-					response.put("respMsg","Œ¥÷–Ω±");
-				}else{
-					if("0".equals(sym.getString("isprize"))){//“—¡ÏΩ±
-						response.put("respCode", "10S714");
-						response.put("respMsg","ƒ˙“—¡Ïπ˝Ω±");
-					}else{
-						String upsql="update smp_year_member set isprize=? where moible=?";
-						Map<Integer , Object> param = new HashMap<Integer, Object>();
-						param.put(1, "0");
-						param.put(2, phoneNumber);
-						commonDao.update(upsql, param);
-						response.put("respCode", "10000");
-						response.put("respMsg", "≥…π¶");
-					}
-				}
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return response;
-	}
-	
-	public JSONObject queryAwardUser(String moible){
 
-		JSONObject response = new JSONObject();
-		try {
-			String sql = "select * from smp_year_member where moible=?";
-			Map<Integer , Object> params = new HashMap<Integer, Object>();
-			params.put(1, moible);
-			CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");
-			JSONObject sym = commonDao.querySingle(sql, params, false);
-			if(sym==null){
-				response.put(CommonConstant.RESP_CODE, "10S710");
-				response.put(CommonConstant.RESP_MSG, "”√ªß≤ª¥Ê‘⁄");
-			}else {
-				response.put(CommonConstant.RESP_CODE, "100000");
-				response.put(CommonConstant.RESP_MSG, "");
-				response.put("aim", sym);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return response;
-	
-	}
-	
-	public static String arrayToString(JSONArray array){
-		String s = "";
-		if(array==null||array.size()<=0){
-			s="";
-		}else{
-			StringBuffer sb = new StringBuffer();
-			for(int i=0;i<array.size();i++){
-				sb.append(array.get(i).toString()).append("|");
-			}
-			s = sb.toString().substring(0, sb.toString().length()-1);
-		}		
-		return s;
-	}
+    public JSONObject queryYearMember(String phoneNumber, String type) {
+        JSONObject response = null;
+        JSONArray allSym = new JSONArray();
+        try {
+            response = new JSONObject();
+            if ("1".equals(type)) {// ÁôªÂΩï,ËøîÂõûÁî®Êà∑‰ø°ÊÅØ,Â§ßÂ•ñ‰ø°ÊÅØ
+                String sql = "select a.*, b.roleflag from smp_year_member a left join smp_year_manager b on a.moible = b.moible where a.moible=?";
+                Map<Integer, Object> params = new HashMap<Integer, Object>();
+                params.put(1, phoneNumber);
+                CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+                JSONObject sym = commonDao.querySingle(sql, params, false);
+                if (sym == null) {
+                    response.put(CommonConstant.RESP_CODE, "10S710");
+                    response.put(CommonConstant.RESP_MSG, "Áî®Êà∑‰∏çÂ≠òÂú®");
+                } else {
+                    String queryRewardSql = "select a.*, b.roleflag from smp_year_member a left join smp_year_manager b on a.moible = b.moible where a.rewardstate=? or a.rewardstate=? or a.rewardstate=?";
+                    Map<Integer, Object> rewardParam = new HashMap<Integer, Object>();
+                    rewardParam.put(1, "t");
+                    rewardParam.put(2, "1");
+                    rewardParam.put(3, "2");
+                    JSONArray rewardArrary = commonDao.queryJSONArray(queryRewardSql, rewardParam, false);
 
-	public JSONObject queryCurrentAward() {
-		String sql = "select * from SMP_YEAR_CURRENT_AWARD";
-		CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");
-		JSONObject res = new JSONObject();
-		try {
-			res = commonDao.querySingle(sql, null, null);
-		} catch (SvcException e) {
-			e.printStackTrace();
-			res.put(CommonConstant.RESP_CODE, "DB00002");
-			res.put(CommonConstant.RESP_MSG, " ˝æ›ø‚≤È—ØΩ·π˚“Ï≥£");
-		}
-		return res;
-	}
+                    JSONObject json = commonDao.querySingle("select count(*) from smp_year_member", new HashMap<Integer, Object>(), false);
+                    sym.put("count", json.getString("count(*)"));
 
-	public void saveCurrentAward(String currentAward, String isStart) {
-		CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");
-		Map<Integer, Object> params = new HashMap<Integer, Object>();
-		params.put(1, currentAward);
-		params.put(2, isStart);
-		
-		if(queryCurrentAward() == null) {
-			// »Áπ˚≤ª¥Ê‘⁄æÕ≤Â»Î
-			String sql = "insert into SMP_YEAR_CURRENT_AWARD values (?, ?)";
-			try {
-				commonDao.addSingle(sql, params);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			// ¥Ê‘⁄æÕupdate
-			String sql = "update SMP_YEAR_CURRENT_AWARD set current_award = ?, is_start = ?";
-			try {
-				commonDao.update(sql, params);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-	}
-	
-	public JSONArray queryuser(String key, String value){
-		String[] names = value.split("\\,");
-		JSONArray testarr = new JSONArray();
-		JSONObject temp = null;
-		for (int i = 0; i < names.length; i++) {
-			temp = UserManager.getUser(names[i]);
-			if(temp != null && !temp.isEmpty()) {
-				testarr.add(temp);
-			}
-		}
-		if(testarr != null && !testarr.isEmpty()){
-			CommonContainer.saveData(key, testarr);
-		}
-		return testarr;
-	}
+                    response.put("usermeg", sym);
+                    response.put("rewardarrary", rewardArrary);
+
+                    CommonContainer.saveData(CommonConstant.TER_12, rewardArrary);
+
+                    response.put(CommonConstant.RESP_CODE, "10000");
+                    response.put(CommonConstant.RESP_MSG, "ÊàêÂäü");
+                }
+            } else if ("2".equals(type)) {// Êü•ËØ¢ÂêåÊ°åÁöÑÁî®Êà∑
+                String sql = "select * from smp_year_member where moible=?";
+                Map<Integer, Object> params = new HashMap<Integer, Object>();
+                params.put(1, phoneNumber);
+                CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+                JSONObject sym = commonDao.querySingle(sql, params, false);
+
+                String sql1 = "select * from smp_year_member where tableNum=? and company=?";// ÂêåÊ°å‰ø°ÊÅØ
+                Map<Integer, Object> param = new HashMap<Integer, Object>();
+                param.put(1, sym.getString("tablenum"));
+                param.put(2, sym.getString("company"));
+                allSym = commonDao.queryJSONArray(sql1, param, false);
+                response.put("usermeg", sym);
+                response.put("resultInfo", allSym);
+                response.put(CommonConstant.RESP_CODE, "10000");
+                response.put(CommonConstant.RESP_MSG, "ÊàêÂäü");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    // Âπ¥‰ºöËäÇÁõÆÊäïÁ•®
+    public JSONObject updateProgram(String phoneNumber, String pnumber, String type) {
+        JSONObject response = new JSONObject();
+        try {
+            if ("1".equals(type)) {// ÊäïÁ•®ÔºåÂπ∂ËøîÂõûÊäïÁ•®ÁªìÊûú
+                String sql = "select * from smp_year_member where moible=?";
+                Map<Integer, Object> params = new HashMap<Integer, Object>();
+                params.put(1, phoneNumber);
+                CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+                JSONObject sym = commonDao.querySingle(sql, params, false);
+                if (StringUtils.isEmpty(sym.getString("pname"))) { // Ê≤°ÊúâÊäïËøáÁ•®
+                    String upYearProgramSql = "update smp_year_program set pcount=pcount+1 where pnumber=?";// Êõ¥Êñ∞ËäÇÁõÆÁ•®Êï∞
+                    Map<Integer, Object> upparam = new HashMap<Integer, Object>();
+                    upparam.put(1, pnumber);
+                    commonDao.update(upYearProgramSql, upparam);
+
+                    // String queryYearP = "select * from smp_year_program where pnumber=?";//Êü•ËØ¢ËäÇÁõÆÂêçÁß∞
+                    // Map<Integer , Object> queryparam = new HashMap<Integer, Object>();
+                    // upparam.put(1, pnumber);
+                    // JSONObject yearProgram = commonDao.querySingle(queryYearP, queryparam, false);
+
+                    String upYearMemberSql = "update smp_year_member set pname=? where moible=?";// Êõ¥Êñ∞Áî®Êà∑ÊäïÁ•®ËäÇÁõÆ
+                    Map<Integer, Object> upYearMemberparam = new HashMap<Integer, Object>();
+                    upYearMemberparam.put(1, pnumber);
+                    upYearMemberparam.put(2, phoneNumber);
+                    commonDao.update(upYearMemberSql, upYearMemberparam);
+
+                    String queryProsql = "select * from smp_year_program order by pnumber";// Êü•ËØ¢ÊäïÁ•®ÁªìÊûú
+                    JSONArray allProgram = commonDao.queryJSONArray(queryProsql, new HashMap<Integer, Object>(), false);
+                    response.put("respCode", "10000");
+                    response.put("respMsg", "ÊäïÁ•®ÊàêÂäü");
+                    response.put("resultInfo", allProgram);
+                } else {// ÊäïËøáÁ•®ÁöÑÁõ¥Êé•ËøîÂõûÊäïÁ•®ÁªìÊûú
+                    String queryProsql = "select * from smp_year_program order by pnumber";// Êü•ËØ¢ÊäïÁ•®ÁªìÊûú
+                    JSONArray allProgram = commonDao.queryJSONArray(queryProsql, new HashMap<Integer, Object>(), false);
+                    response.put("respCode", "10S708");
+                    response.put("respMsg", "Â∑≤ÊäïÁ•®");
+                    response.put("resultInfo", allProgram);
+                }
+            } else if ("2".equals(type)) {// Êü•ËØ¢ÊäïÁ•®ÁªìÊûú
+                String sql = "select * from smp_year_program order by pnumber";
+                CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+                JSONArray allProgram = commonDao.queryJSONArray(sql, new HashMap<Integer, Object>(), false);
+                response.put("respCode", "10000");
+                response.put("respMsg", "ÊàêÂäü");
+                response.put("resultInfo", allProgram);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    // Âπ¥‰ºöËäÇÁõÆÊäïÁ•®
+    public void updateProgramStartFlag(String isstart, String pnumber) {
+        String sql = "update smp_year_program set isstart= ? where pnumber = ?";
+        Map<Integer, Object> params = new HashMap<Integer, Object>();
+        params.put(1, isstart);
+        params.put(2, pnumber);
+
+        CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+        try {
+            commonDao.update(sql, params);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public JSONObject userDraw(String phoneNumber, String level, String type, String currentPage, String pageLine) {
+        JSONObject response = new JSONObject();
+        try {
+            if ("1".equals(type)) { // Êü•ËØ¢Áî®Êà∑‰∏≠Â•ñÔºàÊàëÁöÑÂ•ñÂìÅÔºâ
+                String sql = "select * from smp_year_member where moible=?";
+                Map<Integer, Object> params = new HashMap<Integer, Object>();
+                params.put(1, phoneNumber);
+                CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+                JSONObject yearMember = commonDao.querySingle(sql, params, false);
+                if (yearMember == null) {
+                    response.put(CommonConstant.RESP_CODE, "10S710");
+                    response.put(CommonConstant.RESP_MSG, "Áî®Êà∑‰∏çÂ≠òÂú®");
+                } else {
+                    if (StringUtils.isNotBlank(yearMember.getString("rewardstate"))) {
+                        response.put("resultInfo", yearMember);
+                        response.put("respCode", "10000");
+                        response.put("respMsg", "ÊàêÂäü");
+                    } else {
+                        response.put("respCode", "10S711");
+                        response.put("respMsg", "Êú™‰∏≠Â•ñ");
+                    }
+                }
+            } else if ("2".equals(type)) { // ÁΩëÁ´ôÊäΩÂ•ñ
+                String sql = "select * from smp_year_prize where pname=?";// Êü•ËØ¢Â•ñÈ°π
+                Map<Integer, Object> params = new HashMap<Integer, Object>();
+                params.put(1, level);
+                CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+                JSONObject syPrize = commonDao.querySingle(sql, params, false);
+                if ("0".equals(syPrize.getString("pstatus"))) {// Âà§Êñ≠ËØ•Â•ñÈ°πÊäΩÂèñÁä∂ÊÄÅÔºåÈò≤Ê≠¢ÈáçÂ§çÊäΩÂ•ñ
+                    response.put("respCode", "10S716");
+                    response.put("respMsg", "ËØ•Â•ñÈ°πÂ∑≤ÁªèÊäΩÂèñ,‰∏çËÉΩÈáçÂ§çÊäΩÂ•ñ");
+                    return response;
+                } else {
+                    JSONArray resultInfo = new JSONArray();
+                    String allSql = "select * from smp_year_member where rewardstate is null and ischeck is null";// Êü•ËØ¢ÊâÄÊúâÊú™‰∏≠Â•ñÁî®Êà∑
+                    JSONArray allSym = commonDao.queryJSONArray(allSql, new HashMap<Integer, Object>(), false);
+                    int total = Integer.parseInt(syPrize.getString("pnumber"));
+
+                    String ssql = "select * from smp_year_member where ischeck=?";
+                    Map<Integer, Object> sparam = new HashMap<Integer, Object>();
+                    sparam.put(1, level);
+                    JSONArray sMember = commonDao.queryJSONArray(ssql, sparam, false);
+
+                    total = total - sMember.size();
+
+                    int[] a = StringUtil.randomCommon(0, allSym.size(), total);
+                    for (int i = 0; i < a.length; i++) {
+                        int num = a[i];
+                        JSONObject sym = allSym.getJSONObject(num);
+                        resultInfo.add(sym);
+                        String upUserAwardSql = "update smp_year_member set rewardState=? where moible=?";
+                        Map<Integer, Object> upparam = new HashMap<Integer, Object>();
+                        upparam.put(1, level);
+                        upparam.put(2, sym.getString("moible"));
+                        commonDao.update(upUserAwardSql, upparam);
+                    }
+                    if (sMember.size() > 0) {
+                        for (int i = 0; i < sMember.size(); i++) {
+                            resultInfo.add(sMember.getJSONObject(i));
+                            String suSql = "update smp_year_member set rewardState=? where moible=?";
+                            Map<Integer, Object> suparam = new HashMap<Integer, Object>();
+                            suparam.put(1, level);
+                            suparam.put(2, sMember.getJSONObject(i).get("moible"));
+                            commonDao.update(suSql, suparam);
+                        }
+                    }
+
+                    String updateYearPrizeSql = "update smp_year_prize set pstatus=? where pname=?";
+                    Map<Integer, Object> upYearPrizeParam = new HashMap<Integer, Object>();
+                    upYearPrizeParam.put(1, "0");
+                    upYearPrizeParam.put(2, level);
+                    commonDao.update(updateYearPrizeSql, upYearPrizeParam);
+
+                    if ("5".equals(level)) {
+                        CommonContainer.saveData(CommonConstant.FIFTH_USERLIST, resultInfo);
+                    } else if ("4".equals(level)) {
+                        CommonContainer.saveData(CommonConstant.FOURTH_USERLIST, resultInfo);
+                    } else if ("3".equals(level)) {
+                        CommonContainer.saveData(CommonConstant.THIRD_USERLIST, resultInfo);
+                    } else if ("2".equals(level)) {
+                        CommonContainer.saveData(CommonConstant.SECOND_USERLIST, resultInfo);
+                    } else if ("1".equals(level)) {
+                        CommonContainer.saveData(CommonConstant.FIRST_USERLIST, resultInfo);
+                    } else if ("t".equals(level)) {
+                        CommonContainer.saveData(CommonConstant.LUCKY_USERLIST, resultInfo);
+                    }
+
+                    response.put("respCode", "10000");
+                    response.put("respMsg", "ÊàêÂäü");
+                    response.put("resultInfo", resultInfo);
+                }
+            } else if ("3".equals(type)) { // Êü•ËØ¢ÊâÄÊúâ‰∏≠Â•ñÁî®Êà∑(ÂàÜÂ•ñÈ°π)
+                CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+                String fivesql = "select memname from smp_year_member where rewardstate ='5'";// 5Á≠âÂ•ñÁî®Êà∑
+                JSONArray fivePrizeArray = commonDao.queryJSONArray(fivesql, new HashMap<Integer, Object>(), false);
+                String fivePrize = arrayToString(fivePrizeArray);
+                response.put("fivePrize", fivePrize);
+
+                String foursql = "select memname from smp_year_member where rewardstate ='4'";// Êü•ËØ¢ÊâÄÊúâ‰∏≠Â•ñÁî®Êà∑
+                JSONArray forePrizeArray = commonDao.queryJSONArray(foursql, new HashMap<Integer, Object>(), false);
+                String forePrize = arrayToString(forePrizeArray);
+                response.put("forePrize", forePrize);
+
+                String threesql = "select memname from smp_year_member where rewardstate ='3'";// 3Á≠âÂ•ñÁî®Êà∑
+                JSONArray threePrizeArray = commonDao.queryJSONArray(threesql, new HashMap<Integer, Object>(), false);
+                String threePrize = arrayToString(threePrizeArray);
+                response.put("threePrize", threePrize);
+
+                String twosql = "select memname from smp_year_member where rewardstate ='2'";// 2Á≠âÂ•ñÁî®Êà∑
+                JSONArray twoPrizeArray = commonDao.queryJSONArray(twosql, new HashMap<Integer, Object>(), false);
+                String twoPrize = arrayToString(twoPrizeArray);
+                response.put("twoPrize", twoPrize);
+
+                String onesql = "select memname from smp_year_member where rewardstate ='1'";// 1Á≠âÂ•ñÁî®Êà∑
+                JSONArray onePrizeArray = commonDao.queryJSONArray(onesql, new HashMap<Integer, Object>(), false);
+                String onePrize = arrayToString(onePrizeArray);
+                response.put("onePrize", onePrize);
+
+                String tsql = "select memname from smp_year_member where rewardstate ='t'";// 1Á≠âÂ•ñÁî®Êà∑
+                JSONArray tPrizeArray = commonDao.queryJSONArray(tsql, new HashMap<Integer, Object>(), false);
+                String tPrize = arrayToString(tPrizeArray);
+                response.put("tPrize", tPrize);
+
+                response.put("respCode", "10000");
+                response.put("respMsg", "ÊàêÂäü");
+
+            } else if ("5".equals(type)) { // ÂàÜÈ°µÊü•ËØ¢
+                CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+                String allsql = "select * from smp_year_member where rewardstate is not null";
+                JSONArray allSym = commonDao.queryJSONArray(allsql, new HashMap<Integer, Object>(), false);
+
+                int nowpage = Integer.valueOf(currentPage);
+                int count = Integer.valueOf(pageLine);
+                int totalcount = allSym.size();
+                int pageStart = 0;
+                int pageEnd = 0;
+                int totalpage = 0;
+                if (totalcount > 0) {
+                    totalpage = (int) Math.ceil((double) totalcount / (double) count);
+                }
+                if (nowpage == 1) {
+                    pageStart = 0;
+                    pageEnd = count;
+                } else if (nowpage > 1) {
+                    if (nowpage == totalpage) {
+                        pageStart = (totalpage - 1) * count;
+                        pageEnd = totalcount;
+                    } else {
+                        pageStart = (nowpage - 1) * count;
+                        pageEnd = nowpage * count;
+                    }
+                }
+                String sql = "select * from ( select e.*, rownum rn from (select a.* from smp_year_member a where a.rewardstate is not null)e where rownum <=?) where rn >?";
+                Map<Integer, Object> pagingParam = new HashMap<Integer, Object>();
+                pagingParam.put(1, pageEnd);
+                pagingParam.put(2, pageStart);
+                JSONArray pagingSym = commonDao.queryJSONArray(sql, pagingParam, false);
+                response.put("respCode", "10000");
+                response.put("respMsg", "ÊàêÂäü");
+                response.put("resultInfo", pagingSym);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    public JSONObject yearManage(String sql, Map<Integer, Object> params, String type) {
+        JSONObject response = new JSONObject();
+        try {
+            response.put("respCode", "10S713");
+            response.put("respMsg", "Âπ¥‰ºö‰ø°ÊÅØÁÆ°ÁêÜÂ§±Ë¥•");
+            CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+            if ("2".equals(type)) {// Êñ∞Â¢û
+                boolean result = commonDao.addSingle(sql, params);
+                if (result) {
+                    response.put("respCode", "10000");
+                    response.put("respMsg", "ÊàêÂäü");
+                }
+            } else if ("1".equals(type)) {// ‰øÆÊîπ
+                commonDao.update(sql, params);
+                response.put("respCode", "10000");
+                response.put("respMsg", "ÊàêÂäü");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    public JSONObject acceptAward(String phoneNumber) {
+        JSONObject response = new JSONObject();
+        try {
+            String sql = "select * from smp_year_member where moible=?";
+            Map<Integer, Object> params = new HashMap<Integer, Object>();
+            params.put(1, phoneNumber);
+            CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+            JSONObject sym = commonDao.querySingle(sql, params, false);
+            if (sym == null) {
+                response.put(CommonConstant.RESP_CODE, "10S710");
+                response.put(CommonConstant.RESP_MSG, "Áî®Êà∑‰∏çÂ≠òÂú®");
+            } else {
+                if (StringUtils.isBlank(sym.getString("rewardstate"))) {// Âà§Êñ≠ÊòØÂê¶‰∏≠Â•ñ
+                    response.put("respCode", "10S711");
+                    response.put("respMsg", "Êú™‰∏≠Â•ñ");
+                } else {
+                    if ("0".equals(sym.getString("isprize"))) {// Â∑≤È¢ÜÂ•ñ
+                        response.put("respCode", "10S714");
+                        response.put("respMsg", "ÊÇ®Â∑≤È¢ÜËøáÂ•ñ");
+                    } else {
+                        String upsql = "update smp_year_member set isprize=? where moible=?";
+                        Map<Integer, Object> param = new HashMap<Integer, Object>();
+                        param.put(1, "0");
+                        param.put(2, phoneNumber);
+                        commonDao.update(upsql, param);
+                        response.put("respCode", "10000");
+                        response.put("respMsg", "ÊàêÂäü");
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    public JSONObject queryAwardUser(String moible) {
+
+        JSONObject response = new JSONObject();
+        try {
+            String sql = "select * from smp_year_member where moible=?";
+            Map<Integer, Object> params = new HashMap<Integer, Object>();
+            params.put(1, moible);
+            CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+            JSONObject sym = commonDao.querySingle(sql, params, false);
+            if (sym == null) {
+                response.put(CommonConstant.RESP_CODE, "10S710");
+                response.put(CommonConstant.RESP_MSG, "Áî®Êà∑‰∏çÂ≠òÂú®");
+            } else {
+                response.put(CommonConstant.RESP_CODE, "100000");
+                response.put(CommonConstant.RESP_MSG, "");
+                response.put("aim", sym);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+
+    }
+
+    public static String arrayToString(JSONArray array) {
+        String s = "";
+        if (array == null || array.size() <= 0) {
+            s = "";
+        } else {
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < array.size(); i++) {
+                sb.append(array.get(i).toString()).append("|");
+            }
+            s = sb.toString().substring(0, sb.toString().length() - 1);
+        }
+        return s;
+    }
+
+    public JSONObject queryCurrentAward() {
+        String sql = "select * from SMP_YEAR_CURRENT_AWARD";
+        CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+        JSONObject res = new JSONObject();
+        try {
+            res = commonDao.querySingle(sql, null, null);
+        } catch (SvcException e) {
+            e.printStackTrace();
+            res.put(CommonConstant.RESP_CODE, "DB00002");
+            res.put(CommonConstant.RESP_MSG, "Êï∞ÊçÆÂ∫ìÊü•ËØ¢ÁªìÊûúÂºÇÂ∏∏");
+        }
+        return res;
+    }
+
+    public void saveCurrentAward(String currentAward, String isStart) {
+        CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+        Map<Integer, Object> params = new HashMap<Integer, Object>();
+        params.put(1, currentAward);
+        params.put(2, isStart);
+
+        if (queryCurrentAward() == null) {
+            // Â¶ÇÊûú‰∏çÂ≠òÂú®Â∞±ÊèíÂÖ•
+            String sql = "insert into SMP_YEAR_CURRENT_AWARD values (?, ?)";
+            try {
+                commonDao.addSingle(sql, params);
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
+            // Â≠òÂú®Â∞±update
+            String sql = "update SMP_YEAR_CURRENT_AWARD set current_award = ?, is_start = ?";
+            try {
+                commonDao.update(sql, params);
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public JSONArray queryuser(String key, String value) {
+        String[] names = value.split("\\,");
+        JSONArray testarr = new JSONArray();
+        JSONObject temp = null;
+        for (int i = 0; i < names.length; i++) {
+            temp = UserManager.getUser(names[i]);
+            if (temp != null && !temp.isEmpty()) {
+                testarr.add(temp);
+            }
+        }
+        if (testarr != null && !testarr.isEmpty()) {
+            CommonContainer.saveData(key, testarr);
+        }
+        return testarr;
+    }
 }

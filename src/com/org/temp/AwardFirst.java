@@ -2,28 +2,31 @@ package com.org.temp;
 
 import java.util.Map;
 
-import net.sf.json.JSONArray;
-
 import com.org.common.CommonConstant;
 
-/**
- * Ò»µÈ½±
- */
-public class AwardFirst extends ParentAward implements BuMessageHander{
-	private Map<String,String> paramsMap = null;
-	public AwardFirst(){}
-	public AwardFirst(Map<String,String> paramsMap){
-		this.paramsMap = paramsMap;
-	}
-	
-	@Override
-	public JSONArray getMessage() {
-		String level = paramsMap.get("level");
+import net.sf.json.JSONArray;
 
-		// Îª²¹³é½±×öµÄ¼æÈİ¡£
-		String buCounts = paramsMap.get("buCounts");
-		int awardCount = Integer.valueOf(buCounts);
-		
-		return bucj(CommonConstant.FIRST_USERLIST, level, awardCount);
-	}
+/**
+ * ä¸€ç­‰å¥–
+ */
+public class AwardFirst extends ParentAward implements BuMessageHander {
+    private Map<String, String> paramsMap = null;
+
+    public AwardFirst() {
+    }
+
+    public AwardFirst(Map<String, String> paramsMap) {
+        this.paramsMap = paramsMap;
+    }
+
+    @Override
+    public JSONArray getMessage() {
+        String level = this.paramsMap.get("level");
+
+        // ä¸ºè¡¥æŠ½å¥–åšçš„å…¼å®¹ã€‚
+        String buCounts = this.paramsMap.get("buCounts");
+        int awardCount = Integer.valueOf(buCounts);
+
+        return bucj(CommonConstant.FIRST_USERLIST, level, awardCount);
+    }
 }

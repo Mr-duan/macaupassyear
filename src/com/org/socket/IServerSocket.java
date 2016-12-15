@@ -2,26 +2,24 @@ package com.org.socket;
 
 import com.org.exception.SSocketException;
 
-
 /**
  * @author Nano
  * 
- * socket 服务接口
+ * socket 鏈嶅姟鎺ュ彛
  * 
- * 阻塞和非阻塞服务由此接口派生
+ * 闃诲鍜岄潪闃诲鏈嶅姟鐢辨鎺ュ彛娲剧敓
  * 
  * @since 2011-09-08 10:09:09
  *
  */
-public interface IServerSocket extends Runnable{
-	
-	 public void service();
-	 
-	 public void close() throws SSocketException;
-	 
-	 public void start();
-	 
-	 public String getServerInfo()throws SSocketException;
-	 
+public interface IServerSocket extends Runnable {
+
+    public void service();
+
+    public void close() throws SSocketException;
+
+    public void start();
+
+    public String getServerInfo() throws SSocketException;
 
 }

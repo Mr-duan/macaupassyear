@@ -1,65 +1,65 @@
 package com.org.temp;
 
-import net.sf.json.JSONArray;
-
 import com.org.container.UserManager;
 import com.org.utils.StringUtil;
 
+import net.sf.json.JSONArray;
+
 /**
- * ÎåµÈ½±
+ * äº”ç­‰å¥–
  */
 public class ParentAward {
-	/**
-	 * ²¹³é½±
-	 * @param key Ä¿±ê½±Ïî
-	 * @param count ½±ÊıÁ¿
-	 * @return
-	 */
-	public synchronized JSONArray bucj(String key, String level, int count){
-		JSONArray userList = createRandomUser(count);
-		System.out.println("ÖĞ½±Ãûµ¥£½£½£½¡·" + userList.toString());
-		return userList;
-	}
-	
-	/**
-	 * Éú³ÉËæ»úºÅÂë
-	 * 
-	 * @param count
-	 *            Ëæ»úºÅµÄ¸öÊı
-	 * @return
-	 */
-	public JSONArray createRandomUser(int count) {
-		JSONArray noAwardUser = UserManager.getAllNoAwardUser();
-		System.out.println("noAwardUser size ====> " + noAwardUser.size());
-		System.out.println("userBackup size ====> " + UserManager.getUserBackup().size());
-		JSONArray res = new JSONArray();
-		// ÎªÁË¹«Æ½£¬Ó¦¸ÃÏÈÒ»´ÎĞÔÉú³ÉËùÓĞindex
-		int min = 0;
-		int max = noAwardUser.size()-1;
-		// Éú³ÉËæ»úË÷Òı
-		int[] indexs = StringUtil.randomCommon(min, max, count);
+    /**
+     * è¡¥æŠ½å¥–
+     * @param key ç›®æ ‡å¥–é¡¹
+     * @param count å¥–æ•°é‡
+     * @return
+     */
+    public synchronized JSONArray bucj(String key, String level, int count) {
+        JSONArray userList = createRandomUser(count);
+        System.out.println("ä¸­å¥–åå•ï¼ï¼ï¼ã€‹" + userList.toString());
+        return userList;
+    }
 
-		// ¸ù¾İÉú³ÉµÄËæ»úË÷Òı£¬È¡arr¶ÔÓ¦µÄÔªËØ£¨¸ÃÔªËØÎªÊÖ»úºÅ£©
-		String aimPhonenum = null;
-		for (int i = 0; i < indexs.length; i++) {
-			//System.out.println("Ëæ»úË÷Òı==> "+indexs[i]);
-			// ¸ù¾İË÷Òı»ñÈ¡ÊÖ»úºÅ
-			aimPhonenum = noAwardUser.getString(indexs[i]);
-			// ½«Ä¿±ê´ÓÈİÆ÷ÖĞÈ¡³ö£¬·Åµ½½á¹ûÖĞ£¨ÕâÊÇÒ»¸öjsonobject£©
-			res.add(UserManager.getUser(aimPhonenum));
-		}
-		
-		// ÒÑÈ¡³öµÄÄ¿±ê£¬´ÓÎ´ÖĞ½±ÁĞ±íÖĞÈ¥³ı
-		
-		for (int i = 0; i < res.size(); i++) {
-			aimPhonenum = res.getJSONObject(i).getString("moible");
-			UserManager.removeAwardUser(aimPhonenum);
-		}
-		// ÒÑÈ¡³öµÄÄ¿±ê£¬´ÓÎ´ÖĞ½±ÁĞ±íÖĞÈ¥³ı
-		
-		UserManager.removeAwardUser(res);
+    /**
+     * ç”Ÿæˆéšæœºå·ç 
+     * 
+     * @param count
+     *            éšæœºå·çš„ä¸ªæ•°
+     * @return
+     */
+    public JSONArray createRandomUser(int count) {
+        JSONArray noAwardUser = UserManager.getAllNoAwardUser();
+        System.out.println("noAwardUser size ====> " + noAwardUser.size());
+        System.out.println("userBackup size ====> " + UserManager.getUserBackup().size());
+        JSONArray res = new JSONArray();
+        // ä¸ºäº†å…¬å¹³ï¼Œåº”è¯¥å…ˆä¸€æ¬¡æ€§ç”Ÿæˆæ‰€æœ‰index
+        int min = 0;
+        int max = noAwardUser.size() - 1;
+        // ç”Ÿæˆéšæœºç´¢å¼•
+        int[] indexs = StringUtil.randomCommon(min, max, count);
 
-		return res;
-	}
+        // æ ¹æ®ç”Ÿæˆçš„éšæœºç´¢å¼•ï¼Œå–arrå¯¹åº”çš„å…ƒç´ ï¼ˆè¯¥å…ƒç´ ä¸ºæ‰‹æœºå·ï¼‰
+        String aimPhonenum = null;
+        for (int i = 0; i < indexs.length; i++) {
+            // System.out.println("éšæœºç´¢å¼•==> "+indexs[i]);
+            // æ ¹æ®ç´¢å¼•è·å–æ‰‹æœºå·
+            aimPhonenum = noAwardUser.getString(indexs[i]);
+            // å°†ç›®æ ‡ä»å®¹å™¨ä¸­å–å‡ºï¼Œæ”¾åˆ°ç»“æœä¸­ï¼ˆè¿™æ˜¯ä¸€ä¸ªjsonobjectï¼‰
+            res.add(UserManager.getUser(aimPhonenum));
+        }
+
+        // å·²å–å‡ºçš„ç›®æ ‡ï¼Œä»æœªä¸­å¥–åˆ—è¡¨ä¸­å»é™¤
+
+        for (int i = 0; i < res.size(); i++) {
+            aimPhonenum = res.getJSONObject(i).getString("moible");
+            UserManager.removeAwardUser(aimPhonenum);
+        }
+        // å·²å–å‡ºçš„ç›®æ ‡ï¼Œä»æœªä¸­å¥–åˆ—è¡¨ä¸­å»é™¤
+
+        UserManager.removeAwardUser(res);
+
+        return res;
+    }
 
 }

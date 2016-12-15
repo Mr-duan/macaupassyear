@@ -11,9 +11,6 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import com.org.Connection;
 import com.org.common.CommonConstant;
 import com.org.container.CommonContainer;
@@ -23,170 +20,165 @@ import com.org.utils.ResultSetUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 public class HikaricpMysqlConnection implements Connection<java.sql.Connection> {
 
-	@Override
-	public String getId() {
-		return CommonConstant.DB_MYSQL;
-	}
+    @Override
+    public String getId() {
+        return CommonConstant.DB_MYSQL;
+    }
 
-	public JSONObject queryList(JSONObject param, String sql) {
-		// µ•“≥º«¬º ˝
-		//Integer pageCounts = Integer.valueOf(param.getString("pageCounts"));
-		//param.remove("pageCounts");
-		// “≥¬Î
-		//Integer currentPage = Integer.valueOf(param.getString("currentPage"));
-		//param.remove("currentPage");
+    public JSONObject queryList(JSONObject param, String sql) {
+        // ÂçïÈ°µËÆ∞ÂΩïÊï∞
+        // Integer pageCounts = Integer.valueOf(param.getString("pageCounts"));
+        // param.remove("pageCounts");
+        // È°µÁ†Å
+        // Integer currentPage = Integer.valueOf(param.getString("currentPage"));
+        // param.remove("currentPage");
 
-		JSONObject sqlParamsJSON = param.getJSONObject("sqlParams");
-		Map<Integer, Object> sqlParams = JSONUtils
-				.parseJSON2IntegerKeyMap(sqlParamsJSON);
+        JSONObject sqlParamsJSON = param.getJSONObject("sqlParams");
+        Map<Integer, Object> sqlParams = JSONUtils.parseJSON2IntegerKeyMap(sqlParamsJSON);
 
-		java.sql.Connection con = null;
+        java.sql.Connection con = null;
 
-		JSONObject res = new JSONObject();
-		try {
-			con = template.getConnection();
-			PreparedStatement ps = con.prepareStatement(sql);
-			ResultSetUtil.setStatmentParams(ps, sqlParams);
+        JSONObject res = new JSONObject();
+        try {
+            con = this.template.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSetUtil.setStatmentParams(ps, sqlParams);
 
-			// ≤È—Ø≤ª–Ë“™rollback°°»Áπ˚“™ø™∑¢∏¸–¬æÕµ√rollback
-			ResultSet rs = ps.executeQuery();
+            // Êü•ËØ¢‰∏çÈúÄË¶Årollback Â¶ÇÊûúË¶ÅÂºÄÂèëÊõ¥Êñ∞Â∞±Âæórollback
+            ResultSet rs = ps.executeQuery();
 
-			res.put(CommonConstant.RESP_CODE, "10000");
-			res.put(CommonConstant.RESP_MSG, "≤È—Ø≥…π¶");
+            res.put(CommonConstant.RESP_CODE, "10000");
+            res.put(CommonConstant.RESP_MSG, "Êü•ËØ¢ÊàêÂäü");
 
-			JSONArray list = ResultSetUtil.parseResultSetToJSONArray(rs, true);
-			JSONObject totalObj = new JSONObject();
-			// –≈œ¢º«¬º
-			res.put("record", list);
-			// º∆À„◊‹ ˝µƒ∏Ωº”–≈œ¢
-			res.put("totalObj", totalObj);
-		} catch (SQLException e) {
-			try {
-				if (con != null && !con.isClosed() && !con.getAutoCommit()) {
-					con.rollback();
-				}
-			} catch (SQLException e1) {
+            JSONArray list = ResultSetUtil.parseResultSetToJSONArray(rs, true);
+            JSONObject totalObj = new JSONObject();
+            // ‰ø°ÊÅØËÆ∞ÂΩï
+            res.put("record", list);
+            // ËÆ°ÁÆóÊÄªÊï∞ÁöÑÈôÑÂä†‰ø°ÊÅØ
+            res.put("totalObj", totalObj);
+        } catch (SQLException e) {
+            try {
+                if (con != null && !con.isClosed() && !con.getAutoCommit()) {
+                    con.rollback();
+                }
+            } catch (SQLException e1) {
 
-				res.put(CommonConstant.RESP_CODE, "10001");
-				res.put(CommonConstant.RESP_MSG, "≤È—Øπ˝≥Ã“Ï≥£" + e.getMessage());
-				res.put("record", "");
-				res.put("totalObj", new JSONObject());
-			}
-		} catch (IllegalArgumentException e) {
-			res.put(CommonConstant.RESP_CODE, "10001");
-			res.put(CommonConstant.RESP_MSG,
-					"IllegalArgumentException" + e.getMessage());
-			res.put("record", "");
-			res.put("totalObj", new JSONObject());
-		} catch (IllegalAccessException e) {
-			res.put(CommonConstant.RESP_CODE, "10001");
-			res.put(CommonConstant.RESP_MSG,
-					"IllegalAccessException" + e.getMessage());
-			res.put("record", "");
-			res.put("totalObj", new JSONObject());
-		} catch (InvocationTargetException e) {
-			res.put(CommonConstant.RESP_CODE, "10001");
-			res.put(CommonConstant.RESP_MSG,
-					"InvocationTargetException" + e.getMessage());
-			res.put("record", "");
-			res.put("totalObj", new JSONObject());
-		}
+                res.put(CommonConstant.RESP_CODE, "10001");
+                res.put(CommonConstant.RESP_MSG, "Êü•ËØ¢ËøáÁ®ãÂºÇÂ∏∏" + e.getMessage());
+                res.put("record", "");
+                res.put("totalObj", new JSONObject());
+            }
+        } catch (IllegalArgumentException e) {
+            res.put(CommonConstant.RESP_CODE, "10001");
+            res.put(CommonConstant.RESP_MSG, "IllegalArgumentException" + e.getMessage());
+            res.put("record", "");
+            res.put("totalObj", new JSONObject());
+        } catch (IllegalAccessException e) {
+            res.put(CommonConstant.RESP_CODE, "10001");
+            res.put(CommonConstant.RESP_MSG, "IllegalAccessException" + e.getMessage());
+            res.put("record", "");
+            res.put("totalObj", new JSONObject());
+        } catch (InvocationTargetException e) {
+            res.put(CommonConstant.RESP_CODE, "10001");
+            res.put(CommonConstant.RESP_MSG, "InvocationTargetException" + e.getMessage());
+            res.put("record", "");
+            res.put("totalObj", new JSONObject());
+        }
 
-		return res;
-	}
+        return res;
+    }
 
-	public JSONObject executeQuery(JSONObject requestJson) {
-		JSONObject queryParams = requestJson.getJSONObject("queryParams");
-		String sql = requestJson.getString("sql");
+    @Override
+    public JSONObject executeQuery(JSONObject requestJson) {
+        JSONObject queryParams = requestJson.getJSONObject("queryParams");
+        String sql = requestJson.getString("sql");
 
-		JSONObject result = new JSONObject();
-		result = queryList(queryParams, sql);
+        JSONObject result = new JSONObject();
+        result = queryList(queryParams, sql);
 
-		JSONObject totalObj = (JSONObject) result.remove("totalObj");
-		JSONArray record = (JSONArray) result.remove("record");
+        JSONObject totalObj = (JSONObject) result.remove("totalObj");
+        JSONArray record = (JSONArray) result.remove("record");
 
-		String currentPage = totalObj.containsKey("currentPage") ? totalObj
-				.getString("currentPage") : "0";
-		String totalCounts = totalObj.containsKey("totalCounts") ? totalObj
-				.getString("totalCounts") : "0";
-		String totalPageCounts = totalObj.containsKey("totalPageCounts") ? totalObj
-				.getString("totalPageCounts") : "0";
-		result.put("currentPage", currentPage);
-		result.put("totalCounts", totalCounts);
-		result.put("totalPageCounts", totalPageCounts);
-		result.put("memo1", "");
-		result.put("memo2", "");
-		result.put(CommonConstant.RESP_CODE, "10000");
-		result.put(CommonConstant.RESP_MSG, "≤Ÿ◊˜≥…π¶");
-		result.put("busiInfo", record);
-		return result;
-	}
+        String currentPage = totalObj.containsKey("currentPage") ? totalObj.getString("currentPage") : "0";
+        String totalCounts = totalObj.containsKey("totalCounts") ? totalObj.getString("totalCounts") : "0";
+        String totalPageCounts = totalObj.containsKey("totalPageCounts") ? totalObj.getString("totalPageCounts") : "0";
+        result.put("currentPage", currentPage);
+        result.put("totalCounts", totalCounts);
+        result.put("totalPageCounts", totalPageCounts);
+        result.put("memo1", "");
+        result.put("memo2", "");
+        result.put(CommonConstant.RESP_CODE, "10000");
+        result.put(CommonConstant.RESP_MSG, "Êìç‰ΩúÊàêÂäü");
+        result.put("busiInfo", record);
+        return result;
+    }
 
-	public DataSource getDataSource() {
-		return template;
-	}
+    public DataSource getDataSource() {
+        return this.template;
+    }
 
+    public HikaricpMysqlConnection(Properties pro) {
+        HikariConfig dbConfig = new HikariConfig(pro);
+        HikariDataSource temp = new HikariDataSource(dbConfig);
+        this.template = temp;
+    }
 
-	public HikaricpMysqlConnection(Properties pro) {
-		HikariConfig dbConfig = new HikariConfig(pro);
-		HikariDataSource temp = new HikariDataSource(dbConfig);
-		this.template = temp;
-	}
+    public HikaricpMysqlConnection() throws BusinessException {
+        HikariDataSource temp = loadHikariDataSource();
+        this.template = temp;
+    }
 
-	public HikaricpMysqlConnection() throws BusinessException {
-		HikariDataSource temp = loadHikariDataSource();
-		this.template = temp;
-	}
+    @Override
+    public void close(java.sql.Connection obj) {
+        try {
+            if (obj != null && !obj.isClosed()) {
+                obj.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-	@Override
-	public void close(java.sql.Connection obj) {
-		try {
-			if (obj != null && !obj.isClosed()){
-				obj.close();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+    @Override
+    public java.sql.Connection getRealConnection() {
+        try {
+            if (this.template == null || this.template.getConnection() == null) {
+                // templateÂ∑≤Â§±Êïà
+                System.out.println("template == null || template.getConnection() == null");
+                this.template = loadHikariDataSource();
+            }
+            return this.template.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-	@Override
-	public java.sql.Connection getRealConnection() {
-		try {
-			if(template == null || template.getConnection() == null){
-				// template“— ß–ß
-				System.out.println("template == null || template.getConnection() == null");
-				template = loadHikariDataSource();
-			}
-			return template.getConnection();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		} catch (BusinessException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+    private HikariDataSource loadHikariDataSource() throws BusinessException {
 
-	private HikariDataSource loadHikariDataSource() throws BusinessException{
+        InputStream pin = null;
 
-		InputStream pin = null;
+        Properties pro = new Properties();
+        String fileName = "/WEB-INF/config/directdb_spring_db.properties";
+        try {
+            pin = CommonContainer.getServletContext().getResourceAsStream(fileName);
+            pro.load(pin);
+        } catch (IOException e) {
+            throw new BusinessException("load properties error : " + fileName);
+        }
 
-		Properties pro = new Properties();
-		String fileName = "/WEB-INF/config/directdb_spring_db.properties";
-		try {
-			pin = CommonContainer.getServletContext().getResourceAsStream(
-					fileName);
-			pro.load(pin);
-		} catch (IOException e) {
-			throw new BusinessException("load properties error : " + fileName);
-		}
+        HikariConfig dbConfig = new HikariConfig(pro);
+        HikariDataSource temp = new HikariDataSource(dbConfig);
+        return temp;
+    }
 
-		HikariConfig dbConfig = new HikariConfig(pro);
-		HikariDataSource temp = new HikariDataSource(dbConfig);
-		return temp;
-	}
-	
-	private DataSource template;
+    private DataSource template;
 }

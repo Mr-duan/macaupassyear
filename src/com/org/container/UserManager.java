@@ -8,144 +8,144 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import com.org.common.CommonConstant;
 import com.org.dao.CommonDao;
 import com.org.util.SpringUtil;
 import com.org.utils.PropertiesUtil;
 
-public class UserManager {
-	/**
-	 * ËùÓĞÓÃ»§ĞÅÏ¢map
-	 * Ò»¸öuserÊÇÒ»¸öjsonobject£¬ ÒÔ  15922245222: {"user":"test", "phome":"15922245222"} µÄ¸ñÊ½´æ´¢ÔÚmapÖĞ
-	 */
-	private static Map<String, JSONObject> userMap = new HashMap<String, JSONObject>();
-	/**
-	 * Î´ÖĞ½±ÓÃ»§£ºÖ»´æ·ÅÊÖ»úºÅ
-	 */
-	private static JSONArray noAwardUser = new JSONArray();
-	/**
-	 * ËùÓĞÓÃ»§ÊÖ»úºÅ±¸·İ
-	 */
-	private static JSONArray userBackup = new JSONArray();
-	/**
-	 * ÁÙÊ±ÓÃ»§³Ø£¬ÓÃÓÚÈıµÈ½±¡¢ÌØµÈ½±ÓÃ»§³Ø
-	 */
-	private static JSONArray temporary = new JSONArray();
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
-	/**
-	 * Ìí¼Óµ½ÁÙÊ±³é½±ÓÃ»§ÁĞ±í
-	 * @param phonenum
-	 */
-	public static void addUserToTemporary(String phonenum){
-		if(userMap.containsKey(phonenum) && !temporary.contains(phonenum)){
-			temporary.add(phonenum);
-		}
-	}
-	
-	public static JSONArray getAllTemporaryUser(){
-		return temporary;
-	}
-	
-	public static void initAllTemporaryUser(){
-		temporary = new JSONArray();
-	}
-	
-	public static void initUserInfo(){
-		// ³õÊ¼»¯ÕâÈı¸öÊı¾İ
-		// userMap
-		// allUser
-		// noAwardUser
-		CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");		
-		String allSql = "select * from smp_year_member";//²éÑ¯ËùÓĞÎ´ÖĞ½±ÓÃ»§
-		JSONArray allSym = null;
-		try {
-			allSym = commonDao.queryJSONArray(allSql, new HashMap<Integer, Object>(),false);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		String remove = PropertiesUtil.getValue("award", "remove");
-	    String[] removeList = remove.split(",");
-	    
-	    // ÏÓÒÉÈËÃûµ¥¡£ÕâĞ©ÈË½«±»ÅÅ³ıÔÚÖĞ½±Ãûµ¥Ö®Íâ
-	    List<String> s = Arrays.asList(removeList);
-		    
-		JSONObject o = null;
-		String key = "";
-		for (int i = 0; i < allSym.size(); i++) {
-			o = allSym.getJSONObject(i);
-			key = o.getString("moible");
-			if(!s.contains(key)) {
-				// Èç¹û¸ÃÓÃ»§²»ÔÚÏÓÒÉÈËÃûµ¥ÖĞ¡£
-				if(StringUtils.isEmpty(o.getString("rewardstate"))) {
-					// Èç¹ûÎ´ÖĞ½±
-					noAwardUser.add(key);
-				}
-			} else {
-				System.out.println("====> ÏÓÒÉÈËÃûµ¥£º" + key);
-			}
-			// where rewardstate is null and ischeck is null
-			userMap.put(key, o);
-		}
-		
-		userBackup.addAll(JSONArray.toCollection(noAwardUser));
-		System.out.println("ÓÃ»§ĞÅÏ¢³õÊ¼»¯Íê³É£¬Î´ÖĞ½±ÈËÊı====>"+userBackup.size());
-	}
-	
-	/**
-	 * »ñÈ¡ËùÓĞÎ´ÖĞ½±µÄÓÃ»§
-	 * @return
-	 */
-	public static JSONArray getAllNoAwardUser(){
-		return noAwardUser;
-	}
-	
-	/**
-	 * »ñÈ¡ËùÓĞÎ´ÖĞ½±µÄÓÃ»§
-	 * @return
-	 */
-	public static JSONArray getUserBackup(){
-		return userBackup;
-	}
-	
-	
-	/**
-	 * ÒÑÖĞ½±µÄÓÃ»§°ÑËûÄÃµô
-	 * @param phonenum
-	 */
-	public static void removeAwardUser(int index){
-		noAwardUser.remove(index);
-	}
-	public static void removeAwardUser(Object o){
-		noAwardUser.remove(o);
-	}
-	
-	public static JSONObject getUser(String phonenum){
-		return userMap.get(phonenum);
-	}
-	
-	public static void restoreToBackup(){
-		noAwardUser = new JSONArray();
-		noAwardUser.addAll(JSONArray.toCollection(userBackup));
-		CommonContainer.saveData(CommonConstant.FLAG_FIFTH_START, "");	// ÉèÖÃÎªÎ´¿ªÊ¼
-	}
-	
-	/*
-	*//**
-	 * 
-	 * @param phonenum ÊÖ»úºÅÎª±êÊ¶
-	 * @param params <key=value, key=value, ...>
-	 *//*
-	public static void updateUserStatus(String phonenum, Map<String, String> params){
-		JSONObject aimUser = getUser(phonenum);
-		for (Iterator<String> iterator = params.keySet().iterator(); iterator.hasNext();) {
-			String key = iterator.next();
-			String value = params.get(key);
-			aimUser.put(key, value);
-			System.out.println("¸üĞÂÄ¿±êÓÃ»§£º"+phonenum+"-----> key: " + key + "; value: " + value);
-		}
-	}*/
+public class UserManager {
+    /**
+     * æ‰€æœ‰ç”¨æˆ·ä¿¡æ¯map
+     * ä¸€ä¸ªuseræ˜¯ä¸€ä¸ªjsonobjectï¼Œ ä»¥  15922245222: {"user":"test", "phome":"15922245222"} çš„æ ¼å¼å­˜å‚¨åœ¨mapä¸­
+     */
+    private static Map<String, JSONObject> userMap = new HashMap<String, JSONObject>();
+    /**
+     * æœªä¸­å¥–ç”¨æˆ·ï¼šåªå­˜æ”¾æ‰‹æœºå·
+     */
+    private static JSONArray noAwardUser = new JSONArray();
+    /**
+     * æ‰€æœ‰ç”¨æˆ·æ‰‹æœºå·å¤‡ä»½
+     */
+    private static JSONArray userBackup = new JSONArray();
+    /**
+     * ä¸´æ—¶ç”¨æˆ·æ± ï¼Œç”¨äºä¸‰ç­‰å¥–ã€ç‰¹ç­‰å¥–ç”¨æˆ·æ± 
+     */
+    private static JSONArray temporary = new JSONArray();
+
+    /**
+     * æ·»åŠ åˆ°ä¸´æ—¶æŠ½å¥–ç”¨æˆ·åˆ—è¡¨
+     * @param phonenum
+     */
+    public static void addUserToTemporary(String phonenum) {
+        if (userMap.containsKey(phonenum) && !temporary.contains(phonenum)) {
+            temporary.add(phonenum);
+        }
+    }
+
+    public static JSONArray getAllTemporaryUser() {
+        return temporary;
+    }
+
+    public static void initAllTemporaryUser() {
+        temporary = new JSONArray();
+    }
+
+    public static void initUserInfo() {
+        // åˆå§‹åŒ–è¿™ä¸‰ä¸ªæ•°æ®
+        // userMap
+        // allUser
+        // noAwardUser
+        CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+        String allSql = "select * from smp_year_member";// æŸ¥è¯¢æ‰€æœ‰æœªä¸­å¥–ç”¨æˆ·
+        JSONArray allSym = null;
+        try {
+            allSym = commonDao.queryJSONArray(allSql, new HashMap<Integer, Object>(), false);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        String remove = PropertiesUtil.getValue("award", "remove");
+        String[] removeList = remove.split(",");
+
+        // å«Œç–‘äººåå•ã€‚è¿™äº›äººå°†è¢«æ’é™¤åœ¨ä¸­å¥–åå•ä¹‹å¤–
+        List<String> s = Arrays.asList(removeList);
+
+        JSONObject o = null;
+        String key = "";
+        for (int i = 0; i < allSym.size(); i++) {
+            o = allSym.getJSONObject(i);
+            key = o.getString("moible");
+            if (!s.contains(key)) {
+                // å¦‚æœè¯¥ç”¨æˆ·ä¸åœ¨å«Œç–‘äººåå•ä¸­ã€‚
+                if (StringUtils.isEmpty(o.getString("rewardstate"))) {
+                    // å¦‚æœæœªä¸­å¥–
+                    noAwardUser.add(key);
+                }
+            } else {
+                System.out.println("====> å«Œç–‘äººåå•ï¼š" + key);
+            }
+            // where rewardstate is null and ischeck is null
+            userMap.put(key, o);
+        }
+
+        userBackup.addAll(JSONArray.toCollection(noAwardUser));
+        System.out.println("ç”¨æˆ·ä¿¡æ¯åˆå§‹åŒ–å®Œæˆï¼Œæœªä¸­å¥–äººæ•°====>" + userBackup.size());
+    }
+
+    /**
+     * è·å–æ‰€æœ‰æœªä¸­å¥–çš„ç”¨æˆ·
+     * @return
+     */
+    public static JSONArray getAllNoAwardUser() {
+        return noAwardUser;
+    }
+
+    /**
+     * è·å–æ‰€æœ‰æœªä¸­å¥–çš„ç”¨æˆ·
+     * @return
+     */
+    public static JSONArray getUserBackup() {
+        return userBackup;
+    }
+
+    /**
+     * å·²ä¸­å¥–çš„ç”¨æˆ·æŠŠä»–æ‹¿æ‰
+     * @param phonenum
+     */
+    public static void removeAwardUser(int index) {
+        noAwardUser.remove(index);
+    }
+
+    public static void removeAwardUser(Object o) {
+        noAwardUser.remove(o);
+    }
+
+    public static JSONObject getUser(String phonenum) {
+        return userMap.get(phonenum);
+    }
+
+    public static void restoreToBackup() {
+        noAwardUser = new JSONArray();
+        noAwardUser.addAll(JSONArray.toCollection(userBackup));
+        CommonContainer.saveData(CommonConstant.FLAG_FIFTH_START, ""); // è®¾ç½®ä¸ºæœªå¼€å§‹
+    }
+
+    /*
+    *//**
+      * 
+      * @param phonenum æ‰‹æœºå·ä¸ºæ ‡è¯†
+      * @param params <key=value, key=value, ...>
+      *//*
+        public static void updateUserStatus(String phonenum, Map<String, String> params){
+        JSONObject aimUser = getUser(phonenum);
+        for (Iterator<String> iterator = params.keySet().iterator(); iterator.hasNext();) {
+        	String key = iterator.next();
+        	String value = params.get(key);
+        	aimUser.put(key, value);
+        	System.out.println("æ›´æ–°ç›®æ ‡ç”¨æˆ·ï¼š"+phonenum+"-----> key: " + key + "; value: " + value);
+        }
+        }*/
 }

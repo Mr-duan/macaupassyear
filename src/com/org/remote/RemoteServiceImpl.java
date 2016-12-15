@@ -1,30 +1,28 @@
 package com.org.remote;
 
-
 // TODO 
 public class RemoteServiceImpl implements RemoteService {
-	//private final static DataSourceContainer dsc = DataSourceContainer.getInstance();
-	//private Log log = LogFactory.getLog(RemoteServiceImpl.class);
+    // private final static DataSourceContainer dsc = DataSourceContainer.getInstance();
+    // private Log log = LogFactory.getLog(RemoteServiceImpl.class);
 
-	@Override
-	public String access(String request) {
-		// Ò»¡¢¼ÓÔØÊı¾İÔ´
+    @Override
+    public String access(String request) {
+        // ä¸€ã€åŠ è½½æ•°æ®æº
 
-		
-		//String identityFlag = requestJson.getString("identityFlag");
-		// ¸ù¾İÉí·İ£¬Â·ÓÉµ½Ö¸¶¨µÄÊı¾İ¿â
-		//Connection con = null;
-//		if(identityFlag.equals("monitor")){
-//			con = dsc.getConnection(CommonConstant.DB_MONGO);
-//		} else {
-//			con = dsc.getConnection(CommonConstant.DB_HIKARICP);
-//		}
-		
-		// ¶ş¡¢Ö´ĞĞ²éÑ¯
-		//JSONObject result = executeQuery(requestJson, con);
-		
-		// Èı¡¢·µ»ØÊı¾İ
-//		return result.toString();
-		return null;
-	}
+        // String identityFlag = requestJson.getString("identityFlag");
+        // æ ¹æ®èº«ä»½ï¼Œè·¯ç”±åˆ°æŒ‡å®šçš„æ•°æ®åº“
+        // Connection con = null;
+//      if(identityFlag.equals("monitor")){
+//          con = dsc.getConnection(CommonConstant.DB_MONGO);
+//      } else {
+//          con = dsc.getConnection(CommonConstant.DB_HIKARICP);
+//      }
+
+        // äºŒã€æ‰§è¡ŒæŸ¥è¯¢
+        // JSONObject result = executeQuery(requestJson, con);
+
+        // ä¸‰ã€è¿”å›æ•°æ®
+//      return result.toString();
+        return null;
+    }
 }

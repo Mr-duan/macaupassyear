@@ -6,93 +6,93 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
-import net.sf.json.JSONArray;
-
 import com.org.dao.CommonDao;
 import com.org.util.SpringUtil;
 
+import net.sf.json.JSONArray;
+
 public class CommonContainer {
-	public static Map<Object, Object> map = new HashMap<Object, Object>();
-	// »º´æÊı¾İ
-	public static Map<String, Object> dataMap = new HashMap<String, Object>();
+    public static Map<Object, Object> map = new HashMap<Object, Object>();
+    // ç¼“å­˜æ•°æ®
+    public static Map<String, Object> dataMap = new HashMap<String, Object>();
 
-	public static void saveContext(ServletContext servletContext) {
-		map.put("servletContext", servletContext);
-	}
+    public static void saveContext(ServletContext servletContext) {
+        map.put("servletContext", servletContext);
+    }
 
-	public static ServletContext getServletContext(){
-		if(map.get("servletContext") != null){
-			return (ServletContext)map.get("servletContext");
-		}
-		return null;
-	}
+    public static ServletContext getServletContext() {
+        if (map.get("servletContext") != null) {
+            return (ServletContext) map.get("servletContext");
+        }
+        return null;
+    }
 
-	/**
-	 * Çå³ı»º´æ
-	 * @param key
-	 * @param data
-	 */
-	public static void removeData(String key) {
-		dataMap.remove(key);
-	}
+    /**
+     * æ¸…é™¤ç¼“å­˜
+     * @param key
+     * @param data
+     */
+    public static void removeData(String key) {
+        dataMap.remove(key);
+    }
 
-	/**
-	 * ±£´æµ½ÄÚ´æ
-	 * @param key
-	 * @param data
-	 */
-	public static void saveData(String key, Object data) {
-		dataMap.put(key, data);
-	}
+    /**
+     * ä¿å­˜åˆ°å†…å­˜
+     * @param key
+     * @param data
+     */
+    public static void saveData(String key, Object data) {
+        dataMap.put(key, data);
+    }
 
-	/**
-	 * ±£´æµ½ÄÚ´æ
-	 * @param key
-	 * @param data
-	 */
-	public static Object saveData(String key, String data) {
-		dataMap.put(key, data);
-		return dataMap.get(key);
-	}
+    /**
+     * ä¿å­˜åˆ°å†…å­˜
+     * @param key
+     * @param data
+     */
+    public static Object saveData(String key, String data) {
+        dataMap.put(key, data);
+        return dataMap.get(key);
+    }
 
-	/**
-	 * ±£´æµ½ÄÚ´æµÄÍ¬Ê±£¬Ò²±£´æµ½Êı¾İ¿â
-	 * 2016-01-22 ±£´æµ½Êı¾İ¿âµÄ²Ù×÷£¬¿ÉÒÔÉè¼Æ³ÉÒì²½Ïß³Ì´¦Àí
-	 * @param key
-	 * @param data
-	 */
-	public static void saveDataCacheAndDB(String key, String level, JSONArray data) {
-		// 1±£´æµ½»º´æ
-		dataMap.put(key, data);
-		// 2±£´æµ½Êı¾İ¿â
-		Map<Integer, Object> params = new HashMap<Integer, Object>();
-		String upUserAwardSql = "update smp_year_member set rewardstate='"+level+"' where moible in(";
-		String str = "";
-		int paramIndex = 0;
-		for (int i = 0; i < data.size(); i++) {
-			paramIndex = i +1;
-			str += "?,";
-			params.put(paramIndex, data.getJSONObject(i).getString("moible"));
-			// ±£´æÄÚ´æÖĞÓÃ»§µÄÖĞ½±×´Ì¬
-			data.getJSONObject(i).put("rewardstate", level);
-		}
-		str = str.substring(0, str.length()-1);
-		upUserAwardSql += str;
-		upUserAwardSql += ")";
+    /**
+     * ä¿å­˜åˆ°å†…å­˜çš„åŒæ—¶ï¼Œä¹Ÿä¿å­˜åˆ°æ•°æ®åº“
+     * 2016-01-22 ä¿å­˜åˆ°æ•°æ®åº“çš„æ“ä½œï¼Œå¯ä»¥è®¾è®¡æˆå¼‚æ­¥çº¿ç¨‹å¤„ç†
+     * @param key
+     * @param data
+     */
+    public static void saveDataCacheAndDB(String key, String level, JSONArray data) {
+        // 1ä¿å­˜åˆ°ç¼“å­˜
+        dataMap.put(key, data);
+        // 2ä¿å­˜åˆ°æ•°æ®åº“
+        Map<Integer, Object> params = new HashMap<Integer, Object>();
+        String upUserAwardSql = "update smp_year_member set rewardstate='" + level + "' where moible in(";
+        String str = "";
+        int paramIndex = 0;
+        for (int i = 0; i < data.size(); i++) {
+            paramIndex = i + 1;
+            str += "?,";
+            params.put(paramIndex, data.getJSONObject(i).getString("moible"));
+            // ä¿å­˜å†…å­˜ä¸­ç”¨æˆ·çš„ä¸­å¥–çŠ¶æ€
+            data.getJSONObject(i).put("rewardstate", level);
+        }
+        str = str.substring(0, str.length() - 1);
+        upUserAwardSql += str;
+        upUserAwardSql += ")";
 
-		CommonDao commonDao = (CommonDao)SpringUtil.getBean("commonDao");	
-		try {
-			commonDao.update(upUserAwardSql, params);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
+        CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+        try {
+            commonDao.update(upUserAwardSql, params);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public static Object getData(String key){
-		if(dataMap.containsKey(key) && dataMap.get(key) != null){
-			return dataMap.get(key);
-		}
-		return null;
-	}
-	
+    public static Object getData(String key) {
+        if (dataMap.containsKey(key) && dataMap.get(key) != null) {
+            return dataMap.get(key);
+        }
+        return null;
+    }
+
 }

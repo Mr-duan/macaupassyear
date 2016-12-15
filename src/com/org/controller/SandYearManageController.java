@@ -48,7 +48,7 @@ public class SandYearManageController extends SmpHttpServlet implements CommonCo
             String deleteCurrent = "delete from SMP_YEAR_CURRENT_AWARD";
             yService.yearManage(deleteCurrent, null, "1");
 
-            // Çå³ý»º´æ
+            // æ¸…é™¤ç¼“å­˜
             CommonContainer.removeData(CommonConstant.AWARD_FIFTH);
             CommonContainer.removeData(CommonConstant.AWARD_FIRST);
             CommonContainer.removeData(CommonConstant.AWARD_FOURTH);

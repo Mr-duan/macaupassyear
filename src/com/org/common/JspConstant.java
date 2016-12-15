@@ -2,8 +2,8 @@ package com.org.common;
 
 public class JspConstant {
 
-	/**
-	 * ´íÎóÒ³Ãæ
-	 */
-	public final static String ERROR_PAGE = "error.jsp";
+    /**
+     * é”™è¯¯é¡µé¢
+     */
+    public final static String ERROR_PAGE = "error.jsp";
 }

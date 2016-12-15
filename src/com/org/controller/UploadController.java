@@ -12,23 +12,22 @@ import com.org.servlet.SmpHttpServlet;
 import com.org.utils.FileUploadUtil;
 
 @Controller
-public class UploadController extends SmpHttpServlet implements CommonController{
-	private static final long serialVersionUID = 2156792239072761671L;
+public class UploadController extends SmpHttpServlet implements CommonController {
+    private static final long serialVersionUID = 2156792239072761671L;
 
-	public UploadController(){
-		
-	}
-	
-	private Log log = LogFactory.getLog(UploadController.class);
+    public UploadController() {
 
-	@Override
-	public void post(HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
-		log.info("UploadController.......");
-		// Í¬Ô´²ßÂÔ²»ÔÊĞí¶ÁÈ¡XXXÉÏµÄÔ¶³Ì×ÊÔ´
-		// ¸æËßä¯ÀÀÆ÷£¬Õâ¸ö×ÊÔ´ÊÇÔËĞĞÔ¶³ÌËùÓĞÓòÃû·ÃÎÊµÄ¡£µ±È»£¬´Ë´¦µÄ*Ò²¿ÉÒÔÌæ»»ÎªÖ¸¶¨µÄÓòÃû£¬³öÓÚ°²È«¿¼ÂÇ£¬½¨Òé½«*Ìæ»»³ÉÖ¸¶¨µÄÓòÃû
-		response.setHeader("Access-Control-Allow-Origin", "*");
-		FileUploadUtil.uploadFile(request, response);
-		return;
-	}
+    }
+
+    private Log log = LogFactory.getLog(UploadController.class);
+
+    @Override
+    public void post(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        this.log.info("UploadController.......");
+        // åŒæºç­–ç•¥ä¸å…è®¸è¯»å–XXXä¸Šçš„è¿œç¨‹èµ„æº
+        // å‘Šè¯‰æµè§ˆå™¨ï¼Œè¿™ä¸ªèµ„æºæ˜¯è¿è¡Œè¿œç¨‹æ‰€æœ‰åŸŸåè®¿é—®çš„ã€‚å½“ç„¶ï¼Œæ­¤å¤„çš„*ä¹Ÿå¯ä»¥æ›¿æ¢ä¸ºæŒ‡å®šçš„åŸŸåï¼Œå‡ºäºå®‰å…¨è€ƒè™‘ï¼Œå»ºè®®å°†*æ›¿æ¢æˆæŒ‡å®šçš„åŸŸå
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        FileUploadUtil.uploadFile(request, response);
+        return;
+    }
 }

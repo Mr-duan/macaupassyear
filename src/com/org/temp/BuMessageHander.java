@@ -3,14 +3,14 @@ package com.org.temp;
 import net.sf.json.JSONArray;
 
 /**
- * 实现本接口的类，如果有参数要处理的话，可以添加有参构造方法，参数类型为Map<String,String>
+ * 瀹炵幇鏈帴鍙ｇ殑绫伙紝濡傛灉鏈夊弬鏁拌澶勭悊鐨勮瘽锛屽彲浠ユ坊鍔犳湁鍙傛瀯閫犳柟娉曪紝鍙傛暟绫诲瀷涓篗ap<String,String>
  * @author Administrator
  *
  */
 public interface BuMessageHander {
-	/**
-	 * 返回中奖信息。这里只管生成随机号码，其他不用考虑
-	 * @return
-	 */
-	public JSONArray getMessage();
+    /**
+     * 杩斿洖涓淇℃伅銆傝繖閲屽彧绠＄敓鎴愰殢鏈哄彿鐮侊紝鍏朵粬涓嶇敤鑰冭檻
+     * @return
+     */
+    public JSONArray getMessage();
 }

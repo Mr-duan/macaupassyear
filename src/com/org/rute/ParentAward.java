@@ -1,157 +1,157 @@
 package com.org.rute;
 
-import net.sf.json.JSONArray;
-
 import org.springframework.stereotype.Component;
 
 import com.org.container.CommonContainer;
 import com.org.container.UserManager;
 import com.org.utils.StringUtil;
 
+import net.sf.json.JSONArray;
+
 /**
- * ÎåµÈ½±
+ * äº”ç­‰å¥–
  */
 @Component
 public class ParentAward {
-	/**
-	 * »ñÈ¡ÖĞ½±Ãûµ¥
-	 * @param key Ä¿±ê½±Ïî
-	 * @param count ½±ÊıÁ¿
-	 * @return
-	 */
-	public synchronized JSONArray init(String key, String level, int count){
-		JSONArray userList = getExistintList(key);
-		if(userList == null) {
-			// Èç¹ûÒÑ´æÔÚ£¬ÔòÈ¥³ı£¬ÒÔ·ÀÖØ¸´³é½±
-			userList = createRandomUser(count);
-		}
-		System.out.println("ÖĞ½±Ãûµ¥£½£½£½¡·" + userList.toString());
-		CommonContainer.saveDataCacheAndDB(key, level, userList);
-		return userList;
-	}
+    /**
+     * è·å–ä¸­å¥–åå•
+     * @param key ç›®æ ‡å¥–é¡¹
+     * @param count å¥–æ•°é‡
+     * @return
+     */
+    public synchronized JSONArray init(String key, String level, int count) {
+        JSONArray userList = getExistintList(key);
+        if (userList == null) {
+            // å¦‚æœå·²å­˜åœ¨ï¼Œåˆ™å»é™¤ï¼Œä»¥é˜²é‡å¤æŠ½å¥–
+            userList = createRandomUser(count);
+        }
+        System.out.println("ä¸­å¥–åå•ï¼ï¼ï¼ã€‹" + userList.toString());
+        CommonContainer.saveDataCacheAndDB(key, level, userList);
+        return userList;
+    }
 
-	/**
-	 * »ñÈ¡ÖĞ½±Ãûµ¥
-	 * @param key Ä¿±ê½±Ïî
-	 * @param count ½±ÊıÁ¿
-	 * @return
-	 */
-	public synchronized JSONArray initTemporary(String key, String level, int count){
-		JSONArray userList = getExistintList(key);
-		if(userList == null) {
-			// Èç¹ûÒÑ´æÔÚ£¬ÔòÈ¥³ı£¬ÒÔ·ÀÖØ¸´³é½±
-			userList = createTemporaryRandomUser(count);
-		}
-		System.out.println("ÖĞ½±Ãûµ¥£½£½£½¡·" + userList.toString());
-		CommonContainer.saveDataCacheAndDB(key, level, userList);
-		return userList;
-	}
-	
-	/**
-	 * ²¹³é½±
-	 * @param key Ä¿±ê½±Ïî
-	 * @param count ½±ÊıÁ¿
-	 * @return
-	 */
-	public synchronized JSONArray bucj(String key, String level, int count){
-		JSONArray userList = createRandomUser(count);
-		System.out.println("ÖĞ½±Ãûµ¥£½£½£½¡·" + userList.toString());
-		return userList;
-	}
-	
-	/**
-	 * Éú³ÉËæ»úºÅÂë
-	 * 
-	 * @param count
-	 *            Ëæ»úºÅµÄ¸öÊı
-	 * @return
-	 */
-	public JSONArray createRandomUser(int count) {
-		JSONArray noAwardUser = UserManager.getAllNoAwardUser();
-		System.out.println("noAwardUser size ====> " + noAwardUser.size());
-		System.out.println("userBackup size ====> " + UserManager.getUserBackup().size());
-		JSONArray res = new JSONArray();
-		// ÎªÁË¹«Æ½£¬Ó¦¸ÃÏÈÒ»´ÎĞÔÉú³ÉËùÓĞindex
-		int min = 0;
-		int max = noAwardUser.size()-1;
-		// Éú³ÉËæ»úË÷Òı
-		int[] indexs = StringUtil.randomCommon(min, max, count);
+    /**
+     * è·å–ä¸­å¥–åå•
+     * @param key ç›®æ ‡å¥–é¡¹
+     * @param count å¥–æ•°é‡
+     * @return
+     */
+    public synchronized JSONArray initTemporary(String key, String level, int count) {
+        JSONArray userList = getExistintList(key);
+        if (userList == null) {
+            // å¦‚æœå·²å­˜åœ¨ï¼Œåˆ™å»é™¤ï¼Œä»¥é˜²é‡å¤æŠ½å¥–
+            userList = createTemporaryRandomUser(count);
+        }
+        System.out.println("ä¸­å¥–åå•ï¼ï¼ï¼ã€‹" + userList.toString());
+        CommonContainer.saveDataCacheAndDB(key, level, userList);
+        return userList;
+    }
 
-		// ¸ù¾İÉú³ÉµÄËæ»úË÷Òı£¬È¡arr¶ÔÓ¦µÄÔªËØ£¨¸ÃÔªËØÎªÊÖ»úºÅ£©
-		String aimPhonenum = null;
-		for (int i = 0; i < indexs.length; i++) {
-			//System.out.println("Ëæ»úË÷Òı==> "+indexs[i]);
-			// ¸ù¾İË÷Òı»ñÈ¡ÊÖ»úºÅ
-			aimPhonenum = noAwardUser.getString(indexs[i]);
-			// ½«Ä¿±ê´ÓÈİÆ÷ÖĞÈ¡³ö£¬·Åµ½½á¹ûÖĞ£¨ÕâÊÇÒ»¸öjsonobject£©
-			res.add(UserManager.getUser(aimPhonenum));
-		}
-		
-		// ÒÑÈ¡³öµÄÄ¿±ê£¬´ÓÎ´ÖĞ½±ÁĞ±íÖĞÈ¥³ı
-		
-		for (int i = 0; i < res.size(); i++) {
-			aimPhonenum = res.getJSONObject(i).getString("moible");
-			UserManager.removeAwardUser(aimPhonenum);
-		}
-		// ÒÑÈ¡³öµÄÄ¿±ê£¬´ÓÎ´ÖĞ½±ÁĞ±íÖĞÈ¥³ı
-		
-		UserManager.removeAwardUser(res);
+    /**
+     * è¡¥æŠ½å¥–
+     * @param key ç›®æ ‡å¥–é¡¹
+     * @param count å¥–æ•°é‡
+     * @return
+     */
+    public synchronized JSONArray bucj(String key, String level, int count) {
+        JSONArray userList = createRandomUser(count);
+        System.out.println("ä¸­å¥–åå•ï¼ï¼ï¼ã€‹" + userList.toString());
+        return userList;
+    }
 
-		return res;
-	}
-	
-	/**
-	 * Éú³ÉÁÙÊ±½±µÄËæ»úºÅÂë
-	 * 
-	 * @param count
-	 *            Ëæ»úºÅµÄ¸öÊı
-	 * @return
-	 */
-	public JSONArray createTemporaryRandomUser(int count) {
-		JSONArray noAwardUser = UserManager.getAllTemporaryUser();
-		System.out.println("getAllTemporaryUser  ====> " + noAwardUser.toString());
-		JSONArray res = new JSONArray();
-		// ÎªÁË¹«Æ½£¬Ó¦¸ÃÏÈÒ»´ÎĞÔÉú³ÉËùÓĞindex
-		int min = 0;
-		int max = noAwardUser.size();
-		// Éú³ÉËæ»úË÷Òı
-		int[] indexs = StringUtil.randomCommon(min, max, count);
-		if(indexs == null) {
-			return new JSONArray();
-		}
+    /**
+     * ç”Ÿæˆéšæœºå·ç 
+     * 
+     * @param count
+     *            éšæœºå·çš„ä¸ªæ•°
+     * @return
+     */
+    public JSONArray createRandomUser(int count) {
+        JSONArray noAwardUser = UserManager.getAllNoAwardUser();
+        System.out.println("noAwardUser size ====> " + noAwardUser.size());
+        System.out.println("userBackup size ====> " + UserManager.getUserBackup().size());
+        JSONArray res = new JSONArray();
+        // ä¸ºäº†å…¬å¹³ï¼Œåº”è¯¥å…ˆä¸€æ¬¡æ€§ç”Ÿæˆæ‰€æœ‰index
+        int min = 0;
+        int max = noAwardUser.size() - 1;
+        // ç”Ÿæˆéšæœºç´¢å¼•
+        int[] indexs = StringUtil.randomCommon(min, max, count);
 
-		// ¸ù¾İÉú³ÉµÄËæ»úË÷Òı£¬È¡arr¶ÔÓ¦µÄÔªËØ£¨¸ÃÔªËØÎªÊÖ»úºÅ£©
-		String aimPhonenum = null;
-		for (int i = 0; i < indexs.length; i++) {
-			//System.out.println("Ëæ»úË÷Òı==> "+indexs[i]);
-			// ¸ù¾İË÷Òı»ñÈ¡ÊÖ»úºÅ
-			aimPhonenum = noAwardUser.getString(indexs[i]);
-			// ½«Ä¿±ê´ÓÈİÆ÷ÖĞÈ¡³ö£¬·Åµ½½á¹ûÖĞ£¨ÕâÊÇÒ»¸öjsonobject£©
-			res.add(UserManager.getUser(aimPhonenum));
-		}
-		
-		// ½«ÒÑÖĞ½±µÄÓÃ»§´Ó Î´ÖĞ½±ÓÃ»§³ØÖĞÈ¥³ı
-		for (int i = 0; i < res.size(); i++) {
-			aimPhonenum = res.getJSONObject(i).getString("moible");
-			UserManager.removeAwardUser(aimPhonenum);
-		}
-		
-		// ³é½±Íê³Éºó£¬³õÊ¼»¯µôËùÓĞµÄÁÙÊ±ÓÃ»§£¬ÎªÏÂ¸ö³é½±±¸ÓÃ
-		UserManager.initAllTemporaryUser();
+        // æ ¹æ®ç”Ÿæˆçš„éšæœºç´¢å¼•ï¼Œå–arrå¯¹åº”çš„å…ƒç´ ï¼ˆè¯¥å…ƒç´ ä¸ºæ‰‹æœºå·ï¼‰
+        String aimPhonenum = null;
+        for (int i = 0; i < indexs.length; i++) {
+            // System.out.println("éšæœºç´¢å¼•==> "+indexs[i]);
+            // æ ¹æ®ç´¢å¼•è·å–æ‰‹æœºå·
+            aimPhonenum = noAwardUser.getString(indexs[i]);
+            // å°†ç›®æ ‡ä»å®¹å™¨ä¸­å–å‡ºï¼Œæ”¾åˆ°ç»“æœä¸­ï¼ˆè¿™æ˜¯ä¸€ä¸ªjsonobjectï¼‰
+            res.add(UserManager.getUser(aimPhonenum));
+        }
 
-		return res;
-	}
+        // å·²å–å‡ºçš„ç›®æ ‡ï¼Œä»æœªä¸­å¥–åˆ—è¡¨ä¸­å»é™¤
 
-	public JSONArray getExistintList(String listFlag) {
-		if (CommonContainer.getData(listFlag) != null) {
-			// Èç¹ûÒÑ¾­ÓĞÁË£¬¾ÍÖ±½Ó·µ»Ø
-			JSONArray res = (JSONArray) CommonContainer.getData(listFlag);
-			return res;
-		}
-		return null;
-	}
+        for (int i = 0; i < res.size(); i++) {
+            aimPhonenum = res.getJSONObject(i).getString("moible");
+            UserManager.removeAwardUser(aimPhonenum);
+        }
+        // å·²å–å‡ºçš„ç›®æ ‡ï¼Œä»æœªä¸­å¥–åˆ—è¡¨ä¸­å»é™¤
 
-	public static void main(String[] args) {
-	}
+        UserManager.removeAwardUser(res);
+
+        return res;
+    }
+
+    /**
+     * ç”Ÿæˆä¸´æ—¶å¥–çš„éšæœºå·ç 
+     * 
+     * @param count
+     *            éšæœºå·çš„ä¸ªæ•°
+     * @return
+     */
+    public JSONArray createTemporaryRandomUser(int count) {
+        JSONArray noAwardUser = UserManager.getAllTemporaryUser();
+        System.out.println("getAllTemporaryUser  ====> " + noAwardUser.toString());
+        JSONArray res = new JSONArray();
+        // ä¸ºäº†å…¬å¹³ï¼Œåº”è¯¥å…ˆä¸€æ¬¡æ€§ç”Ÿæˆæ‰€æœ‰index
+        int min = 0;
+        int max = noAwardUser.size();
+        // ç”Ÿæˆéšæœºç´¢å¼•
+        int[] indexs = StringUtil.randomCommon(min, max, count);
+        if (indexs == null) {
+            return new JSONArray();
+        }
+
+        // æ ¹æ®ç”Ÿæˆçš„éšæœºç´¢å¼•ï¼Œå–arrå¯¹åº”çš„å…ƒç´ ï¼ˆè¯¥å…ƒç´ ä¸ºæ‰‹æœºå·ï¼‰
+        String aimPhonenum = null;
+        for (int i = 0; i < indexs.length; i++) {
+            // System.out.println("éšæœºç´¢å¼•==> "+indexs[i]);
+            // æ ¹æ®ç´¢å¼•è·å–æ‰‹æœºå·
+            aimPhonenum = noAwardUser.getString(indexs[i]);
+            // å°†ç›®æ ‡ä»å®¹å™¨ä¸­å–å‡ºï¼Œæ”¾åˆ°ç»“æœä¸­ï¼ˆè¿™æ˜¯ä¸€ä¸ªjsonobjectï¼‰
+            res.add(UserManager.getUser(aimPhonenum));
+        }
+
+        // å°†å·²ä¸­å¥–çš„ç”¨æˆ·ä» æœªä¸­å¥–ç”¨æˆ·æ± ä¸­å»é™¤
+        for (int i = 0; i < res.size(); i++) {
+            aimPhonenum = res.getJSONObject(i).getString("moible");
+            UserManager.removeAwardUser(aimPhonenum);
+        }
+
+        // æŠ½å¥–å®Œæˆåï¼Œåˆå§‹åŒ–æ‰æ‰€æœ‰çš„ä¸´æ—¶ç”¨æˆ·ï¼Œä¸ºä¸‹ä¸ªæŠ½å¥–å¤‡ç”¨
+        UserManager.initAllTemporaryUser();
+
+        return res;
+    }
+
+    public JSONArray getExistintList(String listFlag) {
+        if (CommonContainer.getData(listFlag) != null) {
+            // å¦‚æœå·²ç»æœ‰äº†ï¼Œå°±ç›´æ¥è¿”å›
+            JSONArray res = (JSONArray) CommonContainer.getData(listFlag);
+            return res;
+        }
+        return null;
+    }
+
+    public static void main(String[] args) {
+    }
 
 }

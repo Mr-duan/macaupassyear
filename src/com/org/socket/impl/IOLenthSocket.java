@@ -10,58 +10,61 @@ import com.org.exception.SSocketException;
 import com.org.utils.StringUtil;
 
 public class IOLenthSocket extends IOSocket {
-	private static Log log = LogFactory.getLog(IOLenthSocket.class);
+    private static Log log = LogFactory.getLog(IOLenthSocket.class);
 
-	public void write(byte[] data, boolean flush) {
-		byte[] datalength = StringUtil.charFill(data.length+"", '0', "left", 4).getBytes();
-		data = StringUtil.union(datalength, data);
-		super.write(data, flush);
-	}
-	public byte[] read() {
-		byte[] resp = null;
-		if(socket != null && !isClose()){			
-			try {
-				ins = socket.getInputStream();	
-				int len = 4;
-				byte[] respLength = new byte[len];
-				int n = ins.read(respLength, 0, len);
-				if(n == 4){
-					int respLen = Integer.parseInt(new String(respLength));
-					//resp = new byte[respLen];
-					//n = ins.read(resp, 0, respLen);
-					ByteArrayOutputStream out = new ByteArrayOutputStream();
-					byte[] b = new byte[512];
-					int l = 0;
-					int c = 0;
-					while((l=ins.read(b,0,512)) > 0){
-					    int m = Math.min(l, respLen-c);
+    @Override
+    public void write(byte[] data, boolean flush) {
+        byte[] datalength = StringUtil.charFill(data.length + "", '0', "left", 4).getBytes();
+        data = StringUtil.union(datalength, data);
+        super.write(data, flush);
+    }
+
+    @Override
+    public byte[] read() {
+        byte[] resp = null;
+        if (this.socket != null && !isClose()) {
+            try {
+                this.ins = this.socket.getInputStream();
+                int len = 4;
+                byte[] respLength = new byte[len];
+                int n = this.ins.read(respLength, 0, len);
+                if (n == 4) {
+                    int respLen = Integer.parseInt(new String(respLength));
+                    // resp = new byte[respLen];
+                    // n = ins.read(resp, 0, respLen);
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    byte[] b = new byte[512];
+                    int l = 0;
+                    int c = 0;
+                    while ((l = this.ins.read(b, 0, 512)) > 0) {
+                        int m = Math.min(l, respLen - c);
                         out.write(b, 0, m);
                         c += m;
-                        if(c >= respLen){
+                        if (c >= respLen) {
                             break;
                         }
-					}
-					resp = out.toByteArray();
+                    }
+                    resp = out.toByteArray();
 //					if(n == respLen){
 //						
 //					}else
-//						throw new SSocketException("¶ÁÈ¡ÎŞ·¨ÕıÈ·¶ÁÍê,Çë¼ì²éÊı¾İ...");
-				}else{
-					throw new SSocketException("¶ÁÈ¡Êı¾İÇ°¶Ë4Î»³¤¶È¹ı³ÌÒì³£,Çë¼ì²éÊı¾İ... Êµ¼Ê¶ÁÈ¡³¤¶È : " + n);
-				}
-			} catch (IOException e) {
-				log.info("IOLenthSocket ¶ÁÈ¡Êı¾İ³öÏÖÒì³£");
-				if(ins != null){
-					try {
-							ins.close();
-						} catch (IOException ie) {
-							ie.printStackTrace();
-						}
-				}
-				e.printStackTrace();
-			}
-		}
-		return resp;
-	}
-	
+//						throw new SSocketException("è¯»å–æ— æ³•æ­£ç¡®è¯»å®Œ,è¯·æ£€æŸ¥æ•°æ®...");
+                } else {
+                    throw new SSocketException("è¯»å–æ•°æ®å‰ç«¯4ä½é•¿åº¦è¿‡ç¨‹å¼‚å¸¸,è¯·æ£€æŸ¥æ•°æ®... å®é™…è¯»å–é•¿åº¦ : " + n);
+                }
+            } catch (IOException e) {
+                log.info("IOLenthSocket è¯»å–æ•°æ®å‡ºç°å¼‚å¸¸");
+                if (this.ins != null) {
+                    try {
+                        this.ins.close();
+                    } catch (IOException ie) {
+                        ie.printStackTrace();
+                    }
+                }
+                e.printStackTrace();
+            }
+        }
+        return resp;
+    }
+
 }

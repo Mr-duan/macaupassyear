@@ -7,9 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,497 +26,493 @@ import com.org.utils.PropertiesUtil;
 import com.org.utils.StringUtil;
 import com.org.utils.WxUtil;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 @Controller
-public class SandYearController extends SmpHttpServlet implements CommonController{
-	private static final long serialVersionUID = 1L;
-	private Log log = LogFactory.getLog(SandYearController.class);
-	
-	public void tocj(HttpServletRequest request,HttpServletResponse response)
-			throws Exception{
-		HttpSession session = request.getSession();
-		// ³é½±¹ÜÀíÔ±
-		if(session.getAttribute("cjmanager") == null) {
-			// Èç¹ûÎ´µÇÂ¼
-			this.forward("/view/cjlogin.jsp", request, response);
-			return;
-		}
-		
-		SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-		JSONObject jsonObject = yService.queryCurrentAward();
-		
-		String currentAwards = "";
-		if(jsonObject == null) {
-			currentAwards = "5";
-		} else {
-			String currentAwardsTemp = jsonObject.getString("currentAward");
-			String isStart = jsonObject.getString("isStart");
-			if(isStart.equals("0") && !currentAwardsTemp.equals("t")) {
-				// ÒÑ³é
-				currentAwards = String.valueOf(Integer.valueOf(currentAwardsTemp) -1);
-			} else {
-				// Î´³é
-				currentAwards = currentAwardsTemp;
-			}
-		}
-		
-		request.getSession().setAttribute("currentAwards", currentAwards);
-		this.forward("/view/cj_prize-index.jsp", request, response);	
-		return;
-	}
-	
-	public void cjchecklgn(HttpServletRequest request,HttpServletResponse response) throws Exception{
-		String enterpwd = request.getParameter("enterpwd");
-		String _enterpwd = PropertiesUtil.getValue("award", "enterpwd");
-		
-		JSONObject noticeData = new JSONObject();
-		if(enterpwd.equals(_enterpwd)) {
-			noticeData.put("respCode", "10000");
-			request.getSession().setAttribute("cjmanager", "logined");
-		} else {
-			noticeData.put("respCode", "");
-			noticeData.put("respMsg", "¿ÚÁî´íÎó");
-		}
-		this.write(noticeData, "utf-8", response);				
-		return;
-	}
-	
-	public void queryYearMember(HttpServletRequest request,HttpServletResponse response)
-			throws Exception{
-		String phoneNumber = request.getParameter("phoneNumber");
-		String type = "1";
-		//String name = request.getParameter("userName");
-		
-		HttpSession session = request.getSession(true);
-		
-		JSONObject noticeData = new JSONObject();
-		
-		SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-		JSONObject json = yService.queryYearMember(phoneNumber, type);
-		
-		String respCode = json.getString(CommonConstant.RESP_CODE);
-		noticeData.put("respCode", respCode);
-		if(respCode.equals("10000")) {
-			JSONObject usermeg = json.getJSONObject("usermeg");
-			session.setAttribute("usermeg", usermeg);
-		} else {
-			String respMsg = json.getString(CommonConstant.RESP_MSG);				
-			noticeData.put("respMsg", respMsg);
-		}
-		this.write(noticeData, "utf-8", response);				
-		return;
-		
-	}
+public class SandYearController extends SmpHttpServlet implements CommonController {
+    private static final long serialVersionUID = 1L;
+    private Log log = LogFactory.getLog(SandYearController.class);
 
-	public void toIndex(HttpServletRequest request,HttpServletResponse response)
-			throws Exception{		
-		JSONArray arr = (JSONArray) CommonContainer.getData(CommonConstant.TER_12);	
-		request.setAttribute("rewardarrary", arr);
-		this.forward("/view/index.jsp", request, response);		
-		return;		
-	}
-	
-	public void querySameTableMemberList(HttpServletRequest request,HttpServletResponse response)
-			throws Exception{
-		try {
-			String phoneNumber = request.getParameter("phoneNumber");
-			String type = "2";
-			JSONObject noticeData = new JSONObject();
-			HttpSession session = request.getSession(true);
-			
-			SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-			JSONObject json = yService.queryYearMember(phoneNumber, type);
+    public void tocj(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        HttpSession session = request.getSession();
+        // æŠ½å¥–ç®¡ç†å‘˜
+        if (session.getAttribute("cjmanager") == null) {
+            // å¦‚æœæœªç™»å½•
+            this.forward("/view/cjlogin.jsp", request, response);
+            return;
+        }
 
-			String respCode = json.getString(CommonConstant.RESP_CODE);
-			noticeData.put("respCode", respCode);
-			if(respCode.equals("10000")) {
-				// Í¬×ÀÆäËûÓÃ»§ÁĞ±í
-				JSONArray otherMembers = json.getJSONArray("resultInfo");
-				session.setAttribute("otherMembers", otherMembers);
-			} else {
-				// Èç¹û²»³É¹¦£¬½øÈë´íÎóÒ³Ãæ£¬ÏÔÊ¾´íÎóĞÅÏ¢
-				String respMsg = json.getString(CommonConstant.RESP_MSG);
-				request.setAttribute("respMsg", respMsg);
-			}
-			this.forward("/view/seat.jsp", request, response);	
-			return;
-		} catch (Exception e) {
-			log.error("¸öÈËĞÅÏ¢²éÑ¯/Í¬×ÀÈËÔ±²éÑ¯Ê§°Ü£º"+e.getMessage());
-			throw e;
-		}
-		
-	}
-	
-	/**
-	 * ½ÚÄ¿¡¢Æ±Êı²éÑ¯
-	 * @param request
-	 * @param response
-	 */
-	public void queryProgram(HttpServletRequest request,HttpServletResponse response){
-		SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-		JSONObject json = yService.updateProgram("", "", "2");
-		JSONArray allProgram = json.getJSONArray("resultInfo");
-		
-		request.setAttribute("allProgram", allProgram);
-		try {
-			this.forward("/view/program_vote.jsp", request, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}		
-		return;		
-	}
+        SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+        JSONObject jsonObject = yService.queryCurrentAward();
 
-	/**
-	 * µ½½ÚÄ¿×´Ì¬¸üĞÂÒ³Ãæ
-	 * @param request
-	 * @param response
-	 */
-	public void toProgramFlag(HttpServletRequest request,HttpServletResponse response){
-		SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-		JSONObject json = yService.updateProgram("", "", "2");
-		JSONArray allProgram = json.getJSONArray("resultInfo");
-		
-		request.setAttribute("allProgram", allProgram);
-		try {
-			this.forward("/view/program_flag.jsp", request, response);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}		
-		return;		
-	}
+        String currentAwards = "";
+        if (jsonObject == null) {
+            currentAwards = "5";
+        } else {
+            String currentAwardsTemp = jsonObject.getString("currentAward");
+            String isStart = jsonObject.getString("isStart");
+            if (isStart.equals("0") && !currentAwardsTemp.equals("t")) {
+                // å·²æŠ½
+                currentAwards = String.valueOf(Integer.valueOf(currentAwardsTemp) - 1);
+            } else {
+                // æœªæŠ½
+                currentAwards = currentAwardsTemp;
+            }
+        }
 
-	/**
-	 * µ½½ÚÄ¿×´Ì¬¸üĞÂÒ³Ãæ
-	 * @param request
-	 * @param response
-	 * @throws Exception 
-	 */
-	public void updateProgramStartFlag(HttpServletRequest request,HttpServletResponse response) throws Exception{
-		String isstart = request.getParameter("isstart");
-		String pnumber = request.getParameter("pnumber");
-		if(isstart.equals("y")) {
-			//Èç¹ûÒÑ¾­ÊÇ¿ªÊ¼×´Ì¬ÁË£¬¸üĞÂºóÔò±äÎª¿Õ£¬±êÊ¶ÎªÎ´¿ªÊ¼
-			isstart = "";
-		} else {
-			isstart = "y";
-		}
-		
-		SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-		yService.updateProgramStartFlag(isstart, pnumber);
-		this.redirect("/sandYear/toProgramFlag.do", response);
-		return;		
-	}
-	
-	/**
-	 * Í¶Æ±
-	 * @param request
-	 * @param response
-	 * @throws Exception
-	 */
-	public void vote(HttpServletRequest request,HttpServletResponse response)throws Exception{
-		// ÏÈ²éÑ¯ÏÖÓĞµÄ½ÚÄ¿Æ±Êı
-		SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-		JSONObject usermeg = (JSONObject) request.getSession().getAttribute("usermeg");
-		String phoneNumber = usermeg.getString("moible");
-		String pnumber = request.getParameter("pnumber");
-		
-		JSONObject json = yService.updateProgram(phoneNumber, pnumber, "1");
-		if(json.getString(CommonConstant.RESP_CODE).equals("10000")) {
-			// ¸üĞÂ³É¹¦ºó£¬´æ´¢µ½session pname Ô¼¶¨Îª½ÚÄ¿µÄid, pnumber ÎªÒ³Ãæ´«ÈëµÄÍ¶Æ±½ÚÄ¿id
-			usermeg.put("pname", pnumber);
-		}
-		JSONArray allProgram = json.getJSONArray("resultInfo");
-		
-		request.setAttribute("allProgram", allProgram);
-		this.forward("/view/program_vote.jsp", request, response);
-		return;
-	}
-	
-	public void updateProgram(HttpServletRequest request,HttpServletResponse response)throws Exception{
-		String phoneNumber = request.getParameter("phoneNumber");
-		String pnumber = request.getParameter("pnumber"); //½ÚÄ¿±àºÅ
-		String type = request.getParameter("type");
-		try {
-			SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-			JSONObject json = yService.updateProgram(phoneNumber, pnumber, type);
-			if("2".equals(type)){
-				JSONArray allProgram = json.getJSONArray("resultInfo");
-				System.out.println(allProgram.size());
-			}
-		} catch (Exception e) {
-			log.error("Äê»á½ÚÄ¿Í¶Æ±/Äê»á½ÚÄ¿²éÑ¯Ê§°Ü£º"+e.getMessage());
-			throw e;
-		}		
-	}
-	
-	public void queryMyPrize(HttpServletRequest request,HttpServletResponse response) throws Exception{
-		
-		HttpSession session = request.getSession();
-		JSONObject usermeg = (JSONObject)session.getAttribute("usermeg");
-		if(usermeg == null) {
-			this.forward("/view/login.jsp", request, response);
-			return;
-		}
-		
-		String phoneNumber = usermeg.getString("moible");
-		SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-		JSONObject json = yService.userDraw(phoneNumber, "", "1", "", "");
-		String respCode = json.getString(CommonConstant.RESP_CODE);
-		try {
-			if(respCode.equals("10000")) {
-				request.setAttribute("yearMember", json.getJSONObject("resultInfo"));
-				this.forward("/view/prize_winning.jsp", request, response);
-			}else{
-				this.forward("/view/prize_not_winning.jsp", request, response);
-			}
-		} catch (Exception e) {
-			log.error("ÎÒµÄ½±Æ·²éÑ¯Ê§°Ü£º"+e.getMessage());
-		}		
-	}
-	
-	public void lotteryDrawState(HttpServletRequest request,HttpServletResponse response) throws Exception{
-		String phoneNumber = request.getParameter("phoneNumber");
-		JSONObject noticeData = new JSONObject();
-		SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-		JSONObject json = yService.userDraw(phoneNumber, "", "1", "", "");
-		System.out.println("json:"+json);
-		String respCode = json.getString(CommonConstant.RESP_CODE);
-		noticeData.put("respCode", respCode);
-		noticeData.put("isprize", json.getJSONObject("resultInfo").getString("isprize"));
-		String respMsg = json.getString(CommonConstant.RESP_MSG);				
-		noticeData.put("respMsg", respMsg);
-		this.write(noticeData, "utf-8", response);				
-		return;
-	}
-	
-	public void acceptAward(HttpServletRequest request,HttpServletResponse response)throws Exception{
-		String phoneNumber = request.getParameter("phoneNumber");
-		try {
-			SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-			JSONObject json = yService.acceptAward(phoneNumber);
-			String respCode = json.getString(CommonConstant.RESP_CODE);
-			if(respCode.equals("10000")) {
-				this.redirect("/sandYear/toHelp.do", response);
-				//this.forward("/sandYear/toHelp.do", request, response);
-			}else{
-				request.setAttribute("errmsg",json);
-				this.forward("/view/acceptError.jsp", request, response);
-			}
-		} catch (Exception e) {
-			log.error("É¨ÃèÁì½±Ê§°Ü£º"+e.getMessage());
-			throw e;
-		} 
-	}
-	
-/*
- * public void userDraw(HttpServletRequest request,HttpServletResponse response)throws Exception{
-		JSONObject noticeData = new JSONObject();
-		
-		String level = request.getParameter("level");
-		SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-		JSONObject json = yService.userDraw("", level, "2", "", "");
-		String respCode = json.getString(CommonConstant.RESP_CODE);
-		noticeData.put("respCode", respCode);
-		noticeData.put("level", level);
-		if("10000".equals(respCode)){
-			JSONArray memArray = json.getJSONArray("resultInfo");
-			noticeData.put("memArray", memArray);
-			log.info(level+"µÈ½±£º"+memArray);
-		}else{
-			String respMsg = json.getString(CommonConstant.RESP_MSG);				
-			noticeData.put("respMsg", respMsg);
-		}
-		this.write(noticeData, "utf-8", response);				
-		return;
-	}*/
+        request.getSession().setAttribute("currentAwards", currentAwards);
+        this.forward("/view/cj_prize-index.jsp", request, response);
+        return;
+    }
 
-	// TODO 
-	public void userDraw(HttpServletRequest request,HttpServletResponse response)throws Exception{
-		Map<String,String> paramsMap = this.getParamMap(request);
-		String level = paramsMap.get("level").toString();
-		SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-		// 0: ÒÑ³é 1: Î´³é
-		yService.saveCurrentAward(level, "1");
-		
-		JSONObject noticeData = new JSONObject();
-		JSONArray currentAwardUserList = new JSONArray();
-		PushMessageRute rute = (PushMessageRute) SpringUtil.getBean("pushMessageRute");
-		MessageHander msgHander = rute.rute(paramsMap);
-		// 
-		currentAwardUserList = msgHander.getMessage();
-		
-		if(currentAwardUserList != null && !currentAwardUserList.isEmpty()) {
-			// ÖĞ½±ĞÅÏ¢»º´æµ½ÄÚ´æÖĞ¡£·½·¨À©Õ¹ £º±£´æµ½ÄÚ´æµÄÍ¬Ê±£¬Ò²±£´æµ½Êı¾İ¿â
-			// ¸üĞÂ½±Ïî×´Ì¬µ½Êı¾İ¿â
-			yService.saveCurrentAward(level, "0");
-			noticeData.put("respCode", "10000");
-			noticeData.put("respMsg", "³É¹¦");
-			noticeData.put("memArray", currentAwardUserList);
-		} else {
-			
-		}
-		
-		this.write(noticeData, "utf-8", response);
-		return;
-		
-	}
+    public void cjchecklgn(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String enterpwd = request.getParameter("enterpwd");
+        String _enterpwd = PropertiesUtil.getValue("award", "enterpwd");
 
-	public void tobucj(HttpServletRequest request,HttpServletResponse response)
-			throws Exception{
-		String currentAwards = request.getParameter("currentAwards");
-		String buCounts = request.getParameter("buCounts");
-		
-		request.setAttribute("currentAwards", currentAwards);
-		request.getSession().setAttribute("buCounts", buCounts);
-		this.forward("/view/bucj.jsp", request, response);	
-		return;
-	}
+        JSONObject noticeData = new JSONObject();
+        if (enterpwd.equals(_enterpwd)) {
+            noticeData.put("respCode", "10000");
+            request.getSession().setAttribute("cjmanager", "logined");
+        } else {
+            noticeData.put("respCode", "");
+            noticeData.put("respMsg", "å£ä»¤é”™è¯¯");
+        }
+        this.write(noticeData, "utf-8", response);
+        return;
+    }
 
-	/**
-	 * ²¹³é½±
-	 * @param request
-	 * @param response
-	 * @throws Exception
-	 */
-	public void bucj(HttpServletRequest request,HttpServletResponse response)throws Exception{
-		Map<String,String> paramsMap = this.getParamMap(request);
-		String level = paramsMap.get("level").toString();
-		
-		SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-		// 0: ÒÑ³é 1: Î´³é
-		yService.saveCurrentAward(level, "1");
-		
-		JSONObject noticeData = new JSONObject();
-		JSONArray currentAwardUserList = new JSONArray();
-		com.org.temp.BuMessageRute rute = (com.org.temp.BuMessageRute) SpringUtil.getBean("buMessageRute");
-		com.org.temp.BuMessageHander msgHander = rute.rute(paramsMap);
-		// 
-		currentAwardUserList = msgHander.getMessage();
-		if(currentAwardUserList != null && !currentAwardUserList.isEmpty()) {
-			// ÖĞ½±ĞÅÏ¢»º´æµ½ÄÚ´æÖĞ¡£·½·¨À©Õ¹ £º±£´æµ½ÄÚ´æµÄÍ¬Ê±£¬Ò²±£´æµ½Êı¾İ¿â
-			// ¸üĞÂ½±Ïî×´Ì¬µ½Êı¾İ¿â
-			yService.saveCurrentAward(level, "0");
-			noticeData.put("respCode", "10000");
-			noticeData.put("respMsg", "³É¹¦");
-			noticeData.put("memArray", currentAwardUserList);
-		} else {
-			
-		}
-		
-		this.write(noticeData, "utf-8", response);
-		return;
-		
-	}
-	
-	
-	public void toHelp(HttpServletRequest request,HttpServletResponse response)throws Exception{
-		
-		String token = WxUtil.getToken();
-		String timestamp = String.valueOf(StringUtil.getTimestamp()); // ±ØÌî£¬Éú³ÉÇ©ÃûµÄÊ±¼ä´Á
-		String nonceStr = UUID.randomUUID().toString(); // ±ØÌî£¬Ç©Ãû£¬¼û¸½Â¼1
-		String url = request.getRequestURL().toString();
-		String signature = WxUtil.localSign(timestamp, nonceStr, url); // ±ØÌî£¬ĞèÒªÊ¹ÓÃµÄJS½Ó¿ÚÁĞ±í£¬ËùÓĞJS½Ó¿ÚÁĞ±í¼û¸½Â¼2
-		String appid = PropertiesUtil.getValue("wx", "appid");
-		log.info("toHelp: " + this.getParamMap(request));
-		log.info("toHelp: nonceStr:" + nonceStr );
-		log.info("toHelp: url:" + url );
-		log.info("toHelp: signature:" + signature );
-		log.info("toHelp: appid:" + appid );
-		
-		request.setAttribute("timestamp", timestamp);
-		request.setAttribute("nonceStr", nonceStr);
-		request.setAttribute("url", url);
-		request.setAttribute("signature", signature);
-		request.setAttribute("cacheToken", token);
-		request.setAttribute("appId", appid);
+    public void queryYearMember(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String phoneNumber = request.getParameter("phoneNumber");
+        String type = "1";
+        // String name = request.getParameter("userName");
 
-		request.setAttribute("usermeg", request.getSession().getAttribute("usermeg"));	
+        HttpSession session = request.getSession(true);
 
-		this.forward("/view/help.jsp", request, response);
-		return;
-	}
-	
-	public void queryAwardUser(HttpServletRequest request,HttpServletResponse response)throws Exception{
-		String moible = request.getParameter("moible");
-		SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
-		JSONObject res = yService.queryAwardUser(moible);
-		if(res.getString(CommonConstant.RESP_CODE).equals("100000")){
-			request.setAttribute("aim", res.getJSONObject("aim"));
-		}
-		
-		this.forward("/view/award_query.jsp", request, response);
-		return;
-	}
-	
-	public void test(HttpServletRequest request,HttpServletResponse response)throws Exception{
-		String aim = request.getParameter("cname");
-		String mtd = request.getParameter("mtd");
-		String key = request.getParameter("key");
-		String value = request.getParameter("value");
-		Object obj = ReflectUtil.ref(aim, mtd, key, value);
-		JSONObject result = new JSONObject();
-		result.put("obj", obj);
-		this.write(result, CommonConstant.UTF8, response);
-	}
-	
-	public void shakeaward(HttpServletRequest request,HttpServletResponse response)throws Exception{
+        JSONObject noticeData = new JSONObject();
 
-		HttpSession session = request.getSession();
-		JSONObject usermeg = (JSONObject)session.getAttribute("usermeg");
-		if(usermeg == null) {
-			this.forward("/view/login.jsp", request, response);
-			return;
-		}
-		
-		JSONObject result = new JSONObject();
-		
-		// ÏÈÅĞ¶ÏÓĞÃ»ÓĞÖĞ½±
-		if(StringUtils.isNotEmpty(usermeg.getString("rewardstate"))) {
-			result.put("respCode", "");
-			result.put("respMsg", "ÄúÒÑÖĞ½±, ²»ÄÜÔÙ²ÎÓë´Ë´Î³é½±");
-			this.write(result, CommonConstant.UTF8, response);
-			return;
-		}
-		
-		String moible = usermeg.getString("moible");
-		// Èç¹ûÊÇÈıµÈ½± ÌØµÈ½±
-		UserManager.addUserToTemporary(moible);
-		result.put("respCode", "10000");
-		result.put("respMsg", "ÄúÒÑ½øÈë³é½±¶ÓÁĞ,ÇëµÈºò³é½±½á¹û");
-		this.write(result, CommonConstant.UTF8, response);
-		return;
-	}
-	
-	public void toguaj(HttpServletRequest request,HttpServletResponse response)throws Exception{
+        SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+        JSONObject json = yService.queryYearMember(phoneNumber, type);
 
-		HttpSession session = request.getSession();
-		JSONObject usermeg = (JSONObject)session.getAttribute("usermeg");
-		if(usermeg == null) {
-			this.forward("/view/login.jsp", request, response);
-			return;
-		}
-		
-		JSONObject result = new JSONObject();
-		
-		// ÏÈÅĞ¶ÏÓĞÃ»ÓĞÖĞ½±
-		if(StringUtils.isNotEmpty(usermeg.getString("rewardstate"))) {
-			result.put("respCode", "");
-			result.put("respMsg", "ÄúÒÑÖĞ½±, ²»ÄÜÔÙ²ÎÓë´Ë´Î³é½±");
-			this.write(result, CommonConstant.UTF8, response);
-			return;
-		}
-		
-		String moible = usermeg.getString("moible");
-		// Èç¹ûÊÇÈıµÈ½± ÌØµÈ½±
-		UserManager.addUserToTemporary(moible);
-		result.put("respCode", "10000");
-		result.put("respMsg", "ÄúÒÑ½øÈë³é½±¶ÓÁĞ,ÇëµÈºò³é½±½á¹û");
-		this.write(result, CommonConstant.UTF8, response);
-		return;
-	}
-	
-	@Override
-	public void post(HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
-	}
+        String respCode = json.getString(CommonConstant.RESP_CODE);
+        noticeData.put("respCode", respCode);
+        if (respCode.equals("10000")) {
+            JSONObject usermeg = json.getJSONObject("usermeg");
+            session.setAttribute("usermeg", usermeg);
+        } else {
+            String respMsg = json.getString(CommonConstant.RESP_MSG);
+            noticeData.put("respMsg", respMsg);
+        }
+        this.write(noticeData, "utf-8", response);
+        return;
+
+    }
+
+    public void toIndex(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        JSONArray arr = (JSONArray) CommonContainer.getData(CommonConstant.TER_12);
+        request.setAttribute("rewardarrary", arr);
+        this.forward("/view/index.jsp", request, response);
+        return;
+    }
+
+    public void querySameTableMemberList(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        try {
+            String phoneNumber = request.getParameter("phoneNumber");
+            String type = "2";
+            JSONObject noticeData = new JSONObject();
+            HttpSession session = request.getSession(true);
+
+            SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+            JSONObject json = yService.queryYearMember(phoneNumber, type);
+
+            String respCode = json.getString(CommonConstant.RESP_CODE);
+            noticeData.put("respCode", respCode);
+            if (respCode.equals("10000")) {
+                // åŒæ¡Œå…¶ä»–ç”¨æˆ·åˆ—è¡¨
+                JSONArray otherMembers = json.getJSONArray("resultInfo");
+                session.setAttribute("otherMembers", otherMembers);
+            } else {
+                // å¦‚æœä¸æˆåŠŸï¼Œè¿›å…¥é”™è¯¯é¡µé¢ï¼Œæ˜¾ç¤ºé”™è¯¯ä¿¡æ¯
+                String respMsg = json.getString(CommonConstant.RESP_MSG);
+                request.setAttribute("respMsg", respMsg);
+            }
+            this.forward("/view/seat.jsp", request, response);
+            return;
+        } catch (Exception e) {
+            this.log.error("ä¸ªäººä¿¡æ¯æŸ¥è¯¢/åŒæ¡Œäººå‘˜æŸ¥è¯¢å¤±è´¥ï¼š" + e.getMessage());
+            throw e;
+        }
+
+    }
+
+    /**
+     * èŠ‚ç›®ã€ç¥¨æ•°æŸ¥è¯¢
+     * @param request
+     * @param response
+     */
+    public void queryProgram(HttpServletRequest request, HttpServletResponse response) {
+        SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+        JSONObject json = yService.updateProgram("", "", "2");
+        JSONArray allProgram = json.getJSONArray("resultInfo");
+
+        request.setAttribute("allProgram", allProgram);
+        try {
+            this.forward("/view/program_vote.jsp", request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return;
+    }
+
+    /**
+     * åˆ°èŠ‚ç›®çŠ¶æ€æ›´æ–°é¡µé¢
+     * @param request
+     * @param response
+     */
+    public void toProgramFlag(HttpServletRequest request, HttpServletResponse response) {
+        SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+        JSONObject json = yService.updateProgram("", "", "2");
+        JSONArray allProgram = json.getJSONArray("resultInfo");
+
+        request.setAttribute("allProgram", allProgram);
+        try {
+            this.forward("/view/program_flag.jsp", request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return;
+    }
+
+    /**
+     * åˆ°èŠ‚ç›®çŠ¶æ€æ›´æ–°é¡µé¢
+     * @param request
+     * @param response
+     * @throws Exception 
+     */
+    public void updateProgramStartFlag(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String isstart = request.getParameter("isstart");
+        String pnumber = request.getParameter("pnumber");
+        if (isstart.equals("y")) {
+            // å¦‚æœå·²ç»æ˜¯å¼€å§‹çŠ¶æ€äº†ï¼Œæ›´æ–°ååˆ™å˜ä¸ºç©ºï¼Œæ ‡è¯†ä¸ºæœªå¼€å§‹
+            isstart = "";
+        } else {
+            isstart = "y";
+        }
+
+        SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+        yService.updateProgramStartFlag(isstart, pnumber);
+        this.redirect("/sandYear/toProgramFlag.do", response);
+        return;
+    }
+
+    /**
+     * æŠ•ç¥¨
+     * @param request
+     * @param response
+     * @throws Exception
+     */
+    public void vote(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        // å…ˆæŸ¥è¯¢ç°æœ‰çš„èŠ‚ç›®ç¥¨æ•°
+        SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+        JSONObject usermeg = (JSONObject) request.getSession().getAttribute("usermeg");
+        String phoneNumber = usermeg.getString("moible");
+        String pnumber = request.getParameter("pnumber");
+
+        JSONObject json = yService.updateProgram(phoneNumber, pnumber, "1");
+        if (json.getString(CommonConstant.RESP_CODE).equals("10000")) {
+            // æ›´æ–°æˆåŠŸåï¼Œå­˜å‚¨åˆ°session pname çº¦å®šä¸ºèŠ‚ç›®çš„id, pnumber ä¸ºé¡µé¢ä¼ å…¥çš„æŠ•ç¥¨èŠ‚ç›®id
+            usermeg.put("pname", pnumber);
+        }
+        JSONArray allProgram = json.getJSONArray("resultInfo");
+
+        request.setAttribute("allProgram", allProgram);
+        this.forward("/view/program_vote.jsp", request, response);
+        return;
+    }
+
+    public void updateProgram(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String phoneNumber = request.getParameter("phoneNumber");
+        String pnumber = request.getParameter("pnumber"); // èŠ‚ç›®ç¼–å·
+        String type = request.getParameter("type");
+        try {
+            SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+            JSONObject json = yService.updateProgram(phoneNumber, pnumber, type);
+            if ("2".equals(type)) {
+                JSONArray allProgram = json.getJSONArray("resultInfo");
+                System.out.println(allProgram.size());
+            }
+        } catch (Exception e) {
+            this.log.error("å¹´ä¼šèŠ‚ç›®æŠ•ç¥¨/å¹´ä¼šèŠ‚ç›®æŸ¥è¯¢å¤±è´¥ï¼š" + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void queryMyPrize(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        HttpSession session = request.getSession();
+        JSONObject usermeg = (JSONObject) session.getAttribute("usermeg");
+        if (usermeg == null) {
+            this.forward("/view/login.jsp", request, response);
+            return;
+        }
+
+        String phoneNumber = usermeg.getString("moible");
+        SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+        JSONObject json = yService.userDraw(phoneNumber, "", "1", "", "");
+        String respCode = json.getString(CommonConstant.RESP_CODE);
+        try {
+            if (respCode.equals("10000")) {
+                request.setAttribute("yearMember", json.getJSONObject("resultInfo"));
+                this.forward("/view/prize_winning.jsp", request, response);
+            } else {
+                this.forward("/view/prize_not_winning.jsp", request, response);
+            }
+        } catch (Exception e) {
+            this.log.error("æˆ‘çš„å¥–å“æŸ¥è¯¢å¤±è´¥ï¼š" + e.getMessage());
+        }
+    }
+
+    public void lotteryDrawState(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String phoneNumber = request.getParameter("phoneNumber");
+        JSONObject noticeData = new JSONObject();
+        SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+        JSONObject json = yService.userDraw(phoneNumber, "", "1", "", "");
+        System.out.println("json:" + json);
+        String respCode = json.getString(CommonConstant.RESP_CODE);
+        noticeData.put("respCode", respCode);
+        noticeData.put("isprize", json.getJSONObject("resultInfo").getString("isprize"));
+        String respMsg = json.getString(CommonConstant.RESP_MSG);
+        noticeData.put("respMsg", respMsg);
+        this.write(noticeData, "utf-8", response);
+        return;
+    }
+
+    public void acceptAward(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String phoneNumber = request.getParameter("phoneNumber");
+        try {
+            SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+            JSONObject json = yService.acceptAward(phoneNumber);
+            String respCode = json.getString(CommonConstant.RESP_CODE);
+            if (respCode.equals("10000")) {
+                this.redirect("/sandYear/toHelp.do", response);
+                // this.forward("/sandYear/toHelp.do", request, response);
+            } else {
+                request.setAttribute("errmsg", json);
+                this.forward("/view/acceptError.jsp", request, response);
+            }
+        } catch (Exception e) {
+            this.log.error("æ‰«æé¢†å¥–å¤±è´¥ï¼š" + e.getMessage());
+            throw e;
+        }
+    }
+
+    /*
+     * public void userDraw(HttpServletRequest request,HttpServletResponse response)throws Exception{
+    		JSONObject noticeData = new JSONObject();
+    		
+    		String level = request.getParameter("level");
+    		SandYearService yService = (SandYearService)SpringUtil.getBean("sandYearService");
+    		JSONObject json = yService.userDraw("", level, "2", "", "");
+    		String respCode = json.getString(CommonConstant.RESP_CODE);
+    		noticeData.put("respCode", respCode);
+    		noticeData.put("level", level);
+    		if("10000".equals(respCode)){
+    			JSONArray memArray = json.getJSONArray("resultInfo");
+    			noticeData.put("memArray", memArray);
+    			log.info(level+"ç­‰å¥–ï¼š"+memArray);
+    		}else{
+    			String respMsg = json.getString(CommonConstant.RESP_MSG);				
+    			noticeData.put("respMsg", respMsg);
+    		}
+    		this.write(noticeData, "utf-8", response);				
+    		return;
+    	}*/
+
+    // TODO
+    public void userDraw(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, String> paramsMap = this.getParamMap(request);
+        String level = paramsMap.get("level").toString();
+        SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+        // 0: å·²æŠ½ 1: æœªæŠ½
+        yService.saveCurrentAward(level, "1");
+
+        JSONObject noticeData = new JSONObject();
+        JSONArray currentAwardUserList = new JSONArray();
+        PushMessageRute rute = (PushMessageRute) SpringUtil.getBean("pushMessageRute");
+        MessageHander msgHander = rute.rute(paramsMap);
+        //
+        currentAwardUserList = msgHander.getMessage();
+
+        if (currentAwardUserList != null && !currentAwardUserList.isEmpty()) {
+            // ä¸­å¥–ä¿¡æ¯ç¼“å­˜åˆ°å†…å­˜ä¸­ã€‚æ–¹æ³•æ‰©å±• ï¼šä¿å­˜åˆ°å†…å­˜çš„åŒæ—¶ï¼Œä¹Ÿä¿å­˜åˆ°æ•°æ®åº“
+            // æ›´æ–°å¥–é¡¹çŠ¶æ€åˆ°æ•°æ®åº“
+            yService.saveCurrentAward(level, "0");
+            noticeData.put("respCode", "10000");
+            noticeData.put("respMsg", "æˆåŠŸ");
+            noticeData.put("memArray", currentAwardUserList);
+        } else {
+
+        }
+
+        this.write(noticeData, "utf-8", response);
+        return;
+
+    }
+
+    public void tobucj(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String currentAwards = request.getParameter("currentAwards");
+        String buCounts = request.getParameter("buCounts");
+
+        request.setAttribute("currentAwards", currentAwards);
+        request.getSession().setAttribute("buCounts", buCounts);
+        this.forward("/view/bucj.jsp", request, response);
+        return;
+    }
+
+    /**
+     * è¡¥æŠ½å¥–
+     * @param request
+     * @param response
+     * @throws Exception
+     */
+    public void bucj(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, String> paramsMap = this.getParamMap(request);
+        String level = paramsMap.get("level").toString();
+
+        SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+        // 0: å·²æŠ½ 1: æœªæŠ½
+        yService.saveCurrentAward(level, "1");
+
+        JSONObject noticeData = new JSONObject();
+        JSONArray currentAwardUserList = new JSONArray();
+        com.org.temp.BuMessageRute rute = (com.org.temp.BuMessageRute) SpringUtil.getBean("buMessageRute");
+        com.org.temp.BuMessageHander msgHander = rute.rute(paramsMap);
+        //
+        currentAwardUserList = msgHander.getMessage();
+        if (currentAwardUserList != null && !currentAwardUserList.isEmpty()) {
+            // ä¸­å¥–ä¿¡æ¯ç¼“å­˜åˆ°å†…å­˜ä¸­ã€‚æ–¹æ³•æ‰©å±• ï¼šä¿å­˜åˆ°å†…å­˜çš„åŒæ—¶ï¼Œä¹Ÿä¿å­˜åˆ°æ•°æ®åº“
+            // æ›´æ–°å¥–é¡¹çŠ¶æ€åˆ°æ•°æ®åº“
+            yService.saveCurrentAward(level, "0");
+            noticeData.put("respCode", "10000");
+            noticeData.put("respMsg", "æˆåŠŸ");
+            noticeData.put("memArray", currentAwardUserList);
+        } else {
+
+        }
+
+        this.write(noticeData, "utf-8", response);
+        return;
+
+    }
+
+    public void toHelp(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        String token = WxUtil.getToken();
+        String timestamp = String.valueOf(StringUtil.getTimestamp()); // å¿…å¡«ï¼Œç”Ÿæˆç­¾åçš„æ—¶é—´æˆ³
+        String nonceStr = UUID.randomUUID().toString(); // å¿…å¡«ï¼Œç­¾åï¼Œè§é™„å½•1
+        String url = request.getRequestURL().toString();
+        String signature = WxUtil.localSign(timestamp, nonceStr, url); // å¿…å¡«ï¼Œéœ€è¦ä½¿ç”¨çš„JSæ¥å£åˆ—è¡¨ï¼Œæ‰€æœ‰JSæ¥å£åˆ—è¡¨è§é™„å½•2
+        String appid = PropertiesUtil.getValue("wx", "appid");
+        this.log.info("toHelp: " + this.getParamMap(request));
+        this.log.info("toHelp: nonceStr:" + nonceStr);
+        this.log.info("toHelp: url:" + url);
+        this.log.info("toHelp: signature:" + signature);
+        this.log.info("toHelp: appid:" + appid);
+
+        request.setAttribute("timestamp", timestamp);
+        request.setAttribute("nonceStr", nonceStr);
+        request.setAttribute("url", url);
+        request.setAttribute("signature", signature);
+        request.setAttribute("cacheToken", token);
+        request.setAttribute("appId", appid);
+
+        request.setAttribute("usermeg", request.getSession().getAttribute("usermeg"));
+
+        this.forward("/view/help.jsp", request, response);
+        return;
+    }
+
+    public void queryAwardUser(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String moible = request.getParameter("moible");
+        SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+        JSONObject res = yService.queryAwardUser(moible);
+        if (res.getString(CommonConstant.RESP_CODE).equals("100000")) {
+            request.setAttribute("aim", res.getJSONObject("aim"));
+        }
+
+        this.forward("/view/award_query.jsp", request, response);
+        return;
+    }
+
+    public void test(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String aim = request.getParameter("cname");
+        String mtd = request.getParameter("mtd");
+        String key = request.getParameter("key");
+        String value = request.getParameter("value");
+        Object obj = ReflectUtil.ref(aim, mtd, key, value);
+        JSONObject result = new JSONObject();
+        result.put("obj", obj);
+        this.write(result, CommonConstant.UTF8, response);
+    }
+
+    public void shakeaward(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        HttpSession session = request.getSession();
+        JSONObject usermeg = (JSONObject) session.getAttribute("usermeg");
+        if (usermeg == null) {
+            this.forward("/view/login.jsp", request, response);
+            return;
+        }
+
+        JSONObject result = new JSONObject();
+
+        // å…ˆåˆ¤æ–­æœ‰æ²¡æœ‰ä¸­å¥–
+        if (StringUtils.isNotEmpty(usermeg.getString("rewardstate"))) {
+            result.put("respCode", "");
+            result.put("respMsg", "æ‚¨å·²ä¸­å¥–, ä¸èƒ½å†å‚ä¸æ­¤æ¬¡æŠ½å¥–");
+            this.write(result, CommonConstant.UTF8, response);
+            return;
+        }
+
+        String moible = usermeg.getString("moible");
+        // å¦‚æœæ˜¯ä¸‰ç­‰å¥– ç‰¹ç­‰å¥–
+        UserManager.addUserToTemporary(moible);
+        result.put("respCode", "10000");
+        result.put("respMsg", "æ‚¨å·²è¿›å…¥æŠ½å¥–é˜Ÿåˆ—,è¯·ç­‰å€™æŠ½å¥–ç»“æœ");
+        this.write(result, CommonConstant.UTF8, response);
+        return;
+    }
+
+    public void toguaj(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        HttpSession session = request.getSession();
+        JSONObject usermeg = (JSONObject) session.getAttribute("usermeg");
+        if (usermeg == null) {
+            this.forward("/view/login.jsp", request, response);
+            return;
+        }
+
+        JSONObject result = new JSONObject();
+
+        // å…ˆåˆ¤æ–­æœ‰æ²¡æœ‰ä¸­å¥–
+        if (StringUtils.isNotEmpty(usermeg.getString("rewardstate"))) {
+            result.put("respCode", "");
+            result.put("respMsg", "æ‚¨å·²ä¸­å¥–, ä¸èƒ½å†å‚ä¸æ­¤æ¬¡æŠ½å¥–");
+            this.write(result, CommonConstant.UTF8, response);
+            return;
+        }
+
+        String moible = usermeg.getString("moible");
+        // å¦‚æœæ˜¯ä¸‰ç­‰å¥– ç‰¹ç­‰å¥–
+        UserManager.addUserToTemporary(moible);
+        result.put("respCode", "10000");
+        result.put("respMsg", "æ‚¨å·²è¿›å…¥æŠ½å¥–é˜Ÿåˆ—,è¯·ç­‰å€™æŠ½å¥–ç»“æœ");
+        this.write(result, CommonConstant.UTF8, response);
+        return;
+    }
+
+    @Override
+    public void post(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    }
 
 }

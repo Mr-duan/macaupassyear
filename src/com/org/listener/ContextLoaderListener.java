@@ -46,13 +46,13 @@ public class ContextLoaderListener implements ServletContextListener {
         PropertiesUtil.initProperties(servletContext);
 
         CommonContainer.saveContext(servletContext);
-        CommonContainer.saveData(CommonConstant.FLAG_CURRENT_AWARDS, "5"); // µ±Ç°½±ÏîÄ¬ÈÏÎª5µÈ½±
+        CommonContainer.saveData(CommonConstant.FLAG_CURRENT_AWARDS, "5"); // å½“å‰å¥–é¡¹é»˜è®¤ä¸º5ç­‰å¥–
 
         /* 6.init spring context */
         this.contextLoader = createContextLoader();
         // WebApplicationContext context = this.contextLoader.initWebApplicationContext(servletContext);
         this.contextLoader.initWebApplicationContext(servletContext);
-        // ³õÊ¼»¯ËùÓĞµÄÓÃ»§ĞÅÏ¢
+        // åˆå§‹åŒ–æ‰€æœ‰çš„ç”¨æˆ·ä¿¡æ¯
         UserManager.initUserInfo();
 
         WxUtil.autoRun();

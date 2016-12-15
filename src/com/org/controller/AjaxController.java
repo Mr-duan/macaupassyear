@@ -3,8 +3,6 @@ package com.org.controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
@@ -12,26 +10,27 @@ import org.springframework.stereotype.Controller;
 import com.org.servlet.CommonController;
 import com.org.servlet.SmpHttpServlet;
 
+import net.sf.json.JSONObject;
+
 @Controller
-public class AjaxController extends SmpHttpServlet implements CommonController{
-	private static final long serialVersionUID = 2156792239072761671L;
+public class AjaxController extends SmpHttpServlet implements CommonController {
+    private static final long serialVersionUID = 2156792239072761671L;
 
-	public AjaxController(){
-		
-	}
-	
-	private Log log = LogFactory.getLog(AjaxController.class);
+    public AjaxController() {
 
-	@Override
-	public void post(HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
-		log.info("AjaxController.......");
-		// Í¬Ô´²ßÂÔ²»ÔÊĞí¶ÁÈ¡XXXÉÏµÄÔ¶³Ì×ÊÔ´
-		// ¸æËßä¯ÀÀÆ÷£¬Õâ¸ö×ÊÔ´ÊÇÔËĞĞÔ¶³ÌËùÓĞÓòÃû·ÃÎÊµÄ¡£µ±È»£¬´Ë´¦µÄ*Ò²¿ÉÒÔÌæ»»ÎªÖ¸¶¨µÄÓòÃû£¬³öÓÚ°²È«¿¼ÂÇ£¬½¨Òé½«*Ìæ»»³ÉÖ¸¶¨µÄÓòÃû
-		response.setHeader("Access-Control-Allow-Origin", "*");
-		JSONObject tes = new JSONObject();
-		tes.put("data", "sssssffff");
-		this.write(tes.toString(), "UTF-8", response);
-		return;
-	}
+    }
+
+    private Log log = LogFactory.getLog(AjaxController.class);
+
+    @Override
+    public void post(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        this.log.info("AjaxController.......");
+        // åŒæºç­–ç•¥ä¸å…è®¸è¯»å–XXXä¸Šçš„è¿œç¨‹èµ„æº
+        // å‘Šè¯‰æµè§ˆå™¨ï¼Œè¿™ä¸ªèµ„æºæ˜¯è¿è¡Œè¿œç¨‹æ‰€æœ‰åŸŸåè®¿é—®çš„ã€‚å½“ç„¶ï¼Œæ­¤å¤„çš„*ä¹Ÿå¯ä»¥æ›¿æ¢ä¸ºæŒ‡å®šçš„åŸŸåï¼Œå‡ºäºå®‰å…¨è€ƒè™‘ï¼Œå»ºè®®å°†*æ›¿æ¢æˆæŒ‡å®šçš„åŸŸå
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        JSONObject tes = new JSONObject();
+        tes.put("data", "sssssffff");
+        this.write(tes.toString(), "UTF-8", response);
+        return;
+    }
 }
