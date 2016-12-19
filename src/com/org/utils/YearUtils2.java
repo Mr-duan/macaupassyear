@@ -5,28 +5,25 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class YearUtils {
+public class YearUtils2 {
     private static Timer timer = new Timer();
 
     private static class YearUtilsTask extends TimerTask {
         @Override
         public void run() {
             System.out.println("*************test************");
-            new YearUtils().testCache();
+            new YearUtils2().testCache();
         }
     }
 
     public void testCache() {
         try {
             Memcache memcache = Memcache.getInstance();
-            memcache.setValue("One", "test");
 
             String value = memcache.getValue("One");
-            System.out.println("YearUtils-初始值：" + value);
+            System.out.println("YearUtils2-初始值：" + value);
 
-            memcache.setValue("One", "test*******Test");
-            value = memcache.getValue("One");
-            System.out.println("YearUtils-修改后的值：" + value);
+            System.out.println("修改后的值：" + value);
         } catch (Exception e) {
             e.printStackTrace();
         }
