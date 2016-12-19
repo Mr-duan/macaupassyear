@@ -13,6 +13,7 @@ import com.org.container.CommonContainer;
 import com.org.container.UserManager;
 import com.org.utils.PropertiesUtil;
 import com.org.utils.WxUtil;
+import com.org.utils.YearUtils;
 
 public class ContextLoaderListener implements ServletContextListener {
 
@@ -55,7 +56,9 @@ public class ContextLoaderListener implements ServletContextListener {
         // 初始化所有的用户信息
         UserManager.initUserInfo();
 
-        WxUtil.autoRun();
+        new YearUtils().autoRun();
+
+//        WxUtil.autoRun();
         log.info("Integrate Smp With Spring Container End....");
     }
 

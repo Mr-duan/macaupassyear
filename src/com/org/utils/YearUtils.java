@@ -12,15 +12,32 @@ public class YearUtils {
         @Override
         public void run() {
             System.out.println("*************test************");
-
+            new YearUtils().testCache();
         }
+    }
+
+    public void testCache() {
+        try {
+            Memcache memcache = Memcache.getInstance();
+            memcache.setValue("One", "test");
+
+            String value = memcache.getValue("One");
+            System.out.println("初始值：" + value);
+
+            memcache.setValue("One", "test*******Test");
+            value = memcache.getValue("One");
+            System.out.println("修改后的值：" + value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
      * 
      * @param timeInterval
      */
-    public static void autoRun() {
+    public void autoRun() {
         // 同时启一个定时任务,每两小时执行一次
         Calendar calendar = Calendar.getInstance();
 

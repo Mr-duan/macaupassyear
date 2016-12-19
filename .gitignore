@@ -43,8 +43,6 @@ Temporary Items
 .apdisk
 
 *.class
-*.classpath
-*.settings
-*.java
+
 
 
