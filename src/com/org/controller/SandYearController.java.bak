@@ -34,15 +34,6 @@ public class SandYearController extends SmpHttpServlet implements CommonControll
     private static final long serialVersionUID = 1L;
     private Log log = LogFactory.getLog(SandYearController.class);
 
-    /**
-     * 去抽奖页面
-     * @Description (TODO这里用一句话描述这个方法的作用)
-     * @param request
-     * @param response
-     * @throws Exception
-     * @author Shindo   
-     * @date 2016年12月21日 下午5:01:15
-     */
     public void tocj(HttpServletRequest request, HttpServletResponse response) throws Exception {
         HttpSession session = request.getSession();
         // 抽奖管理员
@@ -75,15 +66,6 @@ public class SandYearController extends SmpHttpServlet implements CommonControll
         return;
     }
 
-    /**
-     * 抽奖管理员登录
-     * @Description (TODO这里用一句话描述这个方法的作用)
-     * @param request
-     * @param response
-     * @throws Exception
-     * @author Shindo   
-     * @date 2016年12月21日 下午4:58:51
-     */
     public void cjchecklgn(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String enterpwd = request.getParameter("enterpwd");
         String _enterpwd = PropertiesUtil.getValue("award", "enterpwd");
@@ -100,15 +82,6 @@ public class SandYearController extends SmpHttpServlet implements CommonControll
         return;
     }
 
-    /**
-     * 用户登录接口
-     * @Description 
-     * @param request
-     * @param response
-     * @throws Exception
-     * @author Shindo   
-     * @date 2016年12月21日 下午3:03:27
-     */
     public void queryYearMember(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String phoneNumber = request.getParameter("phoneNumber");
         String type = "1";
@@ -142,15 +115,6 @@ public class SandYearController extends SmpHttpServlet implements CommonControll
         return;
     }
 
-    /**
-     * 查找同桌用户信息
-     * @Description 
-     * @param request
-     * @param response
-     * @throws Exception
-     * @author Shindo   
-     * @date 2016年12月21日 下午3:04:11
-     */
     public void querySameTableMemberList(HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
             String phoneNumber = request.getParameter("phoneNumber");
@@ -283,15 +247,6 @@ public class SandYearController extends SmpHttpServlet implements CommonControll
         }
     }
 
-    /**
-     * 查询用户获奖信息
-     * @Description (TODO这里用一句话描述这个方法的作用)
-     * @param request
-     * @param response
-     * @throws Exception
-     * @author Shindo   
-     * @date 2016年12月21日 下午4:39:35
-     */
     public void queryMyPrize(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         HttpSession session = request.getSession();
@@ -529,15 +484,6 @@ public class SandYearController extends SmpHttpServlet implements CommonControll
         return;
     }
 
-    /**
-     * 刮一刮
-     * @Description (TODO这里用一句话描述这个方法的作用)
-     * @param request
-     * @param response
-     * @throws Exception
-     * @author Shindo   
-     * @date 2016年12月21日 下午4:54:25
-     */
     public void toguaj(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         HttpSession session = request.getSession();

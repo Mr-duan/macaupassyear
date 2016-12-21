@@ -149,6 +149,18 @@ public class SandYearService {
         }
     }
 
+    /**
+     * 用户抽奖
+     * @Description (TODO这里用一句话描述这个方法的作用)
+     * @param phoneNumber
+     * @param level
+     * @param type
+     * @param currentPage
+     * @param pageLine
+     * @return
+     * @author Shindo   
+     * @date 2016年12月21日 下午4:48:57
+     */
     public JSONObject userDraw(String phoneNumber, String level, String type, String currentPage, String pageLine) {
         JSONObject response = new JSONObject();
         try {
