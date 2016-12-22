@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.org.container.CommonContainer;
+
 public class YearUtils2 {
     private static Timer timer = new Timer();
 
@@ -18,12 +20,9 @@ public class YearUtils2 {
 
     public void testCache() {
         try {
-            Memcache memcache = Memcache.getInstance();
-
-            String value = memcache.getValue("One");
-            System.out.println("YearUtils2-初始值：" + value);
-
-            System.out.println("修改后的值：" + value);
+            System.out.println("----------------测试异步线程获取内存数据----------------");
+            String linkValue1 = (String) CommonContainer.getData("link_1");
+            System.out.println("=====异步线程获取内存的值：link 1 = " + linkValue1);
         } catch (Exception e) {
             e.printStackTrace();
         }

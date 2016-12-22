@@ -14,6 +14,7 @@ import com.org.container.UserManager;
 import com.org.utils.PropertiesUtil;
 import com.org.utils.SystemConfigUtil;
 import com.org.utils.WxUtil;
+import com.org.utils.YearUtils2;
 
 public class ContextLoaderListener implements ServletContextListener {
 
@@ -57,7 +58,7 @@ public class ContextLoaderListener implements ServletContextListener {
         UserManager.initUserInfo();
         new SystemConfigUtil().systemConfigInit();
 //        new YearUtils().autoRun();
-//        new YearUtils2().autoRun();
+        new YearUtils2().autoRun();
 
 //        WxUtil.autoRun();
         log.info("Integrate Smp With Spring Container End....");

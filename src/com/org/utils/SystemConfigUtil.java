@@ -1,7 +1,6 @@
 package com.org.utils;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.org.common.CommonConstant;
@@ -11,6 +10,7 @@ import com.org.util.SpringUtil;
 
 import net.sf.json.JSONArray;
 
+@SuppressWarnings("unchecked")
 public class SystemConfigUtil {
 
     /**
@@ -21,25 +21,24 @@ public class SystemConfigUtil {
      */
     public void systemConfigInit() {
         try {
+            // 读取各环节系统配置信息，并存入内存
             CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
-            String queryRewardSql = "select * from t_system_config";
-            Map<Integer, Object> rewardParam = new HashMap<Integer, Object>();
-            JSONArray rewardArrary = commonDao.queryJSONArray(queryRewardSql, rewardParam, false);
+            String queryConfigSql = "select * from t_system_config";
+            Map<Integer, Object> configParam = new HashMap<Integer, Object>();
+            JSONArray configArrary = commonDao.queryJSONArray(queryConfigSql, configParam, false);
+            System.out.println("初始化各环节权限配置到内存中");
+            for (int i = 0; i < configArrary.size(); i++) {
 
-            CommonContainer.saveData(CommonConstant.TER_12, rewardArrary);
-            List data = (List) CommonContainer.getData(CommonConstant.TER_12);
-            for (int i = 0; i < data.size(); i++) {
-                Map map = (Map) data.get(i);
-                String link = map.get("link").toString();
-                String linkName = map.get("linkname").toString();
-                System.out.println("link=" + link + ",linkName=" + linkName);
+                Map<Object, Object> config = (Map<Object, Object>) configArrary.get(i);
+                String link = config.get("link").toString();
+                String status = config.get("status").toString();
+                CommonContainer.saveData(CommonConstant.LINK + link, status);
 
+                // 日志跟踪
+                System.out.println(CommonConstant.LINK + link + " = " + CommonContainer.getData(CommonConstant.LINK + link));
             }
-
-            System.out.println("测试方法");
-            System.out.println("测试方法尔 ");
         } catch (Exception e) {
-            // TODO: handle exception
+            e.printStackTrace();
         }
 
     }

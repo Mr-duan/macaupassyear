@@ -15,6 +15,9 @@ public class CommonConstant {
 
     // 当前中奖名单
     public final static String TER_12 = "ter12";
+    
+ // 当前活动环节
+    public final static String LINK = "link_";
 
     // 当前奖项
     public final static String FLAG_CURRENT_AWARDS = "flagCA"; // 当前奖项。存储到数据库，预防突发终止事件
