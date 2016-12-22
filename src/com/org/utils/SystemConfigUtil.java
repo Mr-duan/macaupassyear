@@ -30,8 +30,8 @@ public class SystemConfigUtil {
             for (int i = 0; i < configArrary.size(); i++) {
 
                 Map<Object, Object> config = (Map<Object, Object>) configArrary.get(i);
-                String link = config.get("link").toString();
-                String status = config.get("status").toString();
+                String link = StringUtil.trim(config.get("link"));
+                String status = StringUtil.trim(config.get("status"));
                 CommonContainer.saveData(CommonConstant.LINK + link, status);
 
                 // 日志跟踪

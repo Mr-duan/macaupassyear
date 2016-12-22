@@ -53,6 +53,16 @@ public class StringUtil {
     }
 
     /**
+     * 格式化Object对象为字符串，如果为null则返回空白.
+     * 
+     * @param str
+     * @return str
+     */
+    public static String trim(Object str) {
+        return (str == null) ? "" : str.toString().trim();
+    }
+
+    /**
      * 对待转换为bcd的ascii码制字符串的验证模板
      */
     public static Pattern patternBcd = Pattern.compile("^[\\d|:|;|<|=|>|\\?]*$");
