@@ -25,6 +25,54 @@ import net.sf.json.JSONObject;
 @Service
 public class SandYearService {
 
+    /**
+     * 环节权限查询
+     * @Description (TODO这里用一句话描述这个方法的作用)
+     * @param phoneNumber
+     * @param type
+     * @return
+     * @author Shindo   
+     * @date 2016年12月22日 上午10:30:41
+     */
+    public JSONObject checkLinkAuth(String link) {
+        JSONObject response = null;
+        JSONArray allSym = new JSONArray();
+        try {
+            response = new JSONObject();
+            // 先根据传入的环节id在缓存中查
+            String auth = StringUtil.trim(CommonContainer.getData(CommonConstant.LINK + link));
+
+            // 若缓存没保存响应的环节配置信息，则数据库并登记缓存
+            if ("".equals(auth)) {
+                // 读取各环节系统配置信息，并存入内存
+                CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+                String queryConfigSql = "select * from t_system_config where link =?";
+                Map<Integer, Object> configParam = new HashMap<Integer, Object>();
+                configParam.put(1, link);
+                JSONObject querySingle = commonDao.querySingle(queryConfigSql, configParam, false);
+                String status = StringUtil.trim(querySingle.get("status"));
+                CommonContainer.saveData(CommonConstant.LINK + link, status);
+
+                // 日志跟踪
+                System.out.println(CommonConstant.LINK + link + " = " + CommonContainer.getData(CommonConstant.LINK + link));
+            }
+
+            if (CommonConstant.LINK_LOCK.equals(auth)) {
+
+                response.put(CommonConstant.RESP_MSG, "未开锁");
+            } else if (CommonConstant.LINK_OPEN.equals(auth)) {
+                response.put(CommonConstant.RESP_MSG, "已开锁");
+            } else if (CommonConstant.LINK_AWARD.equals(auth)) {
+                response.put(CommonConstant.RESP_MSG, "已抽奖");
+            }
+            response.put(CommonConstant.LINK_STATUS, auth);
+            response.put(CommonConstant.RESP_CODE, "10000");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
     public JSONObject queryYearMember(String phoneNumber, String type) {
         JSONObject response = null;
         JSONArray allSym = new JSONArray();

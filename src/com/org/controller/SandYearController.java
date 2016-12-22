@@ -35,8 +35,36 @@ public class SandYearController extends SmpHttpServlet implements CommonControll
     private Log log = LogFactory.getLog(SandYearController.class);
 
     /**
+     * 环节权限查询
+     * @Description 
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Shindo   
+     * @date 2016年12月21日 下午4:58:51
+     */
+    public void checkLinkAuth(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        String link = request.getParameter("link");
+
+        JSONObject noticeData = new JSONObject();
+
+        SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+        JSONObject json = yService.checkLinkAuth(link);
+
+        String respCode = json.getString(CommonConstant.RESP_CODE);
+        String respMsg = json.getString(CommonConstant.RESP_MSG);
+        String linkStatus = json.getString(CommonConstant.LINK_STATUS);
+        noticeData.put("respCode", respCode);
+        noticeData.put("respMsg", respMsg);
+        noticeData.put("linkStatus", linkStatus);
+        this.write(noticeData, "utf-8", response);
+        return;
+    }
+
+    /**
      * 去抽奖页面
-     * @Description (TODO这里用一句话描述这个方法的作用)
+     * @Description 
      * @param request
      * @param response
      * @throws Exception
