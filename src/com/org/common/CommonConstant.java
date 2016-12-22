@@ -9,6 +9,7 @@ public class CommonConstant {
     public final static String RESP_CODE = "respCode";
     public final static String RESP_MSG = "respMsg";
     public final static String LINK_STATUS = "linkStatus";
+    public final static String USER_AUTH = "userAuth";
     public final static String FILE_PATH = "filePath";
     public final static String FORM_PARAMS = "formParams";
     public final static String MESSAGE_TYPE = "messageType";

@@ -43,14 +43,14 @@ public class SandYearController extends SmpHttpServlet implements CommonControll
      * @author Shindo   
      * @date 2016年12月21日 下午4:58:51
      */
-    public void checkLinkAuth(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void checkLinkStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String link = request.getParameter("link");
 
         JSONObject noticeData = new JSONObject();
 
         SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
-        JSONObject json = yService.checkLinkAuth(link);
+        JSONObject json = yService.checkLinkStatus(link);
 
         String respCode = json.getString(CommonConstant.RESP_CODE);
         String respMsg = json.getString(CommonConstant.RESP_MSG);
@@ -60,6 +60,55 @@ public class SandYearController extends SmpHttpServlet implements CommonControll
         noticeData.put("linkStatus", linkStatus);
         this.write(noticeData, "utf-8", response);
         return;
+    }
+
+    /**
+     * 用户权限校验--步步高升
+     * @Description 确认该用户是否有该活动的参与权
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Shindo   
+     * @date 2016年12月22日 下午2:35:24
+     */
+    public void checkUserAuth(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        JSONObject noticeData = new JSONObject();
+        String mobile = request.getParameter("mobile");
+        SandYearService yService = (SandYearService) SpringUtil.getBean("sandYearService");
+        JSONObject json = yService.checkUserAuth(mobile);
+        String respCode = json.getString(CommonConstant.RESP_CODE);
+        String respMsg = json.getString(CommonConstant.RESP_MSG);
+        String userAuth = json.getString(CommonConstant.USER_AUTH);
+        noticeData.put("respCode", respCode);
+        noticeData.put("respMsg", respMsg);
+        noticeData.put("userAuth", userAuth);
+        this.write(noticeData, "utf-8", response);
+        return;
+    }
+
+    /**
+     * 修改各环节开闭状态
+     * @Description (TODO这里用一句话描述这个方法的作用)
+     * @param request
+     * @param response
+     * @throws Exception
+     * @author Shindo   
+     * @date 2016年12月22日 下午3:07:32
+     */
+    public void updateLinkStatus(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String link = request.getParameter("link");
+        String onOff = request.getParameter("onOff");
+        JSONObject noticeData = new JSONObject();
+        SandYearService yservice = (SandYearService) SpringUtil.getBean("sandYearService");
+        JSONObject json = yservice.updateLinkStatus(link, onOff);
+
+        String respCode = json.getString(CommonConstant.RESP_CODE);
+        String respMsg = json.getString(CommonConstant.RESP_MSG);
+        noticeData.put("respCode", respCode);
+        noticeData.put("respMsg", respMsg);
+        this.write(noticeData, "utf-8", response);
+        return;
+
     }
 
     /**

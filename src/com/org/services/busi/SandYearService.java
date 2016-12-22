@@ -34,7 +34,7 @@ public class SandYearService {
      * @author Shindo   
      * @date 2016年12月22日 上午10:30:41
      */
-    public JSONObject checkLinkAuth(String link) {
+    public JSONObject checkLinkStatus(String link) {
         JSONObject response = null;
         JSONArray allSym = new JSONArray();
         try {
@@ -67,6 +67,69 @@ public class SandYearService {
             }
             response.put(CommonConstant.LINK_STATUS, auth);
             response.put(CommonConstant.RESP_CODE, "10000");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    /**
+     * 用户权限校验--步步高升
+     * @Description 确认该用户是否有该活动的参与权
+     * @param phoneNumber
+     * @return
+     * @author Shindo   
+     * @date 2016年12月22日 下午2:43:08
+     */
+    public JSONObject checkUserAuth(String phoneNumber) {
+        JSONObject response = null;
+        try {
+            response = new JSONObject();
+            CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+            String queryUserSql = "select * from smp_year_member where moible =?";
+            Map<Integer, Object> configParam = new HashMap<Integer, Object>();
+            configParam.put(1, phoneNumber);
+            JSONObject querySingle = commonDao.querySingle(queryUserSql, configParam, false);
+            String isout = StringUtil.trim(querySingle.get("isout"));
+
+            response.put(CommonConstant.USER_AUTH, isout);
+            response.put(CommonConstant.RESP_MSG, "已抽奖");
+            response.put(CommonConstant.RESP_CODE, "10000");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    /**
+     * 改游戏环节权限
+     * @Description 先改数据库再改内存
+     * @param link
+     * @return
+     * @author Shindo   
+     * @date 2016年12月22日 下午4:03:09
+     */
+    public JSONObject updateLinkStatus(String link, String onOff) {
+        JSONObject response = null;
+        JSONArray allSym = new JSONArray();
+        try {
+            response = new JSONObject();
+
+            // 读取各环节系统配置信息，并存入内存
+            CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+            String queryConfigSql = "update t_system_config set status =? where link =?";
+            Map<Integer, Object> configParam = new HashMap<Integer, Object>();
+            configParam.put(1, onOff);
+            configParam.put(2, link);
+            commonDao.update(queryConfigSql, configParam);
+
+            CommonContainer.saveData(CommonConstant.LINK + link, onOff);
+
+            // 日志跟踪
+            System.out.println(CommonConstant.LINK + link + " = " + CommonContainer.getData(CommonConstant.LINK + link));
+
+            response.put(CommonConstant.RESP_CODE, "10000");
+            response.put(CommonConstant.RESP_MSG, "更改成功!");
         } catch (Exception e) {
             e.printStackTrace();
         }
