@@ -8,6 +8,8 @@ public class CommonConstant {
     public final static String DB_HIKARICP = "hikaricp-oracle";
     public final static String RESP_CODE = "respCode";
     public final static String RESP_MSG = "respMsg";
+    public final static String LINK_STATUS = "linkStatus";
+    public final static String USER_AUTH = "userAuth";
     public final static String FILE_PATH = "filePath";
     public final static String FORM_PARAMS = "formParams";
     public final static String MESSAGE_TYPE = "messageType";
@@ -15,6 +17,12 @@ public class CommonConstant {
 
     // 当前中奖名单
     public final static String TER_12 = "ter12";
+
+    // 当前活动环节 及 权限设置
+    public final static String LINK = "link_";
+    public final static String LINK_LOCK = "0";// 未开锁
+    public final static String LINK_OPEN = "1";// 已开锁
+    public final static String LINK_AWARD = "2";// 已抽奖
 
     // 当前奖项
     public final static String FLAG_CURRENT_AWARDS = "flagCA"; // 当前奖项。存储到数据库，预防突发终止事件

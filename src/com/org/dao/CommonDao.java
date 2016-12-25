@@ -167,7 +167,7 @@ public class CommonDao extends BaseDao {
                 setStatmentParams(ps, params);
             }
             ps.executeUpdate();
-            conn.commit();
+            // conn.commit();
         } catch (SQLException e1) {
             e1.printStackTrace();
             conn.setAutoCommit(false);

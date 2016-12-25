@@ -5,28 +5,24 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class YearUtils {
+import com.org.container.CommonContainer;
+
+public class YearUtils2 {
     private static Timer timer = new Timer();
 
     private static class YearUtilsTask extends TimerTask {
         @Override
         public void run() {
             System.out.println("*************test************");
-            new YearUtils().testCache();
+            new YearUtils2().testCache();
         }
     }
 
     public void testCache() {
         try {
-            Memcache memcache = Memcache.getInstance();
-            memcache.setValue("One", "test");
-
-            String value = memcache.getValue("One");
-            System.out.println("YearUtils-初始值：" + value);
-
-            memcache.setValue("One", "test*******Test");
-            value = memcache.getValue("One");
-            System.out.println("YearUtils-修改后的值：" + value);
+            System.out.println("----------------测试异步线程获取内存数据----------------");
+            String linkValue1 = (String) CommonContainer.getData("link_1");
+            System.out.println("=====异步线程获取内存的值：link 1 = " + linkValue1);
         } catch (Exception e) {
             e.printStackTrace();
         }

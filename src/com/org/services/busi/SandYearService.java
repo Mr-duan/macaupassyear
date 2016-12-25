@@ -25,6 +25,117 @@ import net.sf.json.JSONObject;
 @Service
 public class SandYearService {
 
+    /**
+     * 环节权限查询
+     * @Description (TODO这里用一句话描述这个方法的作用)
+     * @param phoneNumber
+     * @param type
+     * @return
+     * @author Shindo   
+     * @date 2016年12月22日 上午10:30:41
+     */
+    public JSONObject checkLinkStatus(String link) {
+        JSONObject response = null;
+        JSONArray allSym = new JSONArray();
+        try {
+            response = new JSONObject();
+            // 先根据传入的环节id在缓存中查
+            String auth = StringUtil.trim(CommonContainer.getData(CommonConstant.LINK + link));
+
+            // 若缓存没保存响应的环节配置信息，则数据库并登记缓存
+            if ("".equals(auth)) {
+                // 读取各环节系统配置信息，并存入内存
+                CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+                String queryConfigSql = "select * from t_system_config where link =?";
+                Map<Integer, Object> configParam = new HashMap<Integer, Object>();
+                configParam.put(1, link);
+                JSONObject querySingle = commonDao.querySingle(queryConfigSql, configParam, false);
+                String status = StringUtil.trim(querySingle.get("status"));
+                CommonContainer.saveData(CommonConstant.LINK + link, status);
+
+                // 日志跟踪
+                System.out.println(CommonConstant.LINK + link + " = " + CommonContainer.getData(CommonConstant.LINK + link));
+            }
+
+            if (CommonConstant.LINK_LOCK.equals(auth)) {
+
+                response.put(CommonConstant.RESP_MSG, "未开锁");
+            } else if (CommonConstant.LINK_OPEN.equals(auth)) {
+                response.put(CommonConstant.RESP_MSG, "已开锁");
+            } else if (CommonConstant.LINK_AWARD.equals(auth)) {
+                response.put(CommonConstant.RESP_MSG, "已抽奖");
+            }
+            response.put(CommonConstant.LINK_STATUS, auth);
+            response.put(CommonConstant.RESP_CODE, "10000");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    /**
+     * 用户权限校验--步步高升
+     * @Description 确认该用户是否有该活动的参与权
+     * @param phoneNumber
+     * @return
+     * @author Shindo   
+     * @date 2016年12月22日 下午2:43:08
+     */
+    public JSONObject checkUserAuth(String phoneNumber) {
+        JSONObject response = null;
+        try {
+            response = new JSONObject();
+            CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+            String queryUserSql = "select * from smp_year_member where moible =?";
+            Map<Integer, Object> configParam = new HashMap<Integer, Object>();
+            configParam.put(1, phoneNumber);
+            JSONObject querySingle = commonDao.querySingle(queryUserSql, configParam, false);
+            String isout = StringUtil.trim(querySingle.get("isout"));
+
+            response.put(CommonConstant.USER_AUTH, isout);
+            response.put(CommonConstant.RESP_MSG, "已抽奖");
+            response.put(CommonConstant.RESP_CODE, "10000");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    /**
+     * 改游戏环节权限
+     * @Description 先改数据库再改内存
+     * @param link
+     * @return
+     * @author Shindo   
+     * @date 2016年12月22日 下午4:03:09
+     */
+    public JSONObject updateLinkStatus(String link, String onOff) {
+        JSONObject response = null;
+        JSONArray allSym = new JSONArray();
+        try {
+            response = new JSONObject();
+
+            // 读取各环节系统配置信息，并存入内存
+            CommonDao commonDao = (CommonDao) SpringUtil.getBean("commonDao");
+            String queryConfigSql = "update t_system_config set status =? where link =?";
+            Map<Integer, Object> configParam = new HashMap<Integer, Object>();
+            configParam.put(1, onOff);
+            configParam.put(2, link);
+            commonDao.update(queryConfigSql, configParam);
+
+            CommonContainer.saveData(CommonConstant.LINK + link, onOff);
+
+            // 日志跟踪
+            System.out.println(CommonConstant.LINK + link + " = " + CommonContainer.getData(CommonConstant.LINK + link));
+
+            response.put(CommonConstant.RESP_CODE, "10000");
+            response.put(CommonConstant.RESP_MSG, "更改成功!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
     public JSONObject queryYearMember(String phoneNumber, String type) {
         JSONObject response = null;
         JSONArray allSym = new JSONArray();
@@ -149,6 +260,18 @@ public class SandYearService {
         }
     }
 
+    /**
+     * 用户抽奖
+     * @Description (TODO这里用一句话描述这个方法的作用)
+     * @param phoneNumber
+     * @param level
+     * @param type
+     * @param currentPage
+     * @param pageLine
+     * @return
+     * @author Shindo   
+     * @date 2016年12月21日 下午4:48:57
+     */
     public JSONObject userDraw(String phoneNumber, String level, String type, String currentPage, String pageLine) {
         JSONObject response = new JSONObject();
         try {
